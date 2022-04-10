@@ -39,7 +39,7 @@ class BinAuthorManager():
         self.results.Show()
         
     def message(self,s):
-        print s
+        print(s)
     
     def del_menu_items(self):
         for addmenu_item_ctx in self.addmenu_item_ctxs:

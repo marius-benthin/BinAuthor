@@ -40,7 +40,7 @@ class BinaryIndexing():
         file.close()
         
     def selectFolder(self):
-        print "Selecting Folder!"
+        print("Selecting Folder!")
         folder = QtGui.QFileDialog.getExistingDirectory(options=0)
         self.lineEditors = self.wid.findChildren(QtGui.QLineEdit)
         
@@ -50,7 +50,7 @@ class BinaryIndexing():
                 self.folderInput = textbox
         
     def indexBinaries(self):
-        print "Indexing Binaries!"
+        print("Indexing Binaries!")
         indexFolder = self.folderInput.text()
         locationOfScript = os.path.dirname(os.path.realpath(__file__))[:-5] + "ExternalScripts\indexFiles.py" 
         DETACHED_PROCESS = 0x00000008
@@ -75,7 +75,7 @@ class BinaryIndexing():
 
     def close(self):
         self.wid.close()
-        print "Closed"
+        print("Closed")
 
 
     def show(self):

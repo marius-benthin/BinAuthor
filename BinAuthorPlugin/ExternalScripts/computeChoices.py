@@ -20,7 +20,7 @@ class choice1():
         collection = db.Choice1
 
         #fileName = idaapi.get_root_filename()
-        #fileMD5 = idautils.GetInputFileMD5()
+        #fileMD5: bytes = idautils.GetInputFileMD5()
 
         mainEA = 0
 
@@ -45,7 +45,7 @@ class choice1():
             currentea = idc.NextHead(currentea)
 
         for item in Heads(mainEA,idc.FindFuncEnd(mainEA)):
-            #print hex(item) + ":" + GetMnem(item) + "\t" + str(idc.GetOpType(item,0)) + "\t" + str(idc.GetOpType(item,1))
+            #print(hex(item) + ":" + GetMnem(item) + "\t" + str(idc.GetOpType(item,0)) + "\t" + str(idc.GetOpType(item,1)))
             if "call" == idc.GetMnem(item) and idc.GetOpType(item,0) == 1:
                 instructionCounts["indirect_call"] += 1
             if idc.GetOpType(item,0) == 1:

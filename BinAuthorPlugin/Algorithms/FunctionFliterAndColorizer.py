@@ -51,8 +51,8 @@ class FunctionFilter():
                 if function["type"] == "user":
                     func.color = 0x80FFCC
         funcTypeStatsView = FunctionFilterList.FunctionFilterList()
-        print len(functionsToColor)
-        print collection.find({"MD5":GetInputFileMD5(),"type":"user"}).count()
+        print(len(functionsToColor))
+        print(collection.find({"MD5":GetInputFileMD5(),"type":"user"}).count())
         funcTypeStatsView.setDetails([userFuncStat, compilerFuncStat, otherFuncStat],{"User":userFunctions,"Compiler":compilerFunctions,"Other":otherFunctions})
         funcTypeStatsView.Show()
         refresh_idaview_anyway()

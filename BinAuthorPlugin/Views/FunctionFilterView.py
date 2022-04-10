@@ -99,7 +99,7 @@ class FunctionFilterList(PluginForm):
         # Populate PluginForm
         self.parent.setLayout(layoutMain)
     def item_click(self,item):
-        print str(item.text(1))
+        print(str(item.text(1)))
         self.statisticsView = StatsView.StatsView()
         self.statisticsView.setDetails(item.text(1))
         self.statisticsView.Show()
@@ -110,7 +110,7 @@ class FunctionFilterList(PluginForm):
         """
         #global ImpExpForm
         #del ImpExpForm
-        print "Closed"
+        print("Closed")
 
 
     def Show(self):

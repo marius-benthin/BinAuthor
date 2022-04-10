@@ -26,13 +26,13 @@ def checkImports():
         try:
             imp.find_module(dependency)
             found = True
-            print dependency + " found!"
+            print(dependency + " found!")
         except ImportError:
             found = False
-            print dependency + " not found!"
-            print "Now installing " + dependency + "..."
+            print(dependency + " not found!")
+            print("Now installing " + dependency + "...")
             install(listOfDependencies[dependency])
-    #print "installing pywin32 dlls..."
+    #print("installing pywin32 dlls...")
     #pywin32Path = os.path.join(os.path.join(os.path.dirname(sys.executable),"Scripts"),"pywin32_postinstall.py")
     #call([python,pywin32Path,"-install"])
     return 0
@@ -42,7 +42,7 @@ def installIDADependencies():
         from shutil import copyfile
         
         app = QtGui.QApplication(sys.argv)
-        print "Requesting Path For IDA Pro..."
+        print("Requesting Path For IDA Pro...")
         idaFolder = QtGui.QFileDialog.getExistingDirectory(options=0)
         folder = os.path.join(idaFolder,"plugins")
 
@@ -77,7 +77,7 @@ def installMongoDBDependencies():
     from shutil import copyfile
 
     #app = QtGui.QApplication(sys.argv)
-    print "Requesting Install Path For MongoDB..."
+    print("Requesting Install Path For MongoDB...")
     mongoDBFolder = QtGui.QFileDialog.getExistingDirectory(options=0)
     for root, directory, filelist in os.walk(mongoDBFolder):
             for file in filelist:

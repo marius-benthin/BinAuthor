@@ -31,7 +31,7 @@ class Mahalanobis():
         n = AShape[0] + BShape[0]
         
         if AShape[1] != BShape[1]:
-            print "Number of columns of A and B must be the same!"
+            print("Number of columns of A and B must be the same!")
             return
         else:
             xDiff = N.mean(A,axis=0)-N.mean(B,axis=0)
@@ -53,6 +53,6 @@ test = Mahalanobis()
 vector1 = [[2, 2],[2, 5],[6, 5],[7, 3],[4, 7],[6, 4],[5, 3],[4, 6],[2, 5],[1, 3]]
 vector2 = [[6, 5], [7, 4], [8, 7], [5, 6], [5, 4]]
 
-print test.mahalanobisDistance(vector1,vector2)
+print(test.mahalanobisDistance(vector1,vector2))
 
 '''

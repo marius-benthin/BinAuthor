@@ -28,7 +28,7 @@ def minHash(documentShingles):
 
     minHashes = []
 
-    #print '\nGenerating MinHash signatures for all documents...'
+    #print('\nGenerating MinHash signatures for all documents...')
 
     # List of documents represented as signature vectors
     signatures = []
@@ -95,7 +95,7 @@ def createShingles(documentString):
     counter = 0
     shingles = set()
     for item in items:
-        #print counter
+        #print(counter)
         if (counter+2) < len(items):
             shingle = items[counter] + " " + items[counter+1] + " " + items[counter+2]
             crc = binascii.crc32(shingle) & 0xffffffff
@@ -117,7 +117,7 @@ def test():
     stringShinglesDict["string1"][2] = minHash(stringShinglesDict["string1"][1])
     stringShinglesDict["string2"][2] = minHash(stringShinglesDict["string2"][1])
 
-    print stringShinglesDict["string1"][2]
-    print stringShinglesDict["string2"][2]
-    print similarity(stringShinglesDict["string1"][2],stringShinglesDict["string2"][2])
+    print(stringShinglesDict["string1"][2])
+    print(stringShinglesDict["string2"][2])
+    print(similarity(stringShinglesDict["string1"][2],stringShinglesDict["string2"][2]))
 

@@ -312,7 +312,7 @@ class StatsView(PluginForm):
                 outputDict[statsType] = correlated
         collection = self.db.FunctionFingerPrint
         collection.insert(outputDict)
-        print "Function Fingerprint has been successfully saved to the database!"
+        print("Function Fingerprint has been successfully saved to the database!")
             
     def OnCreate(self, Form):
         self.parent = self.FormToPySideWidget(Form)
@@ -457,7 +457,7 @@ class StatsView(PluginForm):
         
         
         '''
-        print correlation
+        print(correlation)
         self.widget1 = QtGui.QWidget()
         self.widget1.setMinimumWidth((self.parent.frameGeometry().width()-300)/2)
         self.widget2 = QtGui.QWidget()
@@ -571,7 +571,7 @@ class StatsView(PluginForm):
             w = idaapi.PluginForm.FormToPySideWidget(tform)
             w.setFocus()
         except:
-            print 'Failed to set focus.'
+            print('Failed to set focus.')
         return PluginForm.Show(self,
                                "Function Statistics",
                                options = PluginForm.FORM_PERSIST)

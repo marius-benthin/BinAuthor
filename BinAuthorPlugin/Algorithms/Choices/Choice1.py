@@ -42,7 +42,7 @@ class Choice1():
             currentea = NextHead(currentea)
 
         for item in Heads(mainEA,FindFuncEnd(mainEA)):
-            #print hex(item) + ":" + GetMnem(item) + "\t" + str(idc.GetOpType(item,0)) + "\t" + str(idc.GetOpType(item,1))
+            #print(hex(item) + ":" + GetMnem(item) + "\t" + str(idc.GetOpType(item,0)) + "\t" + str(idc.GetOpType(item,1)))
             if "call" == GetMnem(item) and idc.GetOpType(item,0) == 1:
                 instructionCounts["indirect_call"] += 1
             if idc.GetOpType(item,0) == 1:
@@ -228,7 +228,7 @@ class Choice1():
             currentea = NextHead(currentea)
 
         for item in Heads(mainEA,FindFuncEnd(mainEA)):
-            #print hex(item) + ":" + GetMnem(item) + "\t" + str(idc.GetOpType(item,0)) + "\t" + str(idc.GetOpType(item,1))
+            #print(hex(item) + ":" + GetMnem(item) + "\t" + str(idc.GetOpType(item,0)) + "\t" + str(idc.GetOpType(item,1)))
             if "call" == GetMnem(item) and idc.GetOpType(item,0) == 1:
                 instructionCounts["indirect_call"] += 1
             if idc.GetOpType(item,0) == 1:

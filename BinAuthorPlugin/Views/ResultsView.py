@@ -65,7 +65,7 @@ class Results(PluginForm):
         self.parent.setLayout(layout)
     '''    
     def selectFolder(self):
-        print "Selecting Folder!"
+        print("Selecting Folder!")
         folder = QtGui.QFileDialog.getExistingDirectory(options=0)
         self.lineEditors = self.wid.findChildren(QtGui.QLineEdit)
         
@@ -75,7 +75,7 @@ class Results(PluginForm):
                 self.folderInput = textbox
         
     def results(self):
-        print "Indexing Binaries!"
+        print("Indexing Binaries!")
         indexFolder = self.folderInput.text()
         locationOfScript = os.path.dirname(os.path.realpath(__file__))[:-5] + "ExternalScripts\indexFiles.py" 
         DETACHED_PROCESS = 0x00000008
@@ -100,7 +100,7 @@ class Results(PluginForm):
 
     def close(self):
         self.wid.close()
-        print "Closed"
+        print("Closed")
 
 '''
     def Show(self):
