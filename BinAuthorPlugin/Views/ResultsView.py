@@ -55,7 +55,7 @@ class Results(PluginForm):
         for table in tableView:
             if "tableWidget" in table.objectName():
                 rowCount = table.rowCount()
-                for row in xrange(0,rowCount):
+                for row in range(0,rowCount):
                     value = float(table.item(row,1).text())
                     table.item(row,1).setBackground(self.returnColor(value))
                     table.item(row,0).setBackground(self.returnColor(value))

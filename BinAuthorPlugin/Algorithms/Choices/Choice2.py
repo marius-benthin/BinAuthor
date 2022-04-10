@@ -39,7 +39,7 @@ class Choice2():
 
         numberOfImports = idaapi.get_import_module_qty()
 
-        for counter in xrange(0, numberOfImports):
+        for counter in range(0, numberOfImports):
             idaapi.enum_import_names(counter, self.getImportedFunctions)
 
         for address in Heads(mainEA,FindFuncEnd(mainEA)):
@@ -121,7 +121,7 @@ class Choice2():
 
         numberOfImports = idaapi.get_import_module_qty()
 
-        for counter in xrange(0, numberOfImports):
+        for counter in range(0, numberOfImports):
             idaapi.enum_import_names(counter, self.getImportedFunctions)
 
         for address in Heads(mainEA,FindFuncEnd(mainEA)):
