@@ -407,12 +407,12 @@ class choice18():
                         fingerPrint += " " + str(instruction)
                         counter += 1
                         
-                    functionMinhashes["SimHashSignature"] = str(simhash.Simhash(fingerPrint).value)
+                    functionMinhashes["SimHashSignature"] = str(Simhash(fingerPrint).value)
 
-                    self.simhashList.append([counter,simhash.Simhash(fingerPrint).value])
+                    self.simhashList.append([counter,Simhash(fingerPrint).value])
                     if len(fingerPrint.split(" ")) >= 6:
-                        self.registerChainMinhash.append([fingerPrint,minhash.minHash(minhash.createShingles(fingerPrint))])
-                        functionMinhashes["MinHashSignature"] = minhash.minHash(minhash.createShingles(fingerPrint))
+                        self.registerChainMinhash.append([fingerPrint,minHash(createShingles(fingerPrint))])
+                        functionMinhashes["MinHashSignature"] = minHash(createShingles(fingerPrint))
                         collection.insert(functionMinhashes)
                     else:
                         self.registerChainMinhash.append([fingerPrint,])
