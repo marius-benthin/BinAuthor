@@ -22,8 +22,8 @@ class Mahalanobis():
         self.authorName = self.fileName
         
     def mahalanobisDistance(self,A,B):
-        A = N.array(A)
-        B = N.array(B)
+        A = array(A)
+        B = array(B)
         
         AShape = A.shape
         BShape = B.shape
@@ -34,15 +34,15 @@ class Mahalanobis():
             print("Number of columns of A and B must be the same!")
             return
         else:
-            xDiff = N.mean(A,axis=0)-N.mean(B,axis=0)
+            xDiff = mean(A,axis=0)-mean(B,axis=0)
             cA = self.Covariance(A)
             cB = self.Covariance(B)
-            pC=N.dot(AShape[0]/float(n),cA)+N.dot(BShape[0]/float(n),cB)
-            return N.sqrt(N.dot(N.dot(xDiff,N.linalg.inv(pC)),xDiff))
+            pC=dot(AShape[0]/float(n),cA)+dot(BShape[0]/float(n),cB)
+            return sqrt(dot(dot(xDiff,linalg.inv(pC)),xDiff))
     def Covariance(self,X):
         xShape = X.shape
-        Xc = X-N.tile(N.mean(X,axis=0),(xShape[0],1))
-        return N.dot(Xc.T,Xc)/xShape[0]
+        Xc = X-tile(mean(X,axis=0),(xShape[0],1))
+        return dot(Xc.T,Xc)/xShape[0]
 
     #def getMD(self):
         

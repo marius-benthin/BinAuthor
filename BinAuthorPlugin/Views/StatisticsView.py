@@ -86,7 +86,7 @@ class StatsView(PluginForm):
         self.legend = {}
         self.groupStats = {}
         self.maxFreq = 0
-        self.minFreq = sys.maxint
+        self.minFreq = maxsize
         self.FunctionName = funcName
         self.CurrentMD5 = str(GetInputFileMD5())
         
@@ -106,17 +106,17 @@ class StatsView(PluginForm):
         #f1.set_facecolor(None)
         #f1.patch.set_alpha(0.0)
         temp = f1.add_subplot(111)
-        
-        ## Create data
-        np.random.seed(10)
-        collectn_1 = dataDict.values()
-        collectn_2 = np.random.normal(80, 30, 200)
-        collectn_3 = np.random.normal(90, 20, 200)
-        collectn_4 = np.random.normal(70, 25, 200)
 
-        ## combine these different collections into a list    
+        ## Create data
+        random.seed(10)
+        collectn_1 = dataDict.values()
+        collectn_2 = random.normal(80, 30, 200)
+        collectn_3 = random.normal(90, 20, 200)
+        collectn_4 = random.normal(70, 25, 200)
+
+        ## combine these different collections into a list
         data_to_plot = [collectn_1, collectn_2, collectn_3, collectn_4]
-        
+
 	    # fake up some more data
         temp.boxplot(data_to_plot)
 	    # multiple box plots on one figure
@@ -124,11 +124,11 @@ class StatsView(PluginForm):
         canvas2.setMinimumWidth(150)
         canvas2.setMinimumHeight(150)
         return canvas2
-	
+
     def createBarChart(self):
-        
+
         D = {u'Label0':26, u'Label1': 17, u'Label2':30}
-        
+
         f1 = plt.figure(figsize=(1.5625,0.2))
         #f1.set_facecolor(None)
         #f1.patch.set_alpha(0.0)
@@ -140,18 +140,18 @@ class StatsView(PluginForm):
         canvas2.setMinimumWidth(150)
         canvas2.setMinimumHeight(150)
         return canvas2
-    
+
     def createBarChartCorrelation(self,dataTupple):
         f1 = plt.figure(figsize=(1.5625,1.5))
         #f1.set_facecolor(None)
         #f1.patch.set_alpha(0.0)
         temp = f1.add_subplot(111)
-        
+
         x_axis_Titles = [function[0] for function in dataTupple]
         dataPoints = [function[1] for function in dataTupple]
-        
+
         my_colors = list(islice(cycle(['b', 'r', 'g', 'y', 'k']), None, len(dataTupple)))
-        
+
         temp.bar(range(len(dataTupple)), dataPoints, align='center', width=0.2,color=my_colors)
         temp.set_xticks(range(len(dataTupple)))
         temp.set_xticklabels(x_axis_Titles)
@@ -164,16 +164,16 @@ class StatsView(PluginForm):
         canvas2.setMinimumHeight(150)
         self.statsFigures["FunctionCorrelations"] = f1
         return canvas2
-        
+
     def createBarChartA(self,dataDict,title,type):
-               
+
         f1 = plt.figure(figsize=(1.5625,1.5))
         #f1.set_facecolor(None)
         #f1.patch.set_alpha(0.0)
         temp = f1.add_subplot(111)
-        
+
         my_colors = list(islice(cycle(['b', 'r', 'g', 'y', 'k']), None, len(dataDict)))
-        
+
         temp.bar(range(len(dataDict)), dataDict.values(), align='center', width=0.2,color=my_colors)
         temp.set_xticks(range(len(dataDict)))
         temp.set_xticklabels(dataDict.keys())
@@ -183,11 +183,11 @@ class StatsView(PluginForm):
         plt.title(title)
         canvas2.setMinimumWidth(150)
         canvas2.setMinimumHeight(150)
-        
+
         self.statsFigures[type] = f1
         return canvas2
-        
-           
+
+
     def createPieChart(self):
         # The slices will be ordered and plotted counter-clockwise.
         labels = 'User', 'Compiler', 'Other'

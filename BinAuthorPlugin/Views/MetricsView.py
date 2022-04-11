@@ -85,7 +85,7 @@ class Metrics(PluginForm):
     def OnCreate(self,form):
         self.parent = self.FormToPySideWidget(form)
         self.wid = QtWidgets.QWidget()
-        binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\\UI\\MetricsView.ui"
+        binaryUIPath = dirname(realpath(__file__)) + "\\UI\\MetricsView.ui"
         file = QtCore.QFile(binaryUIPath)
         file.open(QtCore.QFile.ReadOnly)
         myWidget = uic.loadUi(file, self.wid)

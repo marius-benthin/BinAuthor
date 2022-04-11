@@ -20,7 +20,7 @@ class FunctionCategorizer():
         self.groupFeatures = {}
         self.compilerInstructionFeatures = {}
         self.compilerGroupFeatures = {}
-        self.rootFolder = pluginConfigurations.getRoot()
+        self.rootFolder = getRoot()
         self.thresholdPath = "With_Threshold\\"
         self.outputResults = {}
         self.outputResultsOnlyMatch = {}
@@ -125,12 +125,12 @@ class FunctionCategorizer():
             self.loadGroupFeatures(function)
 
         for files in listdir(self.rootFolder + "compilerFeatures\\instructions"):
-            if isfile(self.rootFolder + "compilerFeatures\\instructions\\" + files):
+            if path.isfile(self.rootFolder + "compilerFeatures\\instructions\\" + files):
                 self.loadCompilerInstructionFeatures(self.rootFolder + "compilerFeatures", files)
 
 
         for files in listdir(self.rootFolder + "compilerFeatures\\groups"):
-            if isfile(self.rootFolder + "compilerFeatures\\groups\\" + files):
+            if path.isfile(self.rootFolder + "compilerFeatures\\groups\\" + files):
                 self.loadcompilerGroupFeatures(self.rootFolder + "compilerFeatures", files)
 
         for function in self.instructionFeatures.keys():
@@ -195,7 +195,7 @@ class FunctionCategorizer():
         output = 'Compiler Functions'
         for function in self.compilerFunctionsDetected:
             output += "," + str(function)
-            hashFunction = hashlib.md5()
+            hashFunction = md5()
             hashFunction.update(self.fileMD5 + "," + function + ",compiler") 
             bulkInsert.append({"binaryFileName":self.CurrentfileName,"MD5":self.fileMD5,"Date Analyzed":self.dateAnalyzed,"hash":hashFunction.hexdigest(),"type":"compiler","function":str(function)})
         try:
@@ -207,7 +207,7 @@ class FunctionCategorizer():
         output += "\nOther Functions"
         for function in self.otherFunctionsDetected:
             output += "," + str(function)
-            hashFunction = hashlib.md5()
+            hashFunction = md5()
             hashFunction.update(self.fileMD5 + "," + function + ",other") 
             bulkInsert.append({"binaryFileName":self.CurrentfileName,"MD5":self.fileMD5,"Date Analyzed":self.dateAnalyzed,"hash":hashFunction.hexdigest(),"type":"other","function":str(function)})
         try:
@@ -218,7 +218,7 @@ class FunctionCategorizer():
         output += "\nUser Functions"
         for function in self.userFunctionsDetected:
             output += "," + str(function)
-            hashFunction = hashlib.md5()
+            hashFunction = md5()
             hashFunction.update(self.fileMD5 + "," + function + ",user") 
             bulkInsert.append({"binaryFileName":self.CurrentfileName,"MD5":self.fileMD5,"Date Analyzed":self.dateAnalyzed,"hash":hashFunction.hexdigest(),"type":"user","function":str(function)})
         try:
@@ -282,7 +282,7 @@ class FunctionCategorizer():
         output = 'Compiler Functions'
         for function in self.compilerFunctionsDetectedGroup:
             output += "," + str(function)
-            hashFunction = hashlib.md5()
+            hashFunction = md5()
             hashFunction.update(self.fileMD5 + "," + function + ",compiler") 
             bulkInsert.append({"binaryFileName":self.CurrentfileName,"MD5":self.fileMD5,"Date Analyzed":self.dateAnalyzed,"hash":hashFunction.hexdigest(),"type":"compiler","function":str(function)})
         try:
@@ -293,7 +293,7 @@ class FunctionCategorizer():
         output += "\nOther Functions"
         for function in self.otherFunctionsDetectedGroup:
             output += "," + str(function)
-            hashFunction = hashlib.md5()
+            hashFunction = md5()
             hashFunction.update(self.fileMD5 + "," + function + ",other") 
             bulkInsert.append({"binaryFileName":self.CurrentfileName,"MD5":self.fileMD5,"Date Analyzed":self.dateAnalyzed,"hash":hashFunction.hexdigest(),"type":"other","function":str(function)})
         try:
@@ -304,7 +304,7 @@ class FunctionCategorizer():
         output += "\nUser Functions"
         for function in self.userFunctionsDetectedGroup:
             output += "," + str(function)
-            hashFunction = hashlib.md5()
+            hashFunction = md5()
             hashFunction.update(self.fileMD5 + "," + function + ",user") 
             bulkInsert.append({"binaryFileName":self.CurrentfileName,"MD5":self.fileMD5,"Date Analyzed":self.dateAnalyzed,"hash":hashFunction.hexdigest(),"type":"user","function":str(function)})
         try:

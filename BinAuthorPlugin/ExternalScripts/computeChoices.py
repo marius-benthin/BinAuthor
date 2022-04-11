@@ -39,7 +39,7 @@ class choice1():
 
         output = {}
 
-        #authorName = idc.ARGV[1]
+        #authorName = ARGV[1]
 
         for name in Names():
             if (str(name[1]).find("main") != -1) and (len(str(name[1])) <= 5):
@@ -239,7 +239,7 @@ class choice2():
         numOfInstructions = 0
         printfNewline = [0,0]
         mainEA = 0
-        #fileName = idc.ARGV[1]
+        #fileName = ARGV[1]
 
         self.getAllStrings()
         for name in Names():
@@ -442,7 +442,7 @@ class _Strings():
         output = {"Strings": self.allStrings}      
         output["FileName"] = self.fileName
         output["FileMD5"] = self.fileMD5
-        output["Author Name"] = idc.ARGV[1]
+        output["Author Name"] = ARGV[1]
         
         self.collection.insert(output)
         

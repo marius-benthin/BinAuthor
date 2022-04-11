@@ -20,8 +20,8 @@ class FeatureExtractor():
         self.db = self.client.BinAuthor
         self.collection = self.db.Functions
 
-        self.instructionList = pluginConfigurations.getInstructionListPath() + "InstructionList.txt"
-        self.groupList = pluginConfigurations.getGroupPath() + "InstructionGroups.txt"
+        self.instructionList = getInstructionListPath() + "InstructionList.txt"
+        self.groupList = getGroupPath() + "InstructionGroups.txt"
 
         self.instructions = {}
         self.groups = {}
@@ -51,7 +51,7 @@ class FeatureExtractor():
             mean = (functionInstructions[instruction]/float(sum))
             variance = ((functionInstructions[instruction] - mean)**2/sum)
             if functionInstructions[instruction] > 0:
-                hashFunction = hashlib.md5()
+                hashFunction = md5()
                 hashFunction.update(self.fileMD5 + "," + file + "," + "instructions," + instruction + "," + str(functionInstructions[instruction]) + "," + str(mean) + "," + str(variance))
                 bulkInsert.append({"binaryFileName":self.fileName,"MD5":self.fileMD5,"Date Analyzed":self.dateAnalyzed,"function":oldFileName,"type":"instructions","hash":hashFunction.hexdigest(),"instruction": instruction,"instructionCount": functionInstructions[instruction], "mean": mean, "variance": variance})
         try:
@@ -66,7 +66,7 @@ class FeatureExtractor():
             # mean = (functionInstructions[instruction]/float(sum))
             # variance = ((functionInstructions[instruction] - mean)**2/sum)
             # if functionInstructions[instruction] > 0:
-                # hashFunction = hashlib.md5()
+                # hashFunction = md5()
                 # hashFunction.update(self.fileMD5 + "," + file + "," + "instructions," + instruction + "," + str(functionInstructions[instruction]) + "," + str(mean) + "," + str(variance))
                 # bulkInsert.append({"binaryFileName":self.fileName,"MD5":self.fileMD5,"Date Analyzed":self.dateAnalyzed,"function":oldFileName,"type":"instructions","hash":hashFunction.hexdigest(),"instruction": instruction,"instructionCount": functionInstructions[instruction], "mean": mean, "variance": variance})
 
@@ -78,16 +78,16 @@ class FeatureExtractor():
             mean = (functionGroups[group][1]/float(allGroupSum))
             variance = ((functionGroups[group][1] - mean)**2/allGroupSum)
             if functionGroups[group][1] > 0:
-                hashFunction = hashlib.md5()
+                hashFunction = md5()
                 hashFunction.update(self.fileMD5 + "," + file + "," + "groups," + group + "," + str(functionGroups[group][1]) + "," + str(mean) + "," + str(variance))
-                maxInstruction = max(functionGroups[group][0].iteritems(), key=operator.itemgetter(1))                
+                maxInstruction = max(functionGroups[group][0].iteritems(), key=itemgetter(1))                
                 maxInstructionCount = maxInstruction[1]
                 maxInstruction = maxInstruction[0]
                 
                 for item in functionGroups[group][0].keys():
                     if functionGroups[group][0][item] == 0:
                         del functionGroups[group][0][item]
-                minInstruction = min(functionGroups[group][0].iteritems(), key=operator.itemgetter(1))
+                minInstruction = min(functionGroups[group][0].iteritems(), key=itemgetter(1))
                 minInstructionCount = minInstruction[1]
                 minInstruction = minInstruction[0]
                 
@@ -105,8 +105,8 @@ class FeatureExtractor():
         # ea = idc.BeginEA()
         # count = 0
         # for funcea in Functions(idc.SegStart(ea), idc.SegEnd(ea)):
-            # functionInstructions = copy.deepcopy(self.instructions)
-            # functionGroups = copy.deepcopy(self.groups)
+            # functionInstructions = deepcopy(self.instructions)
+            # functionGroups = deepcopy(self.groups)
             # sum = 0
             # allGroupSum = 0
             # functionName = idc.GetFunctionName(funcea)

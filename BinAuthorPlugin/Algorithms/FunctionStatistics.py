@@ -91,8 +91,8 @@ class InstructionGroupStatistics(object):
                     bottomA += float((self.currentFunction[group][0] - self.currentFunction[group][1]))**2
                     bottomB += float((functionGroups[function][group][0] - functionGroups[function][group][1]))**2
                     
-            if math.sqrt(bottomA*bottomB) != 0:
-                correlations[function[:15]] = float((top/math.sqrt(bottomA*bottomB)))
-        correlations = sorted(correlations.items(), key=operator.itemgetter(1), reverse=True)    
+            if sqrt(bottomA*bottomB) != 0:
+                correlations[function[:15]] = float((top/sqrt(bottomA*bottomB)))
+        correlations = sorted(correlations.items(), key=itemgetter(1), reverse=True)
         return correlations[:self.topCorrelationResults]
             

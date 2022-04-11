@@ -9,7 +9,7 @@ class BinaryIndexing():
    
     def create(self):
         self.wid = QtWidgets.QWidget()
-        binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\\UI\\BinaryIndexing.ui"
+        binaryUIPath = dirname(realpath(__file__)) + "\\UI\\BinaryIndexing.ui"
         file = QtCore.QFile(binaryUIPath)
         file.open(QtCore.QFile.ReadOnly)
         myWidget = uic.loadUi(file, self.wid)
@@ -38,7 +38,7 @@ class BinaryIndexing():
     def indexBinaries(self):
         print("Indexing Binaries!")
         indexFolder = self.folderInput.text()
-        locationOfScript = os.path.dirname(os.path.realpath(__file__))[:-5] + "ExternalScripts\indexFiles.py" 
+        locationOfScript = dirname(realpath(__file__))[:-5] + "ExternalScripts\indexFiles.py"
         DETACHED_PROCESS = 0x00000008
         self.radioButton = self.wid.findChildren(QtWidgets.QRadioButton)
         multiple = 0
@@ -55,9 +55,9 @@ class BinaryIndexing():
                 if radio.isChecked():
                     multiple = 1
         if authorName != None:
-            Popen([pluginConfigurations.getPythonPath(),locationOfScript,indexFolder,str(multiple),authorName],close_fds=True, creationflags=DETACHED_PROCESS)
+            Popen([getPythonPath(),locationOfScript,indexFolder,str(multiple),authorName],close_fds=True, creationflags=DETACHED_PROCESS)
         else:
-            Popen([pluginConfigurations.getPythonPath(),locationOfScript,indexFolder,str(multiple)],close_fds=True, creationflags=DETACHED_PROCESS)
+            Popen([getPythonPath(),locationOfScript,indexFolder,str(multiple)],close_fds=True, creationflags=DETACHED_PROCESS)
 
     def close(self):
         self.wid.close()
