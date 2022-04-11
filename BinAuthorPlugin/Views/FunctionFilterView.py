@@ -11,6 +11,11 @@ use('Qt5Agg')
 
 
 class FunctionFilterList(PluginForm):
+
+    def __init__(self):
+        super().__init__()
+        self.items = []
+
     def imports_names_cb(self, ea, name, ord):
         self.items.append((ea, '' if not name else name, ord))
         # True -> Continue enumeration

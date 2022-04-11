@@ -20,7 +20,7 @@ def main():
     mypath = argv[1]
     multiple = 0
 
-    
+    author = None
     if len(argv) >= 3:
         if "1" in argv[2]:
             author = mypath.split("/")[-1:][0]

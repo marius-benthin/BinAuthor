@@ -78,6 +78,11 @@ class htmlReport():
         return html
 
 class StatsView(PluginForm):
+
+    def __init__(self):
+        super().__init__()
+        self.statsFigures = {}
+
     def setDetails(self,funcName):
         self.client = MongoClient('localhost', 27017)
         self.db = self.client.BinAuthor

@@ -230,6 +230,7 @@ class FunctionCategorizer():
 
         #=====================[GROUPS]===========================================================================
 
+        compilerFunction = None
         for function in self.groupFeatures.keys():
             thresholdMatches = {}
             for group in self.groupFeatures[function].keys():

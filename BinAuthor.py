@@ -13,6 +13,11 @@ def PLUGIN_ENTRY():
         wanted_name = "BinAuthor"
         wanted_hotkey = ""
 
+        def __init__(self):
+            self.BinAuthor_manager = None
+            self.BinAuthorFunctionFilter = None
+            self.BinAuthorFeatureExtractor = None
+
         def init(self):
             try:
                 self.BinAuthorFunctionFilter = FunctionFilter.FunctionFilter()

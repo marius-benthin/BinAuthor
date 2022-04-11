@@ -14,6 +14,9 @@ from BinAuthorPlugin.Algorithms.Choices import Strings as StringsMatching
 
 class BinAuthorManager():
     def __init__(self):
+        self.indexing = None
+        self.metricsResults = None
+        self.results = None
         self._menu = MenuManager()
         self.addmenu_item_ctxs = []
     
