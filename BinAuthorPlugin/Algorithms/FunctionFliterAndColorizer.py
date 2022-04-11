@@ -32,7 +32,7 @@ class FunctionFilter():
         for function in functionsToColor:
             funcEA = self.functionNamesToEA[function["function"]]
             func = get_func(funcEA)
-            flags = idc.GetFunctionFlags(funcEA)
+            flags = get_func_attr(funcEA)
             typeCounter = 0
             if ((flags&FUNC_LIB) != FUNC_LIB) and ((flags&1152) != 1152):
                 if function["type"] == "compiler":

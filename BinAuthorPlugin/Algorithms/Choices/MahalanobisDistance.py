@@ -17,8 +17,8 @@ class Mahalanobis():
         self.db = self.client.BinAuthor
         self.collection = self.db.Mahalanobis
         
-        self.fileName = idaapi.get_root_filename()
-        self.fileMD5 = idautils.GetInputFileMD5()
+        self.fileName = get_root_filename()
+        self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
         
     def mahalanobisDistance(self,A,B):

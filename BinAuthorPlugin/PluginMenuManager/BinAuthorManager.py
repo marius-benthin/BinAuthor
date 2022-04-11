@@ -14,7 +14,7 @@ from BinAuthorPlugin.Algorithms.Choices import Strings as StringsMatching
 
 class BinAuthorManager():
     def __init__(self):
-        self._menu = sark.qt.MenuManager()
+        self._menu = MenuManager()
         self.addmenu_item_ctxs = []
     
     def launchBinaryIndexing(self):
@@ -35,22 +35,31 @@ class BinAuthorManager():
     
     def del_menu_items(self):
         for addmenu_item_ctx in self.addmenu_item_ctxs:
-            idaapi.del_menu_item(addmenu_item_ctx)
+            detach_action_from_menu(addmenu_item_ctx)
 
         self._menu.clear()
         
     def buildMenu(self,functionFilter):
-        self._menu = sark.qt.MenuManager()
+        self._menu = MenuManager()
         self._menu.add_menu("&BinAuthor")
         choice1 = Choice1.Choice1()
         choice2 = Choice2.Choice2()
         choice18 = Choice18.Choice18()
         authorClassification = AuthorClassification.AuthorClassification()
         strings = StringsMatching._Strings()
-        self.addmenu_item_ctxs.append(idaapi.add_menu_item("BinAuthor/", "Author Indexing", "", 0, self.launchBinaryIndexing, ()))
-        self.addmenu_item_ctxs.append(idaapi.add_menu_item("BinAuthor/", "Author Identification", "", 0, self.showMetrics, ()))
-        self.addmenu_item_ctxs.append(idaapi.add_menu_item("BinAuthor/", "Function Classification", "", 0, functionFilter.run, ()))
-        self.addmenu_item_ctxs.append(idaapi.add_menu_item("BinAuthor/", "Variable Utilization Features", "", 0, choice18.choice18, ()))
-        self.addmenu_item_ctxs.append(idaapi.add_menu_item("BinAuthor/", "Generalization Features", "", 0, choice2.choice2, ()))
-        self.addmenu_item_ctxs.append(idaapi.add_menu_item("BinAuthor/", "Code Organization Features", "", 0, choice1.choice1, ()))
-        self.addmenu_item_ctxs.append(idaapi.add_menu_item("BinAuthor/","Quality Features", "", 0, strings._Strings, ()))
+        ui_path = "BinAuthor/"
+
+        for action_name, action_label, callback in [
+            ("author_indexing", "Author Indexing", self.launchBinaryIndexing),
+            ("author_identification", "Author Identification", self.showMetrics),
+            ("function_classification", "Function Classification", functionFilter.run),
+            ("variable_utilization_features", "Variable Utilization Features", choice18.choice18),
+            ("generalization_features", "Generalization Features", choice2.choice2),
+            ("code_organization_features", "Code Organization Features", choice1.choice1),
+            ("quality_features", "Quality Features", strings._Strings),
+        ]:
+            action_desc = action_desc_t(action_name, action_label, callback)
+            if register_action(action_desc):
+                attach_action_to_menu(ui_path, action_name, SETMENU_APP)
+            else:
+                print("Failed registering action '%s'" % action_name)

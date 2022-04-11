@@ -11,12 +11,12 @@ class _Strings():
         self.db = self.client.BinAuthor
         self.collection = self.db.Strings
         
-        self.fileName = idaapi.get_root_filename()
-        self.fileMD5 = idautils.GetInputFileMD5()
+        self.fileName = get_root_filename()
+        self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
         
     def _Strings(self):
-        strings = idautils.Strings(default_setup = False)
+        strings = Strings(default_setup = False)
         strings.setup(strtypes=Strings.STR_C | Strings.STR_UNICODE, ignore_instructions = True, display_only_existing_strings = True,minlen=4)
         for string in strings:
             self.allStrings.append(str(string))
@@ -29,7 +29,7 @@ class _Strings():
         self.collection.insert(output)
         
     def getAllStrings(self):
-        strings = idautils.Strings(default_setup = False)
+        strings = Strings(default_setup = False)
         strings.setup(strtypes=Strings.STR_C | Strings.STR_UNICODE, ignore_instructions = True, display_only_existing_strings = True,minlen=4)
         for string in strings:
             self.allStrings.append(str(string))
@@ -42,7 +42,7 @@ class _Strings():
         return output
         
     def getAllStringsA(self):
-        strings = idautils.Strings(default_setup = False)
+        strings = Strings(default_setup = False)
         allStrings = []
         strings.setup(strtypes=Strings.STR_C | Strings.STR_UNICODE, ignore_instructions = True, display_only_existing_strings = True,minlen=4)
         for string in strings:

@@ -133,19 +133,19 @@ class FeatureExtractor():
         self.loadInstructionGroups()
         functionNamesToEA = {}
             
-        ea = idc.BeginEA()
+        ea = inf_get_min_ea()
         count = 0
-        for funcea in Functions(idc.SegStart(ea), idc.SegEnd(ea)):
-            functionInstructions = copy.deepcopy(self.instructions)
-            functionGroups = copy.deepcopy(self.groups)
+        for funcea in Functions(get_segm_start(ea), get_segm_end(ea)):
+            functionInstructions = deepcopy(self.instructions)
+            functionGroups = deepcopy(self.groups)
             sum = 0
             allGroupSum = 0
-            functionName = idc.GetFunctionName(funcea)
+            functionName = get_func_name(funcea)
             functionNamesToEA[functionName] = funcea
             originalfuncea = funcea
             currentea = funcea
-            while currentea != idc.BADADDR and currentea < idc.FindFuncEnd(funcea):
-                currentInstruction = idc.GetMnem(currentea)
+            while currentea != BADADDR and currentea < find_func_end(funcea):
+                currentInstruction = print_insn_mnem(currentea)
                 if currentInstruction in self.instructions.keys():
                     functionInstructions[currentInstruction] += 1
                     sum += 1
@@ -156,7 +156,7 @@ class FeatureExtractor():
                         functionGroups[group][0][currentInstruction] += 1
                         allGroupSum += 1
                         
-                currentea = idc.NextHead(currentea)
+                currentea = next_head(currentea)
             self.writeInstructionFeatures(self.instructions,sum,functionInstructions,functionName)
             self.writeInstructionGroupFeatures(self.groups,allGroupSum,functionGroups,functionName)
         return functionNamesToEA

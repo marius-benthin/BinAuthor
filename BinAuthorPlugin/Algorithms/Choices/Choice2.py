@@ -7,8 +7,8 @@ from idc import find_func_end, print_insn_mnem, get_operand_type, print_operand,
 
 class Choice2():
     def __init__(self):
-        self.fileName = idaapi.get_root_filename()
-        self.fileMD5 = idautils.GetInputFileMD5()
+        self.fileName = get_root_filename()
+        self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
         self.allStrings = {}
         self.subStrings = ["cout","endl","Xlength_error","cerr"]
@@ -33,12 +33,12 @@ class Choice2():
             if (str(name[1]).find("main") != -1) and (len(str(name[1])) <= 5):
                 mainEA = name[0]
 
-        numberOfImports = idaapi.get_import_module_qty()
+        numberOfImports = get_import_module_qty()
 
         for counter in range(0, numberOfImports):
-            idaapi.enum_import_names(counter, self.getImportedFunctions)
+            enum_import_names(counter, self.getImportedFunctions)
 
-        for address in Heads(mainEA,FindFuncEnd(mainEA)):
+        for address in Heads(mainEA,find_func_end(mainEA)):
             numOfInstructions += 1
 
 
@@ -46,40 +46,40 @@ class Choice2():
         currentStackValue = ''
         numberOfCalls = 0
         previousInstructionEA = 0
-        for address in Heads(mainEA,FindFuncEnd(mainEA)):
+        for address in Heads(mainEA,find_func_end(mainEA)):
             currentInstruction += 1
-            if GetMnem(address) == "push":
+            if print_insn_mnem(address) == "push":
                 previousInstructionEA = address
-                currentStackValue = idc.GetOpnd(address,0)
-            elif GetMnem(address) == "pop":
+                currentStackValue = print_operand(address,0)
+            elif print_insn_mnem(address) == "pop":
                 currentStackValue = ''
-            elif GetMnem(address) == "mov":
-                if idc.GetOpnd(address,0) in self.standardRegisters.keys():
-                    self.standardRegisters[idc.GetOpnd(address,0)] = idc.GetOperandValue(address,1)
+            elif print_insn_mnem(address) == "mov":
+                if print_operand(address,0) in self.standardRegisters.keys():
+                    self.standardRegisters[print_operand(address,0)] = get_operand_value(address,1)
                     
             distanceFromEndOfFunction = int(numOfInstructions * (3/float(4)))
-            if idc.GetOpType(address,0) == 1 and idc.GetOpnd(address,0) in self.standardRegisters.keys():
-                libraryInstruction = self.standardRegisters[idc.GetOpnd(address,0)]
+            if get_operand_type(address,0) == 1 and print_operand(address,0) in self.standardRegisters.keys():
+                libraryInstruction = self.standardRegisters[print_operand(address,0)]
             else:
-                libraryInstruction = idc.GetOperandValue(address,0)
+                libraryInstruction = get_operand_value(address,0)
             
             for string in self.subStrings:
-                if string in idc.GetOpnd(address,1) and currentInstruction >= distanceFromEndOfFunction:
+                if string in print_operand(address,1) and currentInstruction >= distanceFromEndOfFunction:
                     self.libraryFunctionNamesDict[string][1] +=1
             
-            if GetMnem(address) == "call" and currentInstruction >= distanceFromEndOfFunction:
+            if print_insn_mnem(address) == "call" and currentInstruction >= distanceFromEndOfFunction:
                 numberOfCalls += 1
             
-            if GetMnem(address) in self.returns.keys() and currentInstruction >= distanceFromEndOfFunction:
-                self.returns[GetMnem(address)] += 1
+            if print_insn_mnem(address) in self.returns.keys() and currentInstruction >= distanceFromEndOfFunction:
+                self.returns[print_insn_mnem(address)] += 1
                 
-            if GetMnem(address) == "call" and libraryInstruction in self.libraryFunctionNameEADict.keys() and currentInstruction >= distanceFromEndOfFunction:
+            if print_insn_mnem(address) == "call" and libraryInstruction in self.libraryFunctionNameEADict.keys() and currentInstruction >= distanceFromEndOfFunction:
                 if self.libraryFunctionNameEADict[libraryInstruction] == "exit":
                     if currentStackValue == "1":
                         self.libraryFunctionNamesDict[self.libraryFunctionNameEADict[libraryInstruction]][1] += 1
                 else:
-                    if "printf" in self.libraryFunctionNameEADict[libraryInstruction] and GetMnem(previousInstructionEA) == "push":
-                        locationOfPushValue = idc.GetOperandValue(previousInstructionEA,0)
+                    if "printf" in self.libraryFunctionNameEADict[libraryInstruction] and print_insn_mnem(previousInstructionEA) == "push":
+                        locationOfPushValue = get_operand_value(previousInstructionEA,0)
                         
                         if locationOfPushValue in self.allStrings.keys():
                             if "\n" in self.allStrings[locationOfPushValue]:
@@ -115,12 +115,12 @@ class Choice2():
             if (str(name[1]).find("main") != -1) and (len(str(name[1])) <= 5):
                 mainEA = name[0]
 
-        numberOfImports = idaapi.get_import_module_qty()
+        numberOfImports = get_import_module_qty()
 
         for counter in range(0, numberOfImports):
-            idaapi.enum_import_names(counter, self.getImportedFunctions)
+            enum_import_names(counter, self.getImportedFunctions)
 
-        for address in Heads(mainEA,FindFuncEnd(mainEA)):
+        for address in Heads(mainEA,find_func_end(mainEA)):
             numOfInstructions += 1
 
 
@@ -128,40 +128,40 @@ class Choice2():
         currentStackValue = ''
         numberOfCalls = 0
         previousInstructionEA = 0
-        for address in Heads(mainEA,FindFuncEnd(mainEA)):
+        for address in Heads(mainEA,find_func_end(mainEA)):
             currentInstruction += 1
-            if GetMnem(address) == "push":
+            if print_insn_mnem(address) == "push":
                 previousInstructionEA = address
-                currentStackValue = idc.GetOpnd(address,0)
-            elif GetMnem(address) == "pop":
+                currentStackValue = print_operand(address,0)
+            elif print_insn_mnem(address) == "pop":
                 currentStackValue = ''
-            elif GetMnem(address) == "mov":
-                if idc.GetOpnd(address,0) in self.standardRegisters.keys():
-                    self.standardRegisters[idc.GetOpnd(address,0)] = idc.GetOperandValue(address,1)
+            elif print_insn_mnem(address) == "mov":
+                if print_operand(address,0) in self.standardRegisters.keys():
+                    self.standardRegisters[print_operand(address,0)] = get_operand_value(address,1)
                     
             distanceFromEndOfFunction = int(numOfInstructions * (3/float(4)))
-            if idc.GetOpType(address,0) == 1 and idc.GetOpnd(address,0) in self.standardRegisters.keys():
-                libraryInstruction = self.standardRegisters[idc.GetOpnd(address,0)]
+            if get_operand_type(address,0) == 1 and print_operand(address,0) in self.standardRegisters.keys():
+                libraryInstruction = self.standardRegisters[print_operand(address,0)]
             else:
-                libraryInstruction = idc.GetOperandValue(address,0)
+                libraryInstruction = get_operand_value(address,0)
             
             for string in self.subStrings:
-                if string in idc.GetOpnd(address,1) and currentInstruction >= distanceFromEndOfFunction:
+                if string in print_operand(address,1) and currentInstruction >= distanceFromEndOfFunction:
                     self.libraryFunctionNamesDict[string][1] +=1
             
-            if GetMnem(address) == "call" and currentInstruction >= distanceFromEndOfFunction:
+            if print_insn_mnem(address) == "call" and currentInstruction >= distanceFromEndOfFunction:
                 numberOfCalls += 1
             
-            if GetMnem(address) in self.returns.keys() and currentInstruction >= distanceFromEndOfFunction:
-                self.returns[GetMnem(address)] += 1
+            if print_insn_mnem(address) in self.returns.keys() and currentInstruction >= distanceFromEndOfFunction:
+                self.returns[print_insn_mnem(address)] += 1
                 
-            if GetMnem(address) == "call" and libraryInstruction in self.libraryFunctionNameEADict.keys() and currentInstruction >= distanceFromEndOfFunction:
+            if print_insn_mnem(address) == "call" and libraryInstruction in self.libraryFunctionNameEADict.keys() and currentInstruction >= distanceFromEndOfFunction:
                 if self.libraryFunctionNameEADict[libraryInstruction] == "exit":
                     if currentStackValue == "1":
                         self.libraryFunctionNamesDict[self.libraryFunctionNameEADict[libraryInstruction]][1] += 1
                 else:
-                    if "printf" in self.libraryFunctionNameEADict[libraryInstruction] and GetMnem(previousInstructionEA) == "push":
-                        locationOfPushValue = idc.GetOperandValue(previousInstructionEA,0)
+                    if "printf" in self.libraryFunctionNameEADict[libraryInstruction] and print_insn_mnem(previousInstructionEA) == "push":
+                        locationOfPushValue = get_operand_value(previousInstructionEA,0)
                         
                         if locationOfPushValue in self.allStrings.keys():
                             if "\n" in self.allStrings[locationOfPushValue]:
@@ -187,7 +187,7 @@ class Choice2():
         return output
 
     def getAllStrings(self):
-        strings = idautils.Strings(default_setup = False)
+        strings = Strings(default_setup = False)
         strings.setup(strtypes=Strings.STR_C | Strings.STR_UNICODE, ignore_instructions = True, display_only_existing_strings = True,minlen=1)
         for string in strings:
             self.allStrings[string.ea] = str(string)

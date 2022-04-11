@@ -207,17 +207,17 @@ class StatsView(PluginForm):
         return canvas
 
     def saveReport(self):
-        fileName = str(idaapi.get_root_filename() + "_" + self.FunctionName[:15] + ".html")
-        dir = idc.AskFile(1,fileName,"Save as")
+        fileName = str(get_root_filename() + "_" + self.FunctionName[:15] + ".html")
+        dir = ask_file(1,fileName,"Save as")
         dir = dir[:-len(fileName)]
         
-        if not os.path.exists(dir + str(idaapi.get_root_filename() + "_" + self.FunctionName[:15])):
-            os.makedirs(dir + str(idaapi.get_root_filename() + "_" + self.FunctionName[:15]))
-        dir = dir + str(idaapi.get_root_filename() + "_" + self.FunctionName[:15]) + "\\"
+        if not path.exists(dir + str(get_root_filename() + "_" + self.FunctionName[:15])):
+            makedirs(dir + str(get_root_filename() + "_" + self.FunctionName[:15]))
+        dir = dir + str(get_root_filename() + "_" + self.FunctionName[:15]) + "\\"
         report = htmlReport()
 
         fileOutput = open(dir+fileName,"wb")
-        fileOutput.write(report.generateReport(idaapi.get_root_filename(),self.CurrentMD5,self.FunctionName,self.generateStatisticsTable()))
+        fileOutput.write(report.generateReport(get_root_filename(),self.CurrentMD5,self.FunctionName,self.generateStatisticsTable()))
         fileOutput.close()
         
         for graph in self.statsFigures.keys():
@@ -227,12 +227,12 @@ class StatsView(PluginForm):
             self.statsFigures[graph].savefig(dir + graph + ".png")
 
     def saveFigures(self):
-        dir = idc.AskFile(1,"Skewness.png","Save as")
+        dir = ask_file(1,"Skewness.png","Save as")
         dir = dir[:-len("Skewness.png")]
         
-        if not os.path.exists(dir + str(idaapi.get_root_filename() + "_" + self.FunctionName[:15])):
-            os.makedirs(dir + str(idaapi.get_root_filename() + "_" + self.FunctionName[:15]))
-        dir = dir + str(idaapi.get_root_filename() + "_" + self.FunctionName[:15]) + "\\"
+        if not path.exists(dir + str(get_root_filename() + "_" + self.FunctionName[:15])):
+            makedirs(dir + str(get_root_filename() + "_" + self.FunctionName[:15]))
+        dir = dir + str(get_root_filename() + "_" + self.FunctionName[:15]) + "\\"
         
         for graph in self.statsFigures.keys():
             self.statsFigures[graph].set_figheight(2.500)
@@ -277,7 +277,7 @@ class StatsView(PluginForm):
         return output
     def storeFunctionStatistics(self):
         outputSequence = ["Mean","Variance","Min","Max","Skewness","Kurtosis","Correlation"]
-        outputDict = {"ExecutableName":idaapi.get_root_filename(),"ExecutableMD5Hash":self.CurrentMD5,"FunctionName":self.FunctionName}
+        outputDict = {"ExecutableName":get_root_filename(),"ExecutableMD5Hash":self.CurrentMD5,"FunctionName":self.FunctionName}
         for statsType in outputSequence:
             if statsType == "Skewness":
                 outputDict["Skewness"] = self.statistics[statsType]
@@ -565,8 +565,8 @@ class StatsView(PluginForm):
     def Show(self):
         """Creates the form is not created or focuses it if it was"""
         try:
-            tform = idaapi.find_tform("IDA View-A")
-            w = idaapi.PluginForm.FormToPySideWidget(tform)
+            tform = find_widget("IDA View-A")
+            w = PluginForm.FormToPySideWidget(tform)
             w.setFocus()
         except:
             print('Failed to set focus.')

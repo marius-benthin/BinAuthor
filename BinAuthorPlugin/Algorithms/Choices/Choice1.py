@@ -9,8 +9,8 @@ from idc import find_func_end, print_insn_mnem, next_head, get_operand_type, pri
 
 class Choice1():
     def __init__(self):
-        self.fileName = idaapi.get_root_filename()
-        self.fileMD5 = idautils.GetInputFileMD5()
+        self.fileName = get_root_filename()
+        self.fileMD5 = GetInputFileMD5()
         self.authorName = self.fileName
         
     def choice1(self):
@@ -18,8 +18,8 @@ class Choice1():
         db = client.BinAuthor
         collection = db.Choice1
 
-        #fileName = idaapi.get_root_filename()
-        #fileMD5 = idautils.GetInputFileMD5()
+        #fileName = get_root_filename()
+        #fileMD5 = GetInputFileMD5()
 
         mainEA = 0
 
@@ -36,29 +36,29 @@ class Choice1():
                 mainEA = name[0]
 
         currentea = mainEA
-        while currentea != BADADDR and currentea < FindFuncEnd(mainEA):
-            currentInstruction = GetMnem(currentea)
+        while currentea != BADADDR and currentea < find_func_end(mainEA):
+            currentInstruction = print_insn_mnem(currentea)
             if currentInstruction in instructionCounts.keys():
                 instructionCounts[currentInstruction] += 1
             totalInstructions += 1
-            currentea = NextHead(currentea)
+            currentea = next_head(currentea)
 
-        for item in Heads(mainEA,FindFuncEnd(mainEA)):
-            #print(hex(item) + ":" + GetMnem(item) + "\t" + str(idc.GetOpType(item,0)) + "\t" + str(idc.GetOpType(item,1)))
-            if "call" == GetMnem(item) and idc.GetOpType(item,0) == 1:
+        for item in Heads(mainEA,find_func_end(mainEA)):
+            #print(hex(item) + ":" + print_insn_mnem(item) + "\t" + str(get_operand_type(item,0)) + "\t" + str(get_operand_type(item,1)))
+            if "call" == print_insn_mnem(item) and get_operand_type(item,0) == 1:
                 instructionCounts["indirect_call"] += 1
-            if idc.GetOpType(item,0) == 1:
+            if get_operand_type(item,0) == 1:
                 instructionCounts["reg_used"] += 1
                 
-                register = idc.GetOpnd(item,0)
+                register = print_operand(item,0)
                 if register not in registerCounts.keys():
                     registerCounts[register] = 1
                 else:
                     registerCounts[register] += 1
-            if idc.GetOpType(item,1) == 1:
+            if get_operand_type(item,1) == 1:
                 instructionCounts["reg_used"] += 1
                 
-                register = idc.GetOpnd(item,1)
+                register = print_operand(item,1)
                 if register not in registerCounts.keys():
                     registerCounts[register] = 1
                 else:
@@ -222,29 +222,29 @@ class Choice1():
                 mainEA = name[0]
 
         currentea = mainEA
-        while currentea != BADADDR and currentea < FindFuncEnd(mainEA):
-            currentInstruction = GetMnem(currentea)
+        while currentea != BADADDR and currentea < find_func_end(mainEA):
+            currentInstruction = print_insn_mnem(currentea)
             if currentInstruction in instructionCounts.keys():
                 instructionCounts[currentInstruction] += 1
             totalInstructions += 1
-            currentea = NextHead(currentea)
+            currentea = next_head(currentea)
 
-        for item in Heads(mainEA,FindFuncEnd(mainEA)):
-            #print(hex(item) + ":" + GetMnem(item) + "\t" + str(idc.GetOpType(item,0)) + "\t" + str(idc.GetOpType(item,1)))
-            if "call" == GetMnem(item) and idc.GetOpType(item,0) == 1:
+        for item in Heads(mainEA,find_func_end(mainEA)):
+            #print(hex(item) + ":" + print_insn_mnem(item) + "\t" + str(get_operand_type(item,0)) + "\t" + str(get_operand_type(item,1)))
+            if "call" == print_insn_mnem(item) and get_operand_type(item,0) == 1:
                 instructionCounts["indirect_call"] += 1
-            if idc.GetOpType(item,0) == 1:
+            if get_operand_type(item,0) == 1:
                 instructionCounts["reg_used"] += 1
                 
-                register = idc.GetOpnd(item,0)
+                register = print_operand(item,0)
                 if register not in registerCounts.keys():
                     registerCounts[register] = 1
                 else:
                     registerCounts[register] += 1
-            if idc.GetOpType(item,1) == 1:
+            if get_operand_type(item,1) == 1:
                 instructionCounts["reg_used"] += 1
                 
-                register = idc.GetOpnd(item,1)
+                register = print_operand(item,1)
                 if register not in registerCounts.keys():
                     registerCounts[register] = 1
                 else:

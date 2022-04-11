@@ -19,44 +19,44 @@ class Choice18():
         self.simhashList = []
         self.registerChainMinhash = []
         self.blocks = []
-        self.fileName = idaapi.get_root_filename()
-        self.fileMD5 = idautils.GetInputFileMD5()
+        self.fileName = get_root_filename()
+        self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
 
     def createRegisterChain(self,p,ea):
-        f = idaapi.FlowChart(idaapi.get_func(ea))
+        f = FlowChart(get_func(ea))
         
-        functionName = idaapi.get_func_name(ea)
+        functionName = get_func_name(ea)
         client = MongoClient('localhost', 27017)
         db = client.BinAuthor
         collection = db.Choice18
         
-        if idaapi.get_func_name(ea) not in self.functionRegisterChains.keys():
-            self.functionRegisterChains[idaapi.get_func_name(ea)] = {}
+        if get_func_name(ea) not in self.functionRegisterChains.keys():
+            self.functionRegisterChains[get_func_name(ea)] = {}
         for block in f:
             if p:
                 registerChain = {}
                 for address in Heads(block.startEA,block.endEA):
-                    if idc.GetOpType(address, 0) == 1 and idc.GetOpnd(address, 0) != "":
-                        if idc.GetOpnd(address, 0) not in self.functionRegisterChains[idaapi.get_func_name(ea)].keys():
-                            self.functionRegisterChains[idaapi.get_func_name(ea)][idc.GetOpnd(address, 0)] = [GetMnem(address)]
+                    if get_operand_type(address, 0) == 1 and print_operand(address, 0) != "":
+                        if print_operand(address, 0) not in self.functionRegisterChains[get_func_name(ea)].keys():
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [print_insn_mnem(address)]
                         else:
-                            self.functionRegisterChains[idaapi.get_func_name(ea)][idc.GetOpnd(address, 0)].append(GetMnem(address))
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)].append(print_insn_mnem(address))
                             
-                        if idc.GetOpnd(address, 0) not in registerChain.keys():
-                            registerChain[idc.GetOpnd(address, 0)] = [GetMnem(address)]
+                        if print_operand(address, 0) not in registerChain.keys():
+                            registerChain[print_operand(address, 0)] = [print_insn_mnem(address)]
                         else:
-                            registerChain[idc.GetOpnd(address, 0)].append(GetMnem(address))
-                    if idc.GetOpType(address, 1) == 1  and idc.GetOpnd(address, 1) != "":
-                        if idc.GetOpnd(address, 1) not in self.functionRegisterChains[idaapi.get_func_name(ea)].keys():
-                            self.functionRegisterChains[idaapi.get_func_name(ea)][idc.GetOpnd(address, 1)] = [GetMnem(address)]
+                            registerChain[print_operand(address, 0)].append(print_insn_mnem(address))
+                    if get_operand_type(address, 1) == 1  and print_operand(address, 1) != "":
+                        if print_operand(address, 1) not in self.functionRegisterChains[get_func_name(ea)].keys():
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)] = [print_insn_mnem(address)]
                         else:
-                            self.functionRegisterChains[idaapi.get_func_name(ea)][idc.GetOpnd(address, 1)].append(GetMnem(address))
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)].append(print_insn_mnem(address))
                         
-                        if idc.GetOpnd(address, 1) not in registerChain.keys():
-                            registerChain[idc.GetOpnd(address, 1)] = [GetMnem(address)]
+                        if print_operand(address, 1) not in registerChain.keys():
+                            registerChain[print_operand(address, 1)] = [print_insn_mnem(address)]
                         else:
-                            registerChain[idc.GetOpnd(address, 1)].append(GetMnem(address))
+                            registerChain[print_operand(address, 1)].append(print_insn_mnem(address))
                 for register in registerChain.keys():
                     fingerPrint = str(register)
                     functionMinhashes = {}
@@ -83,38 +83,38 @@ class Choice18():
                         self.registerChainMinhash.append([fingerPrint,])
                         
     def createRegisterChainA(self,p,ea):
-        f = idaapi.FlowChart(idaapi.get_func(ea))
+        f = FlowChart(get_func(ea))
         
-        functionName = idaapi.get_func_name(ea)
+        functionName = get_func_name(ea)
         
         functions = []
         
-        if idaapi.get_func_name(ea) not in self.functionRegisterChains.keys():
-            self.functionRegisterChains[idaapi.get_func_name(ea)] = {}
+        if get_func_name(ea) not in self.functionRegisterChains.keys():
+            self.functionRegisterChains[get_func_name(ea)] = {}
         for block in f:
             if p:
                 registerChain = {}
                 for address in Heads(block.startEA,block.endEA):
-                    if idc.GetOpType(address, 0) == 1 and idc.GetOpnd(address, 0) != "":
-                        if idc.GetOpnd(address, 0) not in self.functionRegisterChains[idaapi.get_func_name(ea)].keys():
-                            self.functionRegisterChains[idaapi.get_func_name(ea)][idc.GetOpnd(address, 0)] = [GetMnem(address)]
+                    if get_operand_type(address, 0) == 1 and print_operand(address, 0) != "":
+                        if print_operand(address, 0) not in self.functionRegisterChains[get_func_name(ea)].keys():
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [print_insn_mnem(address)]
                         else:
-                            self.functionRegisterChains[idaapi.get_func_name(ea)][idc.GetOpnd(address, 0)].append(GetMnem(address))
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)].append(print_insn_mnem(address))
                             
-                        if idc.GetOpnd(address, 0) not in registerChain.keys():
-                            registerChain[idc.GetOpnd(address, 0)] = [GetMnem(address)]
+                        if print_operand(address, 0) not in registerChain.keys():
+                            registerChain[print_operand(address, 0)] = [print_insn_mnem(address)]
                         else:
-                            registerChain[idc.GetOpnd(address, 0)].append(GetMnem(address))
-                    if idc.GetOpType(address, 1) == 1  and idc.GetOpnd(address, 1) != "":
-                        if idc.GetOpnd(address, 1) not in self.functionRegisterChains[idaapi.get_func_name(ea)].keys():
-                            self.functionRegisterChains[idaapi.get_func_name(ea)][idc.GetOpnd(address, 1)] = [GetMnem(address)]
+                            registerChain[print_operand(address, 0)].append(print_insn_mnem(address))
+                    if get_operand_type(address, 1) == 1  and print_operand(address, 1) != "":
+                        if print_operand(address, 1) not in self.functionRegisterChains[get_func_name(ea)].keys():
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)] = [print_insn_mnem(address)]
                         else:
-                            self.functionRegisterChains[idaapi.get_func_name(ea)][idc.GetOpnd(address, 1)].append(GetMnem(address))
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)].append(print_insn_mnem(address))
                         
-                        if idc.GetOpnd(address, 1) not in registerChain.keys():
-                            registerChain[idc.GetOpnd(address, 1)] = [GetMnem(address)]
+                        if print_operand(address, 1) not in registerChain.keys():
+                            registerChain[print_operand(address, 1)] = [print_insn_mnem(address)]
                         else:
-                            registerChain[idc.GetOpnd(address, 1)].append(GetMnem(address))
+                            registerChain[print_operand(address, 1)].append(print_insn_mnem(address))
                 for register in registerChain.keys():
                     fingerPrint = str(register)
                     functionMinhashes = {}
@@ -143,13 +143,13 @@ class Choice18():
 
     def choice18(self):
         for function in Functions():
-            self.functionAddresstoRealFunctionName[function] = idaapi.get_func_name(function)
+            self.functionAddresstoRealFunctionName[function] = get_func_name(function)
             self.createRegisterChain(True,function)
             
     def choice18A(self):
         functions = []
         for function in Functions():
-            self.functionAddresstoRealFunctionName[function] = idaapi.get_func_name(function)
+            self.functionAddresstoRealFunctionName[function] = get_func_name(function)
             functions.append(self.createRegisterChainA(True,function))
             
         return functions
