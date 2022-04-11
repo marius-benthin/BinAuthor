@@ -11,7 +11,6 @@ from idaapi import plugin_t
 from pprint import pprint
 from idaapi import PluginForm
 
-from PySide import QtGui, QtCore
 import BinAuthorPlugin.Views.BinaryIndexingView as BinaryIndexing
 import BinAuthorPlugin.Views.ResultsView as Results
 import BinAuthorPlugin.Views.MetricsView as Metrics

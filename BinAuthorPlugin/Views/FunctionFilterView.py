@@ -16,13 +16,13 @@ from idaapi import PluginForm
 import numpy as np
 import matplotlib
 
-matplotlib.use('Qt4Agg')
-matplotlib.rcParams['backend.qt4']='PySide'
+matplotlib.use('Qt5Agg')
+#matplotlib.rcParams['backend.qt5']='PyQt5'
 
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
-from PySide import QtGui, QtCore
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from PyQt5 import QtGui, QtCore, QtWidgets
 import BinAuthorPlugin.Views.StatisticsView as StatsView
 
 class FunctionFilterList(PluginForm):
@@ -43,7 +43,7 @@ class FunctionFilterList(PluginForm):
         # Get parent widget
         self.parent = self.FormToPySideWidget(form)
 
-        w = QtGui.QWidget()
+        w = QtWidgets.QWidget()
         #w.resize(200, 200)
         #w.move(100, 300)
         #w.setWindowTitle('Simple')
@@ -66,7 +66,7 @@ class FunctionFilterList(PluginForm):
         axes.pie(sizes, explode=explode, labels=labels, colors=colors,
                 autopct='%1.1f%%', shadow=True, startangle=90)
     
-        self.results_tree = QtGui.QTreeWidget()
+        self.results_tree = QtWidgets.QTreeWidget()
         self.results_tree.setSortingEnabled(False)
         self.results_tree.headerItem().setText(0, 'Function Type')
         self.results_tree.headerItem().setText(1, 'Function Name')
@@ -74,25 +74,25 @@ class FunctionFilterList(PluginForm):
         #exampleFunctionTypes = {"User":["__ArrayUnwind(void *,uint,int,void (*)(void *))","std::char_traits<char>::compare(char const *,char const *,uint)","solve(int)","_main","std::_Tree_val<std::_Tset_traits<std::basic_string<char,std::char_traits<char>,std::allocator<char>>,std::less<std::basic_string<char,std::char_traits<char>,std::allocator<char>>>,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char>>>,0>>::~_Tree_val<std::_Tset_traits<std::basic_string<char,std::char_traits<char>,std::allocator<char>>,std::less<std::basic_string<char,std::char_traits<char>,std::allocator<char>>>,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char>>>,0>>(void)","std::basic_string<char,std::char_traits<char>,std::allocator<char>>::insert(uint,uint,char)","?erase@?$_Tree@V?$_Tset_traits@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@U?$less@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@$0A@@std@@@std@@QAE?AV?$_Tree_const_iterator@V?$_Tree_val@V?$_Tset_traits@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@U?$less@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$al_"],"Compiler":["std::bad_alloc::`vector deleting destructor'(uint)","std::set<std::basic_string<char,std::char_traits<char>,std::allocator<char>>,std::less<std::basic_string<char,std::char_traits<char>,std::allocator<char>>>,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char>>>>::~set<std::basic_string<char,std::char_traits<char>,std::allocator<char>>,std::less<std::basic_string<char,std::char_traits<char>,std::allocator<char>>>,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char>>>>(void)","std::basic_string<char,std::char_traits<char>,std::allocator<char>>::~basic_string<char,std::char_traits<char>,std::allocator<char>>(void)","std::basic_string<char,std::char_traits<char>,std::allocator<char>>::assign(char const *,uint)"],"Other":["??1bad_alloc@std@@UAE@XZ","operator delete(void *,void *)","__security_check_cookie(x)","std::exception::what(void)","std::exception::exception(std::exception const &)","operator delete(void *)"]}
         counter = 0
         for funcType in self.funcTypeDict.keys():
-            funcTypeTree = QtGui.QTreeWidgetItem(self.results_tree)
+            funcTypeTree = QtWidgets.QTreeWidgetItem(self.results_tree)
             funcTypeTree.setText(0, funcType)
             funcTreeCounter = 0
             for funcName in self.funcTypeDict[funcType]:
-                funcItem = QtGui.QTreeWidgetItem(funcTypeTree)
+                funcItem = QtWidgets.QTreeWidgetItem(funcTypeTree)
                 funcItem.setText(0,funcType)
                 funcItem.setText(1,funcName)
                 funcTreeCounter += 1
             counter +=1
             self.results_tree.addTopLevelItem(funcTypeTree)
         canvas.resize(20,20)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(canvas)
         w.setLayout(layout)
         w.setFixedWidth(500)
         w.setFixedHeight(500)
         
         self.results_tree.itemClicked.connect(self.item_click)
-        layoutMain = QtGui.QGridLayout()
+        layoutMain = QtWidgets.QGridLayout()
         layoutMain.addWidget(w,0,0)
         layoutMain.addWidget(self.results_tree,0,1)
         canvas.draw()

@@ -16,7 +16,7 @@ from pprint import pprint
 from idaapi import PluginForm
 from subprocess import Popen
 
-from PySide import QtGui, QtCore, QtUiTools
+from PyQt5 import QtGui, QtCore, QtWidgets, uic
 import BinAuthorPlugin.Algorithms.AuthorClassification as AuthorClassification
 
 class Metrics(PluginForm):
@@ -96,26 +96,25 @@ class Metrics(PluginForm):
         
     def OnCreate(self,form):
         self.parent = self.FormToPySideWidget(form)
-        self.wid = QtGui.QWidget()
-        binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\UI\MetricsView.ui"
-        loader = QtUiTools.QUiLoader()
+        self.wid = QtWidgets.QWidget()
+        binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\\UI\\MetricsView.ui"
         file = QtCore.QFile(binaryUIPath)
         file.open(QtCore.QFile.ReadOnly)
-        myWidget = loader.load(file,self.wid)
+        myWidget = uic.loadUi(file, self.wid)
         self.authorClassification = AuthorClassification.AuthorClassification()
         self.getChoice1Classification()
         self.getChoice2Classification()
         self.getChoice18Classification()
         self.getStringSimilaritiesClassification()
         # Grid
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(myWidget)
 
         self.getAuthorsList()
         
-        comboBoxes = self.wid.findChildren(QtGui.QComboBox)
-        tableView = self.wid.findChildren(QtGui.QTableWidget,"tableWidget")[0]
-        authorTableView = self.wid.findChildren(QtGui.QTableWidget,"tableWidget_2")[0]
+        comboBoxes = self.wid.findChildren(QtWidgets.QComboBox)
+        tableView = self.wid.findChildren(QtWidgets.QTableWidget,"tableWidget")[0]
+        authorTableView = self.wid.findChildren(QtWidgets.QTableWidget,"tableWidget_2")[0]
         for combo in comboBoxes:
             if "comboBox" in combo.objectName():
                 combo.insertItems(0,["1","5","10","15","50","100"])
@@ -124,23 +123,23 @@ class Metrics(PluginForm):
         for author in self.authors.keys():
             count = tableView.rowCount()
             tableView.insertRow(count)
-            authorName = QtGui.QTableWidgetItem(author)
+            authorName = QtWidgets.QTableWidgetItem(author)
             tableView.setItem(count,0,authorName)
             
             if 'strings' in self.authors[author].keys():
-                stringSimilarity = QtGui.QTableWidgetItem(str(self.authors[author]["strings"]))
+                stringSimilarity = QtWidgets.QTableWidgetItem(str(self.authors[author]["strings"]))
                 tableView.setItem(count,1,stringSimilarity)
             
             if 'choice1' in self.authors[author].keys():
-                choice1Similarity = QtGui.QTableWidgetItem(str(self.authors[author]["choice1"]))
+                choice1Similarity = QtWidgets.QTableWidgetItem(str(self.authors[author]["choice1"]))
                 tableView.setItem(count,2,choice1Similarity)
                 
             if 'choice2' in self.authors[author].keys():
-                choice2Similarity = QtGui.QTableWidgetItem(str(self.authors[author]["choice2"]))
+                choice2Similarity = QtWidgets.QTableWidgetItem(str(self.authors[author]["choice2"]))
                 tableView.setItem(count,3,choice2Similarity)
                 
             if 'choice18' in self.authors[author].keys():
-                choice18Similarity = QtGui.QTableWidgetItem(str(self.authors[author]["choice18"]))
+                choice18Similarity = QtWidgets.QTableWidgetItem(str(self.authors[author]["choice18"]))
                 tableView.setItem(count,4,choice18Similarity)
         
         sortedAuthorMatches = sorted(self.authorRanking,key=self.authorRanking.get,reverse=True)
@@ -149,9 +148,9 @@ class Metrics(PluginForm):
         for author in sortedAuthorMatches:
             count = authorTableView.rowCount()
             authorTableView.insertRow(count)
-            authorName = QtGui.QTableWidgetItem(author)
+            authorName = QtWidgets.QTableWidgetItem(author)
             authorTableView.setItem(count,0,authorName)
-            authorSimilarity = QtGui.QTableWidgetItem(str(self.authorRanking[author]*100))
+            authorSimilarity = QtWidgets.QTableWidgetItem(str(self.authorRanking[author]*100))
             authorTableView.setItem(count,1,authorSimilarity)
             authorTableView.item(count,1).setBackground(self.returnColor(self.authorRanking[author]))
             authorTableView.item(count,0).setBackground(self.returnColor(self.authorRanking[author]))

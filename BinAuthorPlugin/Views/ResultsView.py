@@ -16,7 +16,7 @@ from pprint import pprint
 from idaapi import PluginForm
 from subprocess import Popen
 
-from PySide import QtGui, QtCore, QtUiTools
+from PyQt5 import QtGui, QtWidgets, QtCore, uic
 
 class Results(PluginForm):
     def returnColor(self,percentage):
@@ -35,19 +35,18 @@ class Results(PluginForm):
         return QtGui.QColor(R,G,B)
     def OnCreate(self,form):
         self.parent = self.FormToPySideWidget(form)
-        self.wid = QtGui.QWidget()
-        binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\UI\ResultsView.ui"
-        loader = QtUiTools.QUiLoader()
+        self.wid = QtWidgets.QWidget()
+        binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\\UI\\ResultsView.ui"
         file = QtCore.QFile(binaryUIPath)
         file.open(QtCore.QFile.ReadOnly)
-        myWidget = loader.load(file,self.wid)
+        myWidget = uic.loadUi(file, self.wid)
         # Grid
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(myWidget)
 
         
-        comboBoxes = self.wid.findChildren(QtGui.QComboBox)
-        tableView = self.wid.findChildren(QtGui.QTableWidget)
+        comboBoxes = self.wid.findChildren(QtWidgets.QComboBox)
+        tableView = self.wid.findChildren(QtWidgets.QTableWidget)
         for combo in comboBoxes:
             if "comboBox" in combo.objectName():
                 combo.insertItems(0,["1","5","10","15","50","100"])

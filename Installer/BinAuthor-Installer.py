@@ -38,12 +38,12 @@ def checkImports():
     return 0
 
 def installIDADependencies():
-        from PySide import QtGui, QtCore, QtUiTools
+        from PyQt5 import QtWidgets
         from shutil import copyfile
         
-        app = QtGui.QApplication(sys.argv)
+        app = QtWidgets.QApplication(sys.argv)
         print("Requesting Path For IDA Pro...")
-        idaFolder = QtGui.QFileDialog.getExistingDirectory(options=0)
+        idaFolder = QtWidgets.QFileDialog.getExistingDirectory(options=0)
         folder = os.path.join(idaFolder,"plugins")
 
         setSystemPathVariable(idaFolder)
@@ -73,12 +73,12 @@ def installIDADependencies():
             copyfile(os.path.join(minhashFolder,minhashFile), os.path.join(idaPythonFolder,minhashFile))
         
 def installMongoDBDependencies():
-    from PySide import QtGui, QtCore, QtUiTools
+    from PyQt5 import QtWidgets
     from shutil import copyfile
 
     #app = QtGui.QApplication(sys.argv)
     print("Requesting Install Path For MongoDB...")
-    mongoDBFolder = QtGui.QFileDialog.getExistingDirectory(options=0)
+    mongoDBFolder = QtWidgets.QFileDialog.getExistingDirectory(options=0)
     for root, directory, filelist in os.walk(mongoDBFolder):
             for file in filelist:
                 if file  == 'mongod.exe': 

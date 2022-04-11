@@ -15,20 +15,19 @@ from pprint import pprint
 from idaapi import PluginForm
 from subprocess import Popen
 
-from PySide import QtGui, QtCore, QtUiTools
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import pluginConfigurations
 
 class BinaryIndexing():
    
     def create(self):
-        self.wid = QtGui.QWidget()
-        binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\UI\BinaryIndexing.ui"
-        loader = QtUiTools.QUiLoader()
+        self.wid = QtWidgets.QWidget()
+        binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\\UI\\BinaryIndexing.ui"
         file = QtCore.QFile(binaryUIPath)
         file.open(QtCore.QFile.ReadOnly)
-        myWidget = loader.load(file,self.wid)
+        myWidget = uic.loadUi(file, self.wid)
         self.wid.setWindowTitle('Binary Indexing')
-        pushButtons = self.wid.findChildren(QtGui.QPushButton)
+        pushButtons = self.wid.findChildren(QtWidgets.QPushButton)
         
         for button in pushButtons:
             if "selectFolder" in button.objectName():
@@ -41,8 +40,8 @@ class BinaryIndexing():
         
     def selectFolder(self):
         print("Selecting Folder!")
-        folder = QtGui.QFileDialog.getExistingDirectory(options=0)
-        self.lineEditors = self.wid.findChildren(QtGui.QLineEdit)
+        folder = QtWidgets.QFileDialog.getExistingDirectory(options=0)
+        self.lineEditors = self.wid.findChildren(QtWidgets.QLineEdit)
         
         for textbox in self.lineEditors:
             if "FolderInput" in textbox.objectName():
@@ -54,7 +53,7 @@ class BinaryIndexing():
         indexFolder = self.folderInput.text()
         locationOfScript = os.path.dirname(os.path.realpath(__file__))[:-5] + "ExternalScripts\indexFiles.py" 
         DETACHED_PROCESS = 0x00000008
-        self.radioButton = self.wid.findChildren(QtGui.QRadioButton)
+        self.radioButton = self.wid.findChildren(QtWidgets.QRadioButton)
         multiple = 0
         
         authorName = None
