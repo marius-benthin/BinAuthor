@@ -146,6 +146,6 @@ class Metrics(PluginForm):
         file.close()
         self.parent.setLayout(layout)
 
-    def Show(self):
+    def Show(self, caption="Author Identification", options=PluginForm.WOPN_PERSIST):
         """Creates the form is not created or focuses it if it was"""
-        return PluginForm.Show(self,"Author Identification", options = PluginForm.FORM_PERSIST)
+        return PluginForm.Show(self, caption=caption, options=options)

@@ -566,15 +566,13 @@ class StatsView(PluginForm):
         #scrollArea = QtWidgets.QScrollArea()
         #scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
         #scrollArea.setWidget(self.mainWindow)
-    
-    def Show(self):
+
+    def Show(self, caption="Function Statistics", options=PluginForm.WOPN_PERSIST):
         """Creates the form is not created or focuses it if it was"""
         try:
             tform = find_widget("IDA View-A")
             w = PluginForm.FormToPySideWidget(tform)
             w.setFocus()
-        except:
+        except Exception:
             print('Failed to set focus.')
-        return PluginForm.Show(self,
-                               "Function Statistics",
-                               options = PluginForm.FORM_PERSIST)
+        return PluginForm.Show(self, caption=caption, options=options)

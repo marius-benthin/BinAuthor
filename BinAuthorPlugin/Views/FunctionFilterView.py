@@ -102,9 +102,6 @@ class FunctionFilterList(PluginForm):
         #del ImpExpForm
         print("Closed")
 
-
-    def Show(self):
+    def Show(self, caption="Function Classes", options=PluginForm.WOPN_PERSIST):
         """Creates the form is not created or focuses it if it was"""
-        return PluginForm.Show(self,
-                               "Function Classes",
-                               options = PluginForm.FORM_PERSIST)
+        return PluginForm.Show(self, caption=caption, options=options)

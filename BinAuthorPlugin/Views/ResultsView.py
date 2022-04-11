@@ -88,6 +88,6 @@ class Results(PluginForm):
         print("Closed")
 
 '''
-    def Show(self):
+    def Show(self, caption="Results View", options=PluginForm.WOPN_PERSIST):
         """Creates the form is not created or focuses it if it was"""
-        return PluginForm.Show(self,"Results View", options = PluginForm.FORM_PERSIST)
+        return PluginForm.Show(self, caption=caption, options=options)
