@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 from idautils import GetInputFileMD5
-from idc import get_func_attr
+from idc import get_func_attr, FUNCATTR_FLAGS
 from ida_funcs import get_func, FUNC_LIB
 from ida_kernwin import refresh_idaview_anyway, request_refresh, IWID_FUNCS
 
@@ -32,7 +32,7 @@ class FunctionFilter():
         for function in functionsToColor:
             funcEA = self.functionNamesToEA[function["function"]]
             func = get_func(funcEA)
-            flags = get_func_attr(funcEA)
+            flags = get_func_attr(funcEA, FUNCATTR_FLAGS)
             typeCounter = 0
             if ((flags&FUNC_LIB) != FUNC_LIB) and ((flags&1152) != 1152):
                 if function["type"] == "compiler":
