@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-from ida_nalt import get_root_filename
+from ida_nalt import get_root_filename, STRTYPE_C, STRTYPE_C_16
 from idautils import GetInputFileMD5, Strings
 
 
@@ -16,8 +16,10 @@ class _Strings():
         self.authorName = self.fileName
         
     def _Strings(self):
-        strings = Strings(default_setup = False)
-        strings.setup(strtypes=Strings.STR_C | Strings.STR_UNICODE, ignore_instructions = True, display_only_existing_strings = True,minlen=4)
+        strings = Strings(default_setup=False)
+        strings.setup(
+            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=4
+        )
         for string in strings:
             self.allStrings.append(str(string))
         
@@ -29,8 +31,10 @@ class _Strings():
         self.collection.insert(output)
         
     def getAllStrings(self):
-        strings = Strings(default_setup = False)
-        strings.setup(strtypes=Strings.STR_C | Strings.STR_UNICODE, ignore_instructions = True, display_only_existing_strings = True,minlen=4)
+        strings = Strings(default_setup=False)
+        strings.setup(
+            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=4
+        )
         for string in strings:
             self.allStrings.append(str(string))
         
@@ -44,7 +48,9 @@ class _Strings():
     def getAllStringsA(self):
         strings = Strings(default_setup = False)
         allStrings = []
-        strings.setup(strtypes=Strings.STR_C | Strings.STR_UNICODE, ignore_instructions = True, display_only_existing_strings = True,minlen=4)
+        strings.setup(
+            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=4
+        )
         for string in strings:
             allStrings.append(str(string))
         return allStrings
