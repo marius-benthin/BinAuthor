@@ -1,10 +1,8 @@
-from idaapi import *
-from idc import *
-import idautils
-import idc
-import idaapi
-from idautils import *
 from pymongo import MongoClient
+
+from ida_nalt import get_root_filename
+from idautils import GetInputFileMD5, Strings
+
 
 class _Strings():
     def __init__(self):

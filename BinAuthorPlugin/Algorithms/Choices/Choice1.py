@@ -1,9 +1,11 @@
-from idautils import *
-import idautils
-import math
-from idc import *
-from idaapi import *
+from math import log
 from pymongo import MongoClient
+
+from ida_idaapi import BADADDR
+from ida_nalt import get_root_filename
+from idautils import GetInputFileMD5, Names, Heads
+from idc import find_func_end, print_insn_mnem, next_head, get_operand_type, print_operand
+
 
 class Choice1():
     def __init__(self):

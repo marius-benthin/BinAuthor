@@ -1,13 +1,9 @@
-from idaapi import *
-from idc import *
-import idautils
-import math
-import idc
-import idaapi
-from idautils import *
-import simhash
 from pymongo import MongoClient
-import minhash
+
+from ida_nalt import get_root_filename, get_import_module_qty, enum_import_names
+from idautils import GetInputFileMD5, Names, Heads, Strings
+from idc import find_func_end, print_insn_mnem, get_operand_type, print_operand, get_operand_value
+
 
 class Choice2():
     def __init__(self):

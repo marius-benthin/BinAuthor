@@ -1,17 +1,13 @@
-import sys
-from idautils import *
-from idaapi import *
-import os
-from os import listdir
-from os.path import isfile
-import copy
-from pymongo import MongoClient
+from hashlib import md5
+from os import listdir, path
 from datetime import datetime
-import hashlib
-import idc
-from idaapi import plugin_t
-from idaapi import PluginForm
-import pluginConfigurations
+from pymongo import MongoClient
+
+from ida_nalt import get_root_filename
+from idautils import GetInputFileMD5
+
+from pluginConfigurations import getRoot
+
 
 class FunctionCategorizer():
     def __init__(self):

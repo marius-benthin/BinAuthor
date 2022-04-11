@@ -1,13 +1,14 @@
-from idaapi import *
-from idc import *
-import idautils
-import math
-import idc
-import idaapi
-from idautils import *
-import simhash
+from simhash import Simhash
 from pymongo import MongoClient
-import minhash
+
+from ida_nalt import get_root_filename
+from idautils import GetInputFileMD5, Heads, Functions
+from idc import print_insn_mnem, get_operand_type, print_operand
+from ida_funcs import get_func, get_func_name
+from ida_gdl import FlowChart
+
+from BinAuthorPlugin.ExternalScripts.minhash import minhash
+
 
 class Choice18():
     def __init__(self):

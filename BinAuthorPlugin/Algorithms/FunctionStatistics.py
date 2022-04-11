@@ -1,10 +1,8 @@
-import idautils
-import idc
-import idaapi
-import math
+from math import sqrt
 from scipy import stats
 from pymongo import MongoClient
-import operator
+from operator import itemgetter
+
 
 class InstructionGroupStatistics(object):
     def __init__(self,MD5,functionName):

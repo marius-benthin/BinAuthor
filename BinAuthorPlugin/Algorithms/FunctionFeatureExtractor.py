@@ -1,20 +1,18 @@
-import sys
-from idautils import *
-from idaapi import *
-import os
-from os import listdir
-from os.path import isfile
-import copy
-from pymongo import MongoClient
+from hashlib import md5
+from copy import deepcopy
 from datetime import datetime
-import hashlib
-import idc
-from idaapi import plugin_t
-from pprint import pprint
-from idaapi import PluginForm
-import pluginConfigurations
+from operator import itemgetter
+from pymongo import MongoClient
 
-import operator
+from ida_idaapi import BADADDR
+from ida_nalt import get_root_filename
+from idautils import GetInputFileMD5, Functions
+from idc import next_head, print_insn_mnem, find_func_end, get_segm_start, get_segm_end
+from ida_funcs import get_func_name
+from ida_ida import inf_get_min_ea
+
+from pluginConfigurations import getInstructionListPath, getGroupPath
+
 
 class FeatureExtractor():
     def __init__(self):

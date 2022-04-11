@@ -1,22 +1,14 @@
-import sys
-from idautils import *
-from idaapi import *
-import os
-from os import listdir
-from os.path import isfile
-import copy
 from pymongo import MongoClient
-from datetime import datetime
-import hashlib
-import idc
-from idaapi import plugin_t
-from pprint import pprint
-from idaapi import PluginForm
-import pluginConfigurations
-import FunctionFeatureExtractor as FeatureExtractor
-import CategorizeFunction as FunctionCategorizer
 
-import BinAuthorPlugin.Views.FunctionFilterView as FunctionFilterList
+from idautils import GetInputFileMD5
+from idc import get_func_attr
+from ida_funcs import get_func, FUNC_LIB
+from ida_kernwin import refresh_idaview_anyway, request_refresh, IWID_FUNCS
+
+from BinAuthorPlugin.Views import FunctionFilterView as FunctionFilterList
+from BinAuthorPlugin.Algorithms import CategorizeFunction as FunctionCategorizer
+from BinAuthorPlugin.Algorithms import FunctionFeatureExtractor as FeatureExtractor
+
 
 class FunctionFilter():
     def init(self):

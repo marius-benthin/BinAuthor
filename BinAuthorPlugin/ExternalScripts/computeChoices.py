@@ -1,13 +1,22 @@
-import idautils
-import math
-import idc
-import idaapi
-from idautils import *
-import simhash
+from math import log
+from simhash import Simhash
 from pymongo import MongoClient
-import minhash
 
-idaapi.autoWait()
+from ida_idaapi import BADADDR
+from ida_nalt import get_root_filename, get_import_module_qty, enum_import_names
+from idautils import GetInputFileMD5, Functions, Names, Heads, Strings
+from idc import ARGV, next_head, print_insn_mnem, find_func_end, get_operand_type, print_operand, get_operand_value
+from ida_funcs import get_func, get_func_name
+from ida_gdl import FlowChart
+from ida_auto import auto_wait
+from ida_pro import qexit
+
+from BinAuthorPlugin.ExternalScripts.minhash.minhash import minHash, createShingles
+
+
+auto_wait()
+
+
 class choice1():
     def __init__(self):
         self.fileName = idaapi.get_root_filename()

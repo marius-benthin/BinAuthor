@@ -1,29 +1,14 @@
-import sys
-from idautils import *
-from idaapi import *
-import os
-from os import listdir
-from os.path import isfile
-import copy
-from pymongo import MongoClient
-from datetime import datetime
-import hashlib
-import idc
-import sark.qt
-from idaapi import plugin_t
-from pprint import pprint
-from idaapi import PluginForm
-import numpy as np
-import matplotlib
-
-matplotlib.use('Qt5Agg')
-#matplotlib.rcParams['backend.qt5']='PyQt5'
-
-import matplotlib.pyplot as plt
+from matplotlib import use, pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PyQt5 import QtGui, QtCore, QtWidgets
-import BinAuthorPlugin.Views.StatisticsView as StatsView
+from PyQt5 import QtWidgets
+
+from ida_kernwin import PluginForm
+
+from BinAuthorPlugin.Views import StatisticsView as StatsView
+
+
+use('Qt5Agg')
+
 
 class FunctionFilterList(PluginForm):
     def imports_names_cb(self, ea, name, ord):

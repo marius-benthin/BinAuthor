@@ -1,13 +1,10 @@
+from sys import argv
+from os import listdir, path
+from shlex import split
 from subprocess import call
-import subprocess
-from pymongo import MongoClient
-import threading,Queue
 from multiprocessing import Pool
-import sys
-from os import listdir
-from os.path import isfile, join, isdir
-import os
-import shlex
+from pymongo import MongoClient
+
 
 def executeScripts(file):
     scriptsFolder = os.path.dirname(os.path.realpath(__file__)) + ""

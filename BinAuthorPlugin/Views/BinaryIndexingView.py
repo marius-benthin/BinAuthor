@@ -1,22 +1,9 @@
-import sys
-from idautils import *
-from idaapi import *
-import os
-from os import listdir
-from os.path import isfile
-import copy
-from pymongo import MongoClient
-from datetime import datetime
-import hashlib
-import idc
-import sark.qt
-from idaapi import plugin_t
-from pprint import pprint
-from idaapi import PluginForm
 from subprocess import Popen
+from os.path import dirname, realpath
+from PyQt5 import QtCore, QtWidgets, uic
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-import pluginConfigurations
+from pluginConfigurations import getPythonPath
+
 
 class BinaryIndexing():
    

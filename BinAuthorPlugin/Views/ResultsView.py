@@ -1,22 +1,8 @@
-import sys
-import idaapi
-import idautils
-from idautils import *
-from idaapi import *
 import os
-from os import listdir
-from os.path import isfile
-import copy
-from pymongo import MongoClient
-from datetime import datetime
-import hashlib
-import idc
-import sark.qt
-from pprint import pprint
-from idaapi import PluginForm
-from subprocess import Popen
-
 from PyQt5 import QtGui, QtWidgets, QtCore, uic
+
+from idaapi import PluginForm
+
 
 class Results(PluginForm):
     def returnColor(self,percentage):

@@ -1,16 +1,14 @@
-import idautils
-import idc
-import idaapi
-import math
-from scipy import stats
+from functools import reduce
 from pymongo import MongoClient
-import operator
-import BinAuthorPlugin.Algorithms.Choices.Choice1 as Choice1
-import BinAuthorPlugin.Algorithms.Choices.Choice2 as Choice2
-import BinAuthorPlugin.Algorithms.Choices.Choice18 as Choice18
-import BinAuthorPlugin.Algorithms.Choices.Strings as StringsMatching
-import minhash
-from Levenshtein import *
+from Levenshtein import distance
+
+from BinAuthorPlugin.Algorithms.Choices import Choice1
+from BinAuthorPlugin.Algorithms.Choices import Choice2
+from BinAuthorPlugin.Algorithms.Choices import Choice18
+from BinAuthorPlugin.Algorithms.Choices import Strings as StringsMatching
+from BinAuthorPlugin.ExternalScripts.minhash import minhash
+
+
 class AuthorClassification():
         
     def __init__(self):

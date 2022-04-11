@@ -1,24 +1,17 @@
-import sys
-from idautils import *
-from idaapi import *
-import os
-from os import listdir
-from os.path import isfile
-import copy
-import idc
-import sark.qt
-from idaapi import plugin_t
-from pprint import pprint
-from idaapi import PluginForm
+from sark.qt import MenuManager
 
-import BinAuthorPlugin.Views.BinaryIndexingView as BinaryIndexing
-import BinAuthorPlugin.Views.ResultsView as Results
-import BinAuthorPlugin.Views.MetricsView as Metrics
-import BinAuthorPlugin.Algorithms.Choices.Choice1 as Choice1
-import BinAuthorPlugin.Algorithms.Choices.Choice2 as Choice2
-import BinAuthorPlugin.Algorithms.Choices.Choice18 as Choice18
-import BinAuthorPlugin.Algorithms.AuthorClassification as AuthorClassification
-import BinAuthorPlugin.Algorithms.Choices.Strings as StringsMatching
+from ida_kernwin import detach_action_from_menu, attach_action_to_menu, action_desc_t, SETMENU_APP, register_action
+
+from BinAuthorPlugin.Views import BinaryIndexingView as BinaryIndexing
+from BinAuthorPlugin.Views import ResultsView as Results
+from BinAuthorPlugin.Views import MetricsView as Metrics
+from BinAuthorPlugin.Algorithms.Choices import Choice1
+from BinAuthorPlugin.Algorithms.Choices import Choice2
+from BinAuthorPlugin.Algorithms.Choices import Choice18
+from BinAuthorPlugin.Algorithms import AuthorClassification
+from BinAuthorPlugin.Algorithms.Choices import Strings as StringsMatching
+
+
 class BinAuthorManager():
     def __init__(self):
         self._menu = sark.qt.MenuManager()

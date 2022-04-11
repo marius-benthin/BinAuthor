@@ -1,16 +1,16 @@
-from idaapi import *
-from idc import *
-import idautils
-import idc
-import idaapi
-from idautils import *
 from pymongo import MongoClient
-import numpy as N
+from numpy import array, mean, dot, sqrt, linalg, tile
+
+from ida_nalt import get_root_filename
+from idautils import GetInputFileMD5
+
 
 '''
 This code was translated from: http://people.revoledu.com/kardi/tutorial/Similarity/MahalanobisDistance.html
 It was tested using the sample dataset on this blogsite.
 '''
+
+
 class Mahalanobis():
     def __init__(self):
         self.client = MongoClient('localhost', 27017)

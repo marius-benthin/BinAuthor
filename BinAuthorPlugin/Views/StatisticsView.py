@@ -1,24 +1,22 @@
-from idautils import *
-from idaapi import *
-from idaapi import PluginForm
-from pymongo import MongoClient
-import random
-from itertools import cycle, islice
-import copy
+from os import makedirs, path
+from sys import maxsize
+from numpy import random
 from datetime import datetime
-import idc
-
-import numpy as np
-import matplotlib
-
-matplotlib.use('Qt5Agg')
-#matplotlib.rcParams['backend.qt5']='PyQt5'
-
-import matplotlib.pyplot as plt
+from pymongo import MongoClient
+from itertools import cycle, islice
+from matplotlib import use, pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5 import QtGui, QtCore, QtWidgets
-import BinAuthorPlugin.Algorithms.FunctionStatistics as InstructionGroupStatistics
+
+from ida_nalt import get_root_filename
+from idautils import GetInputFileMD5
+from ida_kernwin import PluginForm, find_widget, ask_file
+
+from BinAuthorPlugin.Algorithms import FunctionStatistics as InstructionGroupStatistics
+
+
+use('Qt5Agg')
+
 
 class htmlReport():
     def generateReport(self,executableName,MD5,function,statsTable):
