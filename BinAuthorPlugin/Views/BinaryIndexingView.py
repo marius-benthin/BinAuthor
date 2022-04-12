@@ -63,15 +63,16 @@ class BinaryIndexing:
         file.close()
 
     def selectFolder(self):
-        print("Selecting Folder!")
-        folder = QtWidgets.QFileDialog.getExistingDirectory(options=0)
+        """
+        Select the folder that contains the binaries
+        """
+        folder = QtWidgets.QFileDialog.getExistingDirectory()
         self.lineEditors = self.wid.findChildren(QtWidgets.QLineEdit)
-        
         for textbox in self.lineEditors:
             if "FolderInput" in textbox.objectName():
                 textbox.setText(folder)
                 self.folderInput = textbox
-        
+
     def indexBinaries(self):
         """
         Index all binaries for each author
