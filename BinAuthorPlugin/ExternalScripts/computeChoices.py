@@ -376,7 +376,7 @@ class choice18:
         for block in f:
             if p:
                 registerChain = {}
-                for address in Heads(block.startEA,block.endEA):
+                for address in Heads(block.start_ea, block.end_ea):
                     if get_operand_type(address, 0) == 1 and print_operand(address, 0) != "":
                         if print_operand(address, 0) not in self.functionRegisterChains[get_func_name(ea)].keys():
                             self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [print_insn_mnem(address)]
@@ -399,14 +399,10 @@ class choice18:
                             registerChain[print_operand(address, 1)].append(print_insn_mnem(address))
                 for register in registerChain.keys():
                     fingerPrint = str(register)
-                    functionMinhashes = {}
-                    functionMinhashes["FunctionName"] = functionName
-                    functionMinhashes["FileName"] = self.fileName
-                    functionMinhashes["FileMD5"] = self.fileMD5
-                    functionMinhashes["Author Name"] = self.authorName
-                    functionMinhashes["BlockStartEA"] = block.startEA
-                    functionMinhashes["register"] = register
-                    functionMinhashes["registerChain"] = registerChain[register]
+                    functionMinhashes = {"FunctionName": functionName, "FileName": self.fileName,
+                                         "FileMD5": self.fileMD5, "Author Name": self.authorName,
+                                         "BlockStartEA": block.start_ea, "register": register,
+                                         "registerChain": registerChain[register]}
                     counter = 0
                     for instruction in registerChain[register]:
                         fingerPrint += " " + str(instruction)
