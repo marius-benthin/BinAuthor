@@ -1,5 +1,5 @@
+from pathlib import Path
 from subprocess import Popen
-from os.path import dirname, realpath
 from PyQt5 import QtCore, QtWidgets, uic
 
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
@@ -26,17 +26,33 @@ class BinaryIndexingHandler(action_handler_t):
         return AST_ENABLE_ALWAYS
 
 
-class BinaryIndexing():
-   
+class BinaryIndexing:
+
+    """
+    Indexes all authors and their developed binaries
+    """
+
+    def __init__(self):
+        self.file_dir_path = Path(__file__).parent.absolute()
+        self.radioButton = None
+        self.folderInput = None
+        self.lineEditors = None
+        self.wid = None
+
     def create(self):
-        self.wid = QtWidgets.QWidget()
-        binaryUIPath = dirname(realpath(__file__)) + "\\UI\\BinaryIndexing.ui"
-        file = QtCore.QFile(binaryUIPath)
+        """
+        Create a view for binary indexing
+        """
+        # load UI file
+        ui_path = self.file_dir_path / "UI" / "BinaryIndexing.ui"
+        file = QtCore.QFile(str(ui_path))
         file.open(QtCore.QFile.ReadOnly)
-        myWidget = uic.loadUi(file, self.wid)
-        self.wid.setWindowTitle('Binary Indexing')
+        # create window widget
+        self.wid = QtWidgets.QWidget()
+        uic.loadUi(file, self.wid)
+        self.wid.setWindowTitle("Binary Indexing")
+        # connect buttons with actions
         pushButtons = self.wid.findChildren(QtWidgets.QPushButton)
-        
         for button in pushButtons:
             if "selectFolder" in button.objectName():
                 button.clicked.connect(self.selectFolder)
@@ -45,7 +61,7 @@ class BinaryIndexing():
             elif "indexAuthors" in button.objectName():
                 button.clicked.connect(self.indexBinaries)
         file.close()
-        
+
     def selectFolder(self):
         print("Selecting Folder!")
         folder = QtWidgets.QFileDialog.getExistingDirectory(options=0)
@@ -57,9 +73,11 @@ class BinaryIndexing():
                 self.folderInput = textbox
         
     def indexBinaries(self):
-        print("Indexing Binaries!")
+        """
+        Index all binaries for each author
+        """
         indexFolder = self.folderInput.text()
-        locationOfScript = dirname(realpath(__file__))[:-5] + "ExternalScripts\indexFiles.py"
+        locationOfScript = self.file_dir_path.parent / "ExternalScripts" / "indexFiles.py"
         DETACHED_PROCESS = 0x00000008
         self.radioButton = self.wid.findChildren(QtWidgets.QRadioButton)
         multiple = 0
@@ -81,10 +99,13 @@ class BinaryIndexing():
             Popen([getPythonPath(),locationOfScript,indexFolder,str(multiple)],close_fds=True, creationflags=DETACHED_PROCESS)
 
     def close(self):
+        """
+        Close view for binary indexing
+        """
         self.wid.close()
-        print("Closed")
-
 
     def show(self):
-        """Creates the form is not created or focuses it if it was"""
+        """
+        Open or focus binary indexing view
+        """
         self.wid.show()
