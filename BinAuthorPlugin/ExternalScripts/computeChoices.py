@@ -1,6 +1,6 @@
 from math import log
 from simhash import Simhash
-from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from ida_idaapi import BADADDR
 from ida_nalt import get_root_filename, get_import_module_qty, enum_import_names, STRTYPE_C, STRTYPE_C_16
@@ -11,25 +11,21 @@ from ida_gdl import FlowChart
 from ida_auto import auto_wait
 from ida_pro import qexit
 
+from Database.mongodb import MongoDB, Collections
 from BinAuthorPlugin.ExternalScripts.minhash.minhash import minHash, createShingles
-
 
 auto_wait()
 
 
-class choice1():
-    def __init__(self):
-        self.fileName = get_root_filename()
-        self.fileMD5: bytes = GetInputFileMD5()
-        self.authorName = ARGV[1]
-        
-    def choice1(self):
-        client = MongoClient('localhost', 27017)
-        db = client.BinAuthor
-        collection = db.Choice1
+class choice1:
 
-        #fileName = get_root_filename()
-        #fileMD5: bytes = GetInputFileMD5()
+    def __init__(self):
+        self.fileName: str = get_root_filename()
+        self.fileMD5: bytes = GetInputFileMD5()
+        self.authorName: str = ARGV[1]
+        self.collection: Collection = MongoDB(Collections.choice1).collection
+
+    def choice1(self):
 
         mainEA = 0
 
@@ -216,26 +212,29 @@ class choice1():
         document["FileName"] = self.fileName
         document["FileMD5"] = self.fileMD5
         document["Author Name"] = self.authorName
-        collection.insert(document)
+        self.collection.insert_one(document)
 
-class choice2():
+
+class choice2:
+
     def __init__(self):
-        self.fileName = get_root_filename()
+        self.fileName: str = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()
-        self.authorName = ARGV[1]
-        self.allStrings = {}
-        self.subStrings = ["cout","endl","Xlength_error","cerr"]
-        self.returns = {"ret":0,"retn":0}
-        self.libraryFunctionNamesDict = {"printf":[0,0],"fprintf":[0,0],"cout":[0,0],"exit":[0,0],"fflush":[0,0],"endl":[0,0],"puts":[0,0],"Xlength_error":[0,0],"clock":[0,0],"cerr":[0,0]}#,"scanf":[0,0]}
+        self.authorName: str = ARGV[1]
+        self.collection: Collection = MongoDB(Collections.choice2).collection
 
-        self.standardRegisters = {"eax":0,"ebx":0,"ecx":0,"edx":0,"esi":0,"edi":0}
-        self.libraryFunctionNameEADict = {}
-            
+        self.allStrings: dict = {}
+        self.subStrings: list = ["cout", "endl", "Xlength_error", "cerr"]
+        self.returns: dict = {"ret": 0, "retn": 0}
+        self.libraryFunctionNamesDict: dict = {"printf": [0, 0], "fprintf": [0, 0], "cout": [0, 0], "exit": [0, 0],
+                                               "fflush": [0, 0], "endl": [0, 0], "puts": [0, 0],
+                                               "Xlength_error": [0, 0],
+                                               "clock": [0, 0], "cerr": [0, 0]}  # ,"scanf":[0,0]}
+
+        self.standardRegisters: dict = {"eax": 0, "ebx": 0, "ecx": 0, "edx": 0, "esi": 0, "edi": 0}
+        self.libraryFunctionNameEADict: dict = {}
+
     def choice2(self):
-        client = MongoClient('localhost', 27017)
-        db = client.BinAuthor
-        collection = db.Choice2
-        
         numOfInstructions = 0
         printfNewline = [0,0]
         mainEA = 0
@@ -315,7 +314,7 @@ class choice2():
         output["FileName"] = self.fileName
         output["FileMD5"] = self.fileMD5
         output["Author Name"] = self.authorName
-        collection.insert(output)
+        self.collection.insert_one(output)
 
     def getAllStrings(self):
         strings = Strings(default_setup=False)
@@ -347,8 +346,15 @@ class choice2():
             self.libraryFunctionNameEADict[ea] = "cerr"
         return True
 
-class choice18():
+
+class choice18:
+
     def __init__(self):
+        self.fileName: str = get_root_filename()
+        self.fileMD5: bytes = GetInputFileMD5()
+        self.authorName: str = ARGV[1]
+        self.collection: Collection = MongoDB(Collections.choice18).collection
+
         self.functionAddresstoRealFunctionName = {}
         self.functionRegisterChains = {}
         self.finalOutput = ''
@@ -356,9 +362,6 @@ class choice18():
         self.simhashList = []
         self.registerChainMinhash = []
         self.blocks = []
-        self.fileName = get_root_filename()
-        self.fileMD5: bytes = GetInputFileMD5()
-        self.authorName = ARGV[1]
 
     def createRegisterChain(self,p,ea):
         f = FlowChart(get_func(ea))
@@ -415,30 +418,31 @@ class choice18():
                     if len(fingerPrint.split(" ")) >= 6:
                         self.registerChainMinhash.append([fingerPrint,minHash(createShingles(fingerPrint))])
                         functionMinhashes["MinHashSignature"] = minHash(createShingles(fingerPrint))
-                        collection.insert(functionMinhashes)
+                        self.collection.insert_one(functionMinhashes)
                     else:
                         self.registerChainMinhash.append([fingerPrint,])
 
     def choice18(self):
         for function in Functions():
             self.functionAddresstoRealFunctionName[function] = get_func_name(function)
-            self.createRegisterChain(True,function)
-            
-class _Strings():
+            self.createRegisterChain(True, function)
+
+
+class CustomStrings:
+
     def __init__(self):
-        self.allStrings = []
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client.BinAuthor
-        self.collection = self.db.Strings
-        
-        self.fileName = get_root_filename()
+        self.fileName: str = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()
-        self.authorName = self.fileName
-        
-    def _Strings(self):
-        strings = Strings(default_setup=False)
-        strings.setup(
-            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=4
+        self.authorName: str = ARGV[1]
+        self.collection: Collection = MongoDB(Collections.strings).collection
+
+        self.allStrings = []
+
+    def CustomStrings(self):
+
+        all_strings = Strings(default_setup=False)
+        all_strings.setup(
+            strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4
         )
         for string in strings:
             self.allStrings.append(str(string))
@@ -447,9 +451,9 @@ class _Strings():
         output["FileName"] = self.fileName
         output["FileMD5"] = self.fileMD5
         output["Author Name"] = ARGV[1]
-        
-        self.collection.insert(output)
-        
+
+        self.collection.insert_one(output)
+
     def getAllStrings(self):
         strings = Strings(default_setup=False)
         strings.setup(
@@ -464,9 +468,11 @@ class _Strings():
         output["Author Name"] = self.authorName
         
         return output
-strings = _Strings()   
-strings._Strings()     
-choice1 = choice1()    
+
+
+strings = CustomStrings()
+strings.CustomStrings()
+choice1 = choice1()
 choice1.choice1()
 choice2 = choice2()
 choice2.choice2()

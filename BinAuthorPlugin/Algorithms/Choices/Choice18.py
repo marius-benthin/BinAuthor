@@ -1,5 +1,5 @@
 from simhash import Simhash
-from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from ida_nalt import get_root_filename
 from idautils import GetInputFileMD5, Heads, Functions
@@ -8,6 +8,7 @@ from ida_funcs import get_func, get_func_name
 from ida_gdl import FlowChart
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
+from Database.mongodb import MongoDB, Collections
 from BinAuthorPlugin.ExternalScripts.minhash import minhash
 
 
@@ -28,6 +29,11 @@ class Choice18Handler(action_handler_t):
 class Choice18:
 
     def __init__(self):
+        self.fileName = get_root_filename()
+        self.fileMD5: bytes = GetInputFileMD5()
+        self.authorName = self.fileName
+        self.collection: Collection = MongoDB(Collections.choice18).collection
+
         self.functionAddresstoRealFunctionName = {}
         self.functionRegisterChains = {}
         self.finalOutput = ''
@@ -35,9 +41,6 @@ class Choice18:
         self.simhashList = []
         self.registerChainMinhash = []
         self.blocks = []
-        self.fileName = get_root_filename()
-        self.fileMD5: bytes = GetInputFileMD5()
-        self.authorName = self.fileName
 
     def createRegisterChain(self,p,ea):
         f = FlowChart(get_func(ea))
@@ -94,7 +97,7 @@ class Choice18:
                     if len(fingerPrint.split(" ")) >= 6:
                         self.registerChainMinhash.append([fingerPrint,minhash.minHash(minhash.createShingles(fingerPrint))])
                         functionMinhashes["MinHashSignature"] = minhash.minHash(minhash.createShingles(fingerPrint))
-                        collection.insert(functionMinhashes)
+                        self.collection.insert_one(functionMinhashes)
                     else:
                         self.registerChainMinhash.append([fingerPrint,])
                         

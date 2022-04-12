@@ -1,8 +1,10 @@
-from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from ida_nalt import get_root_filename, STRTYPE_C, STRTYPE_C_16
 from idautils import GetInputFileMD5, Strings
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
+
+from Database.mongodb import MongoDB, Collections
 
 
 class CustomStringsHandler(action_handler_t):
@@ -22,16 +24,14 @@ class CustomStringsHandler(action_handler_t):
 class CustomStrings:
 
     def __init__(self):
-        self.allStrings = []
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client.BinAuthor
-        self.collection = self.db.Strings
-        
-        self.fileName = get_root_filename()
+        self.fileName: str = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
-        
-    def _Strings(self):
+        self.collection: Collection = MongoDB(Collections.strings).collection
+
+        self.allStrings = []
+
+    def CustomStrings(self):
         strings = Strings(default_setup=False)
         strings.setup(
             strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=4

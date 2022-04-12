@@ -1,9 +1,11 @@
-from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from ida_nalt import get_root_filename, get_import_module_qty, enum_import_names, STRTYPE_C, STRTYPE_C_16
 from idautils import GetInputFileMD5, Names, Heads, Strings
 from idc import find_func_end, print_insn_mnem, get_operand_type, print_operand, get_operand_value
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
+
+from Database.mongodb import MongoDB, Collections
 
 
 class Choice2Handler(action_handler_t):
@@ -26,6 +28,8 @@ class Choice2:
         self.fileName = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
+        self.collection: Collection = MongoDB(Collections.choice2).collection
+
         self.allStrings = {}
         self.subStrings = ["cout","endl","Xlength_error","cerr"]
         self.returns = {"ret":0,"retn":0}
@@ -118,8 +122,8 @@ class Choice2:
         output["FileName"] = self.fileName
         output["FileMD5"] = self.fileMD5
         output["Author Name"] = self.authorName
-        collection.insert(output)
-        
+        self.collection.insert_one(output)
+
     def getChoice2(self):
         numOfInstructions = 0
         printfNewline = [0,0]

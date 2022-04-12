@@ -1,5 +1,5 @@
 from math import log
-from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from ida_idaapi import BADADDR
 from ida_nalt import get_root_filename
@@ -8,6 +8,7 @@ from idc import find_func_end, print_insn_mnem, next_head, get_operand_type, pri
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
 
+from Database.mongodb import MongoDB, Collections
 
 
 class Choice1Handler(action_handler_t):
@@ -30,14 +31,9 @@ class Choice1:
         self.fileName: str = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
-        
-    def choice1(self):
-        client = MongoClient('localhost', 27017)
-        db = client.BinAuthor
-        collection = db.Choice1
+        self.collection: Collection = MongoDB(Collections.choice1).collection
 
-        #fileName = get_root_filename()
-        #fileMD5 = GetInputFileMD5()
+    def choice1(self):
 
         mainEA = 0
 
@@ -224,8 +220,8 @@ class Choice1:
         document["FileName"] = self.fileName
         document["FileMD5"] = self.fileMD5
         document["Author Name"] = self.authorName
-        collection.insert(document)
-        
+        self.collection.insert_one(document)
+
     def getChoice1(self):
         mainEA = 0
 
