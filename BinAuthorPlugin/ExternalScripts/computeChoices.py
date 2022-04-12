@@ -317,9 +317,9 @@ class choice2:
         self.collection.insert_one(output)
 
     def getAllStrings(self):
-        strings = Strings(default_setup=False)
-        strings.setup(
-            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=1
+        all_strings = Strings(default_setup=False)
+        all_strings.setup(
+            strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=1
         )
         for string in strings:
             self.allStrings[string.ea] = str(string)
@@ -455,9 +455,9 @@ class CustomStrings:
         self.collection.insert_one(output)
 
     def getAllStrings(self):
-        strings = Strings(default_setup=False)
-        strings.setup(
-            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=4
+        all_strings = Strings(default_setup=False)
+        all_strings.setup(
+            strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4
         )
         for string in strings:
             self.allStrings.append(str(string))

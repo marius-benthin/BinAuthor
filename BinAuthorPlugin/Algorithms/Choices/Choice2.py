@@ -209,7 +209,7 @@ class Choice2:
     def getAllStrings(self):
         strings = Strings(default_setup=False)
         strings.setup(
-            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=1
+            strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=1
         )
         for string in strings:
             self.allStrings[string.ea] = str(string)

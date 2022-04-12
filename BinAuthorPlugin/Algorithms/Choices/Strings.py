@@ -34,7 +34,7 @@ class CustomStrings:
     def CustomStrings(self):
         strings = Strings(default_setup=False)
         strings.setup(
-            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=4
+            strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4
         )
         for string in strings:
             self.allStrings.append(str(string))
@@ -49,7 +49,7 @@ class CustomStrings:
     def getAllStrings(self):
         strings = Strings(default_setup=False)
         strings.setup(
-            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=4
+            strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4
         )
         for string in strings:
             self.allStrings.append(str(string))
@@ -65,7 +65,7 @@ class CustomStrings:
         strings = Strings(default_setup = False)
         allStrings = []
         strings.setup(
-            strtypes=STRTYPE_C | STRTYPE_C_16, ignore_instructions=True, display_only_existing_strings=True, minlen=4
+            strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4
         )
         for string in strings:
             allStrings.append(str(string))
