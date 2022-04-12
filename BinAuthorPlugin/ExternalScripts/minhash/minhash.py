@@ -1,4 +1,5 @@
 __author__ = 'titan'
+
 import random
 import binascii
 import pickle
@@ -10,15 +11,16 @@ string2 = "Shakespeare produced most of his work after 1589"
 numOfShingles = 3
 numOfUniqueHashCodes = 200
 hashNumbers = []
-maxShingleID = 2**32-1
+maxShingleID = 2 ** 32 - 1
 nextPrime = 4294967311
 numHashes = numOfUniqueHashCodes
 
-stringShinglesDict = {"string1":[string1,set(),[]],"string2":[string2,set(),[]]}
+stringShinglesDict = {"string1": [string1, set(), []], "string2": [string2, set(), []]}
 
 path = os.path.dirname(os.path.realpath(__file__))
-coeffA = pickle.load( open( path + "\coeffA.p", "rb" ) )#pickRandomCoeffs(numHashes)
-coeffB = pickle.load( open( path + "\coeffB.p", "rb" ) )#pickRandomCoeffs(numHashes)
+coeffA = pickle.load(open(path + "\\coeffA.p", "rb"))  # pickRandomCoeffs(numHashes)
+coeffB = pickle.load(open(path + "\\coeffB.p", "rb"))  # pickRandomCoeffs(numHashes)
+
 
 def minHash(documentShingles):
     global maxShingleID
@@ -28,10 +30,10 @@ def minHash(documentShingles):
 
     minHashes = []
 
-    #print('\nGenerating MinHash signatures for all documents...')
+    # print('\nGenerating MinHash signatures for all documents...')
 
     # List of documents represented as signature vectors
-    signatures = []
+    # signatures = []
 
     # Rather than generating a random permutation of all possible shingles,
     # we'll just hash the IDs of the shingles that are *actually in the document*,
@@ -44,7 +46,7 @@ def minHash(documentShingles):
     shingleIDSet = documentShingles
 
     # The resulting minhash signature for this document.
-    signature = []
+    # signature = []
 
     # For each of the random hash functions...
     for i in range(0, numHashes):
@@ -68,27 +70,29 @@ def minHash(documentShingles):
         # Add the smallest hash code value as component number 'i' of the signature.
         minHashes.append(minHashCode)
 
-      # Store the MinHash signature for this document.
+    # Store the MinHash signature for this document.
     return minHashes
 
+
 def pickRandomCoeffs(k):
-  global maxShingleID
-  # Create a list of 'k' random values.
-  randList = []
+    global maxShingleID
+    # Create a list of 'k' random values.
+    randList = []
 
-  while k > 0:
-    # Get a random shingle ID.
-    randIndex = random.randint(0, maxShingleID)
+    while k > 0:
+        # Get a random shingle ID.
+        randIndex = random.randint(0, maxShingleID)
 
-    # Ensure that each random number is unique.
-    while randIndex in randList:
-      randIndex = random.randint(0, maxShingleID)
+        # Ensure that each random number is unique.
+        while randIndex in randList:
+            randIndex = random.randint(0, maxShingleID)
 
-    # Add the random number to the list.
-    randList.append(randIndex)
-    k = k - 1
+        # Add the random number to the list.
+        randList.append(randIndex)
+        k = k - 1
 
-  return randList
+    return randList
+
 
 def createShingles(documentString):
     items = documentString.split(" ")
@@ -103,11 +107,12 @@ def createShingles(documentString):
         counter += 1
     return shingles
 
-def similarity(document1Minhashes,document2Minhashes):
+
+def similarity(document1Minhashes, document2Minhashes):
     count = 0
-    for k in range(0,numHashes):
+    for k in range(0, numHashes):
         count = count + (document1Minhashes[k] == document2Minhashes[k])
-    return (count/float(numHashes))
+    return count / float(numHashes)
 
 
 def test():
@@ -119,5 +124,4 @@ def test():
 
     print(stringShinglesDict["string1"][2])
     print(stringShinglesDict["string2"][2])
-    print(similarity(stringShinglesDict["string1"][2],stringShinglesDict["string2"][2]))
-
+    print(similarity(stringShinglesDict["string1"][2], stringShinglesDict["string2"][2]))

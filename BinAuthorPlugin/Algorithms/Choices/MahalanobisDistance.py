@@ -1,52 +1,49 @@
-from pymongo import MongoClient
 from numpy import array, mean, dot, sqrt, linalg, tile
 
 from ida_nalt import get_root_filename
 from idautils import GetInputFileMD5
 
-
 '''
-This code was translated from: http://people.revoledu.com/kardi/tutorial/Similarity/MahalanobisDistance.html
+This code was translated from: https://people.revoledu.com/kardi/tutorial/Similarity/MahalanobisDistance.html
 It was tested using the sample dataset on this blogsite.
 '''
 
 
-class Mahalanobis():
+class Mahalanobis:
+
     def __init__(self):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client.BinAuthor
-        self.collection = self.db.Mahalanobis
-        
-        self.fileName = get_root_filename()
+        self.fileName: str = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
-        
-    def mahalanobisDistance(self,A,B):
+
+    def mahalanobisDistance(self, A, B):
         A = array(A)
         B = array(B)
-        
+
         AShape = A.shape
         BShape = B.shape
-        
+
         n = AShape[0] + BShape[0]
-        
+
         if AShape[1] != BShape[1]:
             print("Number of columns of A and B must be the same!")
             return
         else:
-            xDiff = mean(A,axis=0)-mean(B,axis=0)
+            xDiff = mean(A, axis=0) - mean(B, axis=0)
             cA = self.Covariance(A)
             cB = self.Covariance(B)
-            pC=dot(AShape[0]/float(n),cA)+dot(BShape[0]/float(n),cB)
-            return sqrt(dot(dot(xDiff,linalg.inv(pC)),xDiff))
-    def Covariance(self,X):
-        xShape = X.shape
-        Xc = X-tile(mean(X,axis=0),(xShape[0],1))
-        return dot(Xc.T,Xc)/xShape[0]
+            pC = dot(AShape[0] / float(n), cA) + dot(BShape[0] / float(n), cB)
+            return sqrt(dot(dot(xDiff, linalg.inv(pC)), xDiff))
 
-    #def getMD(self):
-        
-        
+    @staticmethod
+    def Covariance(X):
+        xShape = X.shape
+        Xc = X - tile(mean(X, axis=0), (xShape[0], 1))
+        return dot(Xc.T, Xc) / xShape[0]
+
+    # def getMD(self):
+
+
 ''' Example Usage:        
 test = Mahalanobis()
 

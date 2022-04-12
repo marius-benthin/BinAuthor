@@ -23,21 +23,29 @@ class ResultsHandler(action_handler_t):
 
 
 class Results(PluginForm):
-    def returnColor(self,percentage):
-        percentage = (1-percentage) * 100
-        #R = (255 * percentage) / 100
-        #G = (255 * (100 - percentage)) / 100
-        #B = 0
-        
+
+    def __init__(self):
+        super().__init__()
+        self.wid = None
+        self.parent = None
+
+    @staticmethod
+    def returnColor(percentage):
+        percentage = (1 - percentage) * 100
+        # R = (255 * percentage) / 100
+        # G = (255 * (100 - percentage)) / 100
+        # B = 0
+
         if percentage < 50:
-            R = 255 * (percentage/50)
+            R = 255 * (percentage / 50)
             G = 255
         else:
             R = 255
             G = 255 * ((50 - percentage % 50) / 50)
         B = 0
-        return QtGui.QColor(R,G,B)
-    def OnCreate(self,form):
+        return QtGui.QColor(R, G, B)
+
+    def OnCreate(self, form):
         self.parent = self.FormToPySideWidget(form)
         self.wid = QtWidgets.QWidget()
         binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\\UI\\ResultsView.ui"
@@ -48,24 +56,23 @@ class Results(PluginForm):
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(myWidget)
 
-        
         comboBoxes = self.wid.findChildren(QtWidgets.QComboBox)
         tableView = self.wid.findChildren(QtWidgets.QTableWidget)
         for combo in comboBoxes:
             if "comboBox" in combo.objectName():
-                combo.insertItems(0,["1","5","10","15","50","100"])
-                
+                combo.insertItems(0, ["1", "5", "10", "15", "50", "100"])
+
         for table in tableView:
             if "tableWidget" in table.objectName():
                 rowCount = table.rowCount()
-                for row in range(0,rowCount):
-                    value = float(table.item(row,1).text())
-                    table.item(row,1).setBackground(self.returnColor(value))
-                    table.item(row,0).setBackground(self.returnColor(value))
-                    
-        
+                for row in range(0, rowCount):
+                    value = float(table.item(row, 1).text())
+                    table.item(row, 1).setBackground(self.returnColor(value))
+                    table.item(row, 0).setBackground(self.returnColor(value))
+
         file.close()
         self.parent.setLayout(layout)
+
     '''    
     def selectFolder(self):
         print("Selecting Folder!")
@@ -80,7 +87,7 @@ class Results(PluginForm):
     def results(self):
         print("Indexing Binaries!")
         indexFolder = self.folderInput.text()
-        locationOfScript = os.path.dirname(os.path.realpath(__file__))[:-5] + "ExternalScripts\indexFiles.py" 
+        locationOfScript = os.path.dirname(os.path.realpath(__file__))[:-5] + "ExternalScripts\\indexFiles.py" 
         DETACHED_PROCESS = 0x00000008
         self.radioButton = self.wid.findChildren(QtGui.QRadioButton)
         multiple = 0
@@ -97,7 +104,8 @@ class Results(PluginForm):
                 if radio.isChecked():
                     multiple = 1
         if authorName != None:
-            Popen(["python",locationOfScript,indexFolder,str(multiple),authorName],close_fds=True, creationflags=DETACHED_PROCESS)
+            Popen(["python",locationOfScript,indexFolder,str(multiple),authorName],close_fds=True, 
+            creationflags=DETACHED_PROCESS)
         else:
             Popen(["python",locationOfScript,indexFolder,str(multiple)],close_fds=True, creationflags=DETACHED_PROCESS)
 
@@ -106,6 +114,7 @@ class Results(PluginForm):
         print("Closed")
 
 '''
+
     def Show(self, caption="Results View", options=PluginForm.WOPN_PERSIST):
         """Creates the form is not created or focuses it if it was"""
         return PluginForm.Show(self, caption=caption, options=options)

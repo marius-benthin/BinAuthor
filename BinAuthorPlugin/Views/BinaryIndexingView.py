@@ -82,22 +82,23 @@ class BinaryIndexing:
         DETACHED_PROCESS = 0x00000008
         self.radioButton = self.wid.findChildren(QtWidgets.QRadioButton)
         multiple = 0
-        
+
         authorName = None
         for textbox in self.lineEditors:
             if "AuthorInput" in textbox.objectName():
-                if textbox.isEnabled() == True:
+                if textbox.isEnabled():
                     authorName = textbox.text()
-        
-        
+
         for radio in self.radioButton:
             if "multiple" in radio.objectName():
                 if radio.isChecked():
                     multiple = 1
-        if authorName != None:
-            Popen([getPythonPath(),locationOfScript,indexFolder,str(multiple),authorName],close_fds=True, creationflags=DETACHED_PROCESS)
+        if authorName is not None:
+            Popen([getPythonPath(), locationOfScript, indexFolder, str(multiple), authorName], close_fds=True,
+                  creationflags=DETACHED_PROCESS)
         else:
-            Popen([getPythonPath(),locationOfScript,indexFolder,str(multiple)],close_fds=True, creationflags=DETACHED_PROCESS)
+            Popen([getPythonPath(), locationOfScript, indexFolder, str(multiple)], close_fds=True,
+                  creationflags=DETACHED_PROCESS)
 
     def close(self):
         """

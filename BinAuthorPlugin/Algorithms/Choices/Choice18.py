@@ -42,14 +42,11 @@ class Choice18:
         self.registerChainMinhash = []
         self.blocks = []
 
-    def createRegisterChain(self,p,ea):
+    def createRegisterChain(self, p, ea):
         f = FlowChart(get_func(ea))
-        
+
         functionName = get_func_name(ea)
-        client = MongoClient('localhost', 27017)
-        db = client.BinAuthor
-        collection = db.Choice18
-        
+
         if get_func_name(ea) not in self.functionRegisterChains.keys():
             self.functionRegisterChains[get_func_name(ea)] = {}
         for block in f:
@@ -58,20 +55,28 @@ class Choice18:
                 for address in Heads(block.start_ea, block.end_ea):
                     if get_operand_type(address, 0) == 1 and print_operand(address, 0) != "":
                         if print_operand(address, 0) not in self.functionRegisterChains[get_func_name(ea)].keys():
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [print_insn_mnem(address)]
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [
+                                print_insn_mnem(address)
+                            ]
                         else:
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)].append(print_insn_mnem(address))
-                            
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)].append(
+                                print_insn_mnem(address)
+                            )
+
                         if print_operand(address, 0) not in registerChain.keys():
                             registerChain[print_operand(address, 0)] = [print_insn_mnem(address)]
                         else:
                             registerChain[print_operand(address, 0)].append(print_insn_mnem(address))
-                    if get_operand_type(address, 1) == 1  and print_operand(address, 1) != "":
+                    if get_operand_type(address, 1) == 1 and print_operand(address, 1) != "":
                         if print_operand(address, 1) not in self.functionRegisterChains[get_func_name(ea)].keys():
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)] = [print_insn_mnem(address)]
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)] = [
+                                print_insn_mnem(address)
+                            ]
                         else:
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)].append(print_insn_mnem(address))
-                        
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)].append(
+                                print_insn_mnem(address)
+                            )
+
                         if print_operand(address, 1) not in registerChain.keys():
                             registerChain[print_operand(address, 1)] = [print_insn_mnem(address)]
                         else:
@@ -91,24 +96,25 @@ class Choice18:
                     for instruction in registerChain[register]:
                         fingerPrint += " " + str(instruction)
                         counter += 1
-                        
+
                     functionMinhashes["SimHashSignature"] = str(Simhash(fingerPrint).value)
 
-                    self.simhashList.append([counter,Simhash(fingerPrint).value])
+                    self.simhashList.append([counter, Simhash(fingerPrint).value])
                     if len(fingerPrint.split(" ")) >= 6:
-                        self.registerChainMinhash.append([fingerPrint,minhash.minHash(minhash.createShingles(fingerPrint))])
+                        self.registerChainMinhash.append(
+                            [fingerPrint, minhash.minHash(minhash.createShingles(fingerPrint))])
                         functionMinhashes["MinHashSignature"] = minhash.minHash(minhash.createShingles(fingerPrint))
                         self.collection.insert_one(functionMinhashes)
                     else:
-                        self.registerChainMinhash.append([fingerPrint,])
-                        
-    def createRegisterChainA(self,p,ea):
+                        self.registerChainMinhash.append([fingerPrint, ])
+
+    def createRegisterChainA(self, p, ea):
         f = FlowChart(get_func(ea))
-        
+
         functionName = get_func_name(ea)
-        
+
         functions = []
-        
+
         if get_func_name(ea) not in self.functionRegisterChains.keys():
             self.functionRegisterChains[get_func_name(ea)] = {}
         for block in f:
@@ -117,20 +123,24 @@ class Choice18:
                 for address in Heads(block.start_ea, block.end_ea):
                     if get_operand_type(address, 0) == 1 and print_operand(address, 0) != "":
                         if print_operand(address, 0) not in self.functionRegisterChains[get_func_name(ea)].keys():
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [print_insn_mnem(address)]
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [
+                                print_insn_mnem(address)]
                         else:
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)].append(print_insn_mnem(address))
-                            
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)].append(
+                                print_insn_mnem(address))
+
                         if print_operand(address, 0) not in registerChain.keys():
                             registerChain[print_operand(address, 0)] = [print_insn_mnem(address)]
                         else:
                             registerChain[print_operand(address, 0)].append(print_insn_mnem(address))
-                    if get_operand_type(address, 1) == 1  and print_operand(address, 1) != "":
+                    if get_operand_type(address, 1) == 1 and print_operand(address, 1) != "":
                         if print_operand(address, 1) not in self.functionRegisterChains[get_func_name(ea)].keys():
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)] = [print_insn_mnem(address)]
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)] = [
+                                print_insn_mnem(address)]
                         else:
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)].append(print_insn_mnem(address))
-                        
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)].append(
+                                print_insn_mnem(address))
+
                         if print_operand(address, 1) not in registerChain.keys():
                             registerChain[print_operand(address, 1)] = [print_insn_mnem(address)]
                         else:
@@ -150,28 +160,28 @@ class Choice18:
                     for instruction in registerChain[register]:
                         fingerPrint += " " + str(instruction)
                         counter += 1
-                        
+
                     functionMinhashes["SimHashSignature"] = str(Simhash(fingerPrint).value)
 
-                    self.simhashList.append([counter,Simhash(fingerPrint).value])
+                    self.simhashList.append([counter, Simhash(fingerPrint).value])
                     if len(fingerPrint.split(" ")) >= 6:
-                        self.registerChainMinhash.append([fingerPrint,minhash.minHash(minhash.createShingles(fingerPrint))])
+                        self.registerChainMinhash.append(
+                            [fingerPrint, minhash.minHash(minhash.createShingles(fingerPrint))])
                         functionMinhashes["MinHashSignature"] = minhash.minHash(minhash.createShingles(fingerPrint))
                         functions.append(functionMinhashes)
                     else:
-                        self.registerChainMinhash.append([fingerPrint,])
+                        self.registerChainMinhash.append([fingerPrint, ])
         return functions
 
     def choice18(self):
         for function in Functions():
             self.functionAddresstoRealFunctionName[function] = get_func_name(function)
-            self.createRegisterChain(True,function)
-            
+            self.createRegisterChain(True, function)
+
     def choice18A(self):
         functions = []
         for function in Functions():
             self.functionAddresstoRealFunctionName[function] = get_func_name(function)
-            functions.append(self.createRegisterChainA(True,function))
-            
+            functions.append(self.createRegisterChainA(True, function))
+
         return functions
-   

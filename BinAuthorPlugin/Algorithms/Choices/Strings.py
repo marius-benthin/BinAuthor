@@ -38,14 +38,12 @@ class CustomStrings:
         )
         for string in strings:
             self.allStrings.append(str(string))
-        
-        output = {"Strings": self.allStrings}      
-        output["FileName"] = self.fileName
-        output["FileMD5"] = self.fileMD5
-        output["Author Name"] = self.authorName
-        
-        self.collection.insert(output)
-        
+
+        output = {"Strings": self.allStrings, "FileName": self.fileName, "FileMD5": self.fileMD5,
+                  "Author Name": self.authorName}
+
+        self.collection.insert_one(output)
+
     def getAllStrings(self):
         strings = Strings(default_setup=False)
         strings.setup(
@@ -53,16 +51,15 @@ class CustomStrings:
         )
         for string in strings:
             self.allStrings.append(str(string))
-        
-        output = {"Strings": self.allStrings}      
-        output["FileName"] = self.fileName
-        output["FileMD5"] = self.fileMD5
-        output["Author Name"] = self.authorName
-        
+
+        output = {"Strings": self.allStrings, "FileName": self.fileName, "FileMD5": self.fileMD5,
+                  "Author Name": self.authorName}
+
         return output
-        
-    def getAllStringsA(self):
-        strings = Strings(default_setup = False)
+
+    @staticmethod
+    def getAllStringsA():
+        strings = Strings(default_setup=False)
         allStrings = []
         strings.setup(
             strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4

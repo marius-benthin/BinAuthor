@@ -30,12 +30,11 @@ class choice1:
         mainEA = 0
 
         totalInstructions = 0
-        instructionCounts = {"jmp":0,"cmp":0,"test":0,"mov":0,"call":0,"lea":0,"push":0,"indirect_call" : 0, "reg_used":0} 
+        instructionCounts = {"jmp": 0, "cmp": 0, "test": 0, "mov": 0, "call": 0, "lea": 0, "push": 0,
+                             "indirect_call": 0, "reg_used": 0}
         registerCounts = {}
 
         output = {}
-
-        #authorName = ARGV[1]
 
         for name in Names():
             if (str(name[1]).find("main") != -1) and (len(str(name[1])) <= 5):
@@ -49,84 +48,90 @@ class choice1:
             totalInstructions += 1
             currentea = next_head(currentea)
 
-        for item in Heads(mainEA,find_func_end(mainEA)):
-            #print(hex(item) + ":" + GetMnem(item) + "\t" + str(get_operand_type(item,0)) + "\t" + str(get_operand_type(item,1)))
-            if "call" == print_insn_mnem(item) and get_operand_type(item,0) == 1:
+        for item in Heads(mainEA, find_func_end(mainEA)):
+            # print(hex(item) + ":" + GetMnem(item) + "\t" + str(get_operand_type(item,0)) + "\t" + str(
+            # get_operand_type(item,1)))
+            if "call" == print_insn_mnem(item) and get_operand_type(item, 0) == 1:
                 instructionCounts["indirect_call"] += 1
-            if get_operand_type(item,0) == 1:
+            if get_operand_type(item, 0) == 1:
                 instructionCounts["reg_used"] += 1
-                
-                register = print_operand(item,0)
+
+                register = print_operand(item, 0)
                 if register not in registerCounts.keys():
                     registerCounts[register] = 1
                 else:
                     registerCounts[register] += 1
-            if get_operand_type(item,1) == 1:
+            if get_operand_type(item, 1) == 1:
                 instructionCounts["reg_used"] += 1
-                
-                register = print_operand(item,1)
+
+                register = print_operand(item, 1)
                 if register not in registerCounts.keys():
                     registerCounts[register] = 1
                 else:
                     registerCounts[register] += 1
-                
+
         output["Total"] = totalInstructions
         output["push"] = instructionCounts["push"]
         output["call"] = instructionCounts["call"]
         output["indirect calls"] = instructionCounts["indirect_call"]
         output["regs used"] = instructionCounts["reg_used"]
 
-        if float(totalInstructions) != 0 :
-            output["ln(num push/length)"] = log(instructionCounts["push"]/float(totalInstructions))
-            output["ln(num call/length)"] = log(instructionCounts["call"]/float(totalInstructions))
+        if float(totalInstructions) != 0:
+            output["ln(num push/length)"] = log(instructionCounts["push"] / float(totalInstructions))
+            output["ln(num call/length)"] = log(instructionCounts["call"] / float(totalInstructions))
         else:
             output["ln(num push/length)"] = "infinity"
             output["ln(num call/length)"] = "infinity"
         if float(totalInstructions) != 0:
-            if (instructionCounts["indirect_call"]/float(totalInstructions)) != 0 and (instructionCounts["reg_used"]/float(totalInstructions)) != 0:
-                output["ln(num Indirect call/length)"] = log(instructionCounts["indirect_call"]/float(totalInstructions))
-                output["ln(num reg used/length)"] = log(instructionCounts["reg_used"]/float(totalInstructions))
-            elif (instructionCounts["indirect_call"]/float(totalInstructions)) == 0:
+            if (instructionCounts["indirect_call"] / float(totalInstructions)) != 0 and (
+                    instructionCounts["reg_used"] / float(totalInstructions)) != 0:
+                output["ln(num Indirect call/length)"] = log(
+                    instructionCounts["indirect_call"] / float(totalInstructions))
+                output["ln(num reg used/length)"] = log(instructionCounts["reg_used"] / float(totalInstructions))
+            elif (instructionCounts["indirect_call"] / float(totalInstructions)) == 0:
                 output["ln(num Indirect call/length)"] = "infinity"
-                output["ln(num reg used/length)"] = log(instructionCounts["reg_used"]/float(totalInstructions))
-            elif (instructionCounts["reg_used"]/float(totalInstructions)) == 0:
-                output["ln(num Indirect call/length)"] = log(instructionCounts["indirect_call"]/float(totalInstructions))
+                output["ln(num reg used/length)"] = log(instructionCounts["reg_used"] / float(totalInstructions))
+            elif (instructionCounts["reg_used"] / float(totalInstructions)) == 0:
+                output["ln(num Indirect call/length)"] = log(
+                    instructionCounts["indirect_call"] / float(totalInstructions))
                 output["ln(num reg used/length)"] = "infinity"
         else:
             output["ln(num Indirect call/length)"] = "infinity"
             output["ln(num reg used/length)"] = "infinity"
 
-        if float(instructionCounts["lea"]) != 0 and (instructionCounts["push"]/float(instructionCounts["lea"])) != 0:
-            output["ln(num push/num lea)"] = log(instructionCounts["push"]/float(instructionCounts["lea"]))
+        if float(instructionCounts["lea"]) != 0 and (instructionCounts["push"] / float(instructionCounts["lea"])) != 0:
+            output["ln(num push/num lea)"] = log(instructionCounts["push"] / float(instructionCounts["lea"]))
         else:
             output["ln(num push/num lea)"] = "infinity"
 
-        if float(instructionCounts["test"]) != 0 and (instructionCounts["cmp"]/float(instructionCounts["test"])) != 0:     
-            output["ln(num cmp/num test)"] = log(instructionCounts["cmp"]/float(instructionCounts["test"]))
+        if float(instructionCounts["test"]) != 0 and (instructionCounts["cmp"] / float(instructionCounts["test"])) != 0:
+            output["ln(num cmp/num test)"] = log(instructionCounts["cmp"] / float(instructionCounts["test"]))
         else:
             output["ln(num cmp/num test)"] = "infinity"
 
-        if float(instructionCounts["push"]) != 0 and (instructionCounts["mov"]/float(instructionCounts["push"])) != 0:
-            output["ln(num mov/num push)"] = log(instructionCounts["mov"]/float(instructionCounts["push"]))
+        if float(instructionCounts["push"]) != 0 and (instructionCounts["mov"] / float(instructionCounts["push"])) != 0:
+            output["ln(num mov/num push)"] = log(instructionCounts["mov"] / float(instructionCounts["push"]))
         else:
-            output["ln(num mov/num push)"] = "infinity" 
-        if float(instructionCounts["lea"]) != 0 and (instructionCounts["jmp"]/float(instructionCounts["lea"])) != 0:
-            output["ln(num jmp/num lea)"] = log(instructionCounts["jmp"]/float(instructionCounts["lea"]))
+            output["ln(num mov/num push)"] = "infinity"
+        if float(instructionCounts["lea"]) != 0 and (instructionCounts["jmp"] / float(instructionCounts["lea"])) != 0:
+            output["ln(num jmp/num lea)"] = log(instructionCounts["jmp"] / float(instructionCounts["lea"]))
         else:
             output["ln(num jmp/num lea)"] = "infinity"
 
-        if float(instructionCounts["call"]) != 0 and (instructionCounts["indirect_call"]/float(instructionCounts["call"])) != 0:     
-            output["ln(num indirect call/num call)"] = log(instructionCounts["indirect_call"]/float(instructionCounts["call"]))
+        if float(instructionCounts["call"]) != 0 and (
+                instructionCounts["indirect_call"] / float(instructionCounts["call"])) != 0:
+            output["ln(num indirect call/num call)"] = log(
+                instructionCounts["indirect_call"] / float(instructionCounts["call"]))
         else:
             output["ln(num indirect call/num call)"] = "infinity"
 
-        if float(registerCounts["ecx"]) != 0:    
-            output["ln(num eax/num ecx)"] = log(registerCounts["eax"]/float(registerCounts["ecx"]))
+        if float(registerCounts["ecx"]) != 0:
+            output["ln(num eax/num ecx)"] = log(registerCounts["eax"] / float(registerCounts["ecx"]))
         else:
             output["ln(num eax/num ecx)"] = "infinity"
         if "esi" in registerCounts.keys() and "edi" in registerCounts.keys():
-            if float(registerCounts["edi"]) != 0 and (registerCounts["esi"]/float(registerCounts["edi"])) != 0:
-                output["ln(num esi/num edi)"] = log(registerCounts["esi"]/float(registerCounts["edi"]))
+            if float(registerCounts["edi"]) != 0 and (registerCounts["esi"] / float(registerCounts["edi"])) != 0:
+                output["ln(num esi/num edi)"] = log(registerCounts["esi"] / float(registerCounts["edi"]))
             else:
                 output["ln(num esi/num edi)"] = "infinity"
         else:
@@ -135,48 +140,49 @@ class choice1:
         document = {"General": output}
 
         if float(instructionCounts["lea"]) != 0:
-            if (instructionCounts["push"]/float(instructionCounts["lea"])) != 0:
-                feature1 = log(instructionCounts["push"]/float(instructionCounts["lea"]))
+            if (instructionCounts["push"] / float(instructionCounts["lea"])) != 0:
+                feature1 = log(instructionCounts["push"] / float(instructionCounts["lea"]))
             else:
                 feature1 = -1
-            if (instructionCounts["jmp"]/float(instructionCounts["lea"])) != 0:
-                feature2 = log(instructionCounts["jmp"]/float(instructionCounts["lea"]))
+            if (instructionCounts["jmp"] / float(instructionCounts["lea"])) != 0:
+                feature2 = log(instructionCounts["jmp"] / float(instructionCounts["lea"]))
             else:
                 feature2 = -1
         else:
             feature1 = -1
             feature2 = -1
 
-        if float(instructionCounts["push"]) != 0 and (instructionCounts["mov"]/float(instructionCounts["push"])) != 0:
-            feature3 = log(instructionCounts["mov"]/float(instructionCounts["push"]))
+        if float(instructionCounts["push"]) != 0 and (instructionCounts["mov"] / float(instructionCounts["push"])) != 0:
+            feature3 = log(instructionCounts["mov"] / float(instructionCounts["push"]))
         else:
             feature3 = -1
 
-        if float(instructionCounts["call"]) != 0 and (instructionCounts["indirect_call"]/float(instructionCounts["call"])) != 0:
-            feature4 = log(instructionCounts["indirect_call"]/float(instructionCounts["call"]))
+        if float(instructionCounts["call"]) != 0 and (
+                instructionCounts["indirect_call"] / float(instructionCounts["call"])) != 0:
+            feature4 = log(instructionCounts["indirect_call"] / float(instructionCounts["call"]))
         else:
             feature4 = -1
 
-        if float(instructionCounts["test"]) != 0 and (instructionCounts["cmp"]/float(instructionCounts["test"])) != 0:
-            feature5 = log(instructionCounts["cmp"]/float(instructionCounts["test"]))
+        if float(instructionCounts["test"]) != 0 and (instructionCounts["cmp"] / float(instructionCounts["test"])) != 0:
+            feature5 = log(instructionCounts["cmp"] / float(instructionCounts["test"]))
         else:
             feature5 = -1
-            
+
         if float(totalInstructions) != 0:
-            if (instructionCounts["reg_used"]/float(totalInstructions)) != 0:
-                feature6 = log(instructionCounts["reg_used"]/float(totalInstructions))
+            if (instructionCounts["reg_used"] / float(totalInstructions)) != 0:
+                feature6 = log(instructionCounts["reg_used"] / float(totalInstructions))
             else:
                 feature6 = -1
-            if (instructionCounts["push"]/float(totalInstructions)) != 0:
-                feature7 = log(instructionCounts["push"]/float(totalInstructions))
+            if (instructionCounts["push"] / float(totalInstructions)) != 0:
+                feature7 = log(instructionCounts["push"] / float(totalInstructions))
             else:
                 feature7 = -1
-            if (instructionCounts["call"]/float(totalInstructions)) != 0:
-                feature8 = log(instructionCounts["call"]/float(totalInstructions))
+            if (instructionCounts["call"] / float(totalInstructions)) != 0:
+                feature8 = log(instructionCounts["call"] / float(totalInstructions))
             else:
                 feature8 = -1
-            if (instructionCounts["indirect_call"]/float(totalInstructions)) != 0:
-                feature9 = log(instructionCounts["indirect_call"]/float(totalInstructions))
+            if (instructionCounts["indirect_call"] / float(totalInstructions)) != 0:
+                feature9 = log(instructionCounts["indirect_call"] / float(totalInstructions))
             else:
                 feature9 = -1
         else:
@@ -186,27 +192,27 @@ class choice1:
             feature9 = -1
 
         if float(registerCounts["ecx"]) != 0:
-            feature10 = log(registerCounts["eax"]/float(registerCounts["ecx"]))
+            feature10 = log(registerCounts["eax"] / float(registerCounts["ecx"]))
         else:
             feature10 = -1
 
         if "edi" in registerCounts.keys():
             if float(registerCounts["edi"]) != 0:
-                feature11 = log(registerCounts["esi"]/float(registerCounts["edi"]))
+                feature11 = log(registerCounts["esi"] / float(registerCounts["edi"]))
             else:
                 feature11 = -1
         else:
             feature11 = -2
-        featureList = [feature1,\
-                       feature3,\
-                       feature4,\
-                       feature5,\
-                       feature6,\
-                       feature10,\
-                       feature11,\
-                       feature2,\
-                       feature7,\
-                       feature8,\
+        featureList = [feature1,
+                       feature3,
+                       feature4,
+                       feature5,
+                       feature6,
+                       feature10,
+                       feature11,
+                       feature2,
+                       feature7,
+                       feature8,
                        feature9]
         document["features"] = featureList
         document["FileName"] = self.fileName
@@ -236,9 +242,9 @@ class choice2:
 
     def choice2(self):
         numOfInstructions = 0
-        printfNewline = [0,0]
+        printfNewline = [0, 0]
         mainEA = 0
-        #fileName = ARGV[1]
+        # fileName = ARGV[1]
 
         self.getAllStrings()
         for name in Names():
@@ -250,64 +256,67 @@ class choice2:
         for counter in range(0, numberOfImports):
             enum_import_names(counter, self.getImportedFunctions)
 
-        for address in Heads(mainEA,find_func_end(mainEA)):
+        for _ in Heads(mainEA, find_func_end(mainEA)):
             numOfInstructions += 1
-
 
         currentInstruction = 0
         currentStackValue = ''
         numberOfCalls = 0
         previousInstructionEA = 0
-        for address in Heads(mainEA,find_func_end(mainEA)):
+        for address in Heads(mainEA, find_func_end(mainEA)):
             currentInstruction += 1
             if print_insn_mnem(address) == "push":
                 previousInstructionEA = address
-                currentStackValue = print_operand(address,0)
+                currentStackValue = print_operand(address, 0)
             elif print_insn_mnem(address) == "pop":
                 currentStackValue = ''
             elif print_insn_mnem(address) == "mov":
-                if print_operand(address,0) in self.standardRegisters.keys():
-                    self.standardRegisters[print_operand(address,0)] = get_operand_value(address,1)
-                    
-            distanceFromEndOfFunction = int(numOfInstructions * (3/float(4)))
-            if get_operand_type(address,0) == 1 and print_operand(address,0) in self.standardRegisters.keys():
-                libraryInstruction = self.standardRegisters[print_operand(address,0)]
+                if print_operand(address, 0) in self.standardRegisters.keys():
+                    self.standardRegisters[print_operand(address, 0)] = get_operand_value(address, 1)
+
+            distanceFromEndOfFunction = int(numOfInstructions * (3 / float(4)))
+            if get_operand_type(address, 0) == 1 and print_operand(address, 0) in self.standardRegisters.keys():
+                libraryInstruction = self.standardRegisters[print_operand(address, 0)]
             else:
-                libraryInstruction = get_operand_value(address,0)
-            
+                libraryInstruction = get_operand_value(address, 0)
+
             for string in self.subStrings:
-                if string in print_operand(address,1) and currentInstruction >= distanceFromEndOfFunction:
-                    self.libraryFunctionNamesDict[string][1] +=1
-            
+                if string in print_operand(address, 1) and currentInstruction >= distanceFromEndOfFunction:
+                    self.libraryFunctionNamesDict[string][1] += 1
+
             if print_insn_mnem(address) == "call" and currentInstruction >= distanceFromEndOfFunction:
                 numberOfCalls += 1
-            
+
             if print_insn_mnem(address) in self.returns.keys() and currentInstruction >= distanceFromEndOfFunction:
                 self.returns[print_insn_mnem(address)] += 1
-                
-            if print_insn_mnem(address) == "call" and libraryInstruction in self.libraryFunctionNameEADict.keys() and currentInstruction >= distanceFromEndOfFunction:
+
+            if (
+                    print_insn_mnem(address) == "call" and
+                    libraryInstruction in self.libraryFunctionNameEADict.keys() and
+                    currentInstruction >= distanceFromEndOfFunction
+            ):
                 if self.libraryFunctionNameEADict[libraryInstruction] == "exit":
                     if currentStackValue == "1":
                         self.libraryFunctionNamesDict[self.libraryFunctionNameEADict[libraryInstruction]][1] += 1
                 else:
-                    if "printf" in self.libraryFunctionNameEADict[libraryInstruction] and print_insn_mnem(previousInstructionEA) == "push":
-                        locationOfPushValue = get_operand_value(previousInstructionEA,0)
-                        
+                    if "printf" in self.libraryFunctionNameEADict[libraryInstruction] and print_insn_mnem(
+                            previousInstructionEA) == "push":
+                        locationOfPushValue = get_operand_value(previousInstructionEA, 0)
+
                         if locationOfPushValue in self.allStrings.keys():
                             if "\n" in self.allStrings[locationOfPushValue]:
                                 printfNewline[0] += 1
                             else:
                                 printfNewline[1] += 1
-                            
-                            
+
                     self.libraryFunctionNamesDict[self.libraryFunctionNameEADict[libraryInstruction]][1] += 1
 
         output = {"LibraryFunctions": {}}
         for libraryFunction in self.libraryFunctionNamesDict.keys():
             output["LibraryFunctions"][libraryFunction] = self.libraryFunctionNamesDict[libraryFunction][1]
-        
+
         output["calls"] = numberOfCalls
-        
+
         output["returns"] = self.returns
         output["printf with newline"] = printfNewline[0]
         output["printf without newline"] = printfNewline[1]
@@ -321,26 +330,26 @@ class choice2:
         all_strings.setup(
             strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=1
         )
-        for string in strings:
+        for string in all_strings:
             self.allStrings[string.ea] = str(string)
 
-    def getImportedFunctions(self,ea, libraryFunctionName, ord):
+    def getImportedFunctions(self, ea, libraryFunctionName, _ord):
         if libraryFunctionName in self.libraryFunctionNamesDict.keys():
             self.libraryFunctionNamesDict[libraryFunctionName][0] = ea
             self.libraryFunctionNameEADict[ea] = libraryFunctionName
-        
+
         if "cout" in libraryFunctionName:
             self.libraryFunctionNamesDict["cout"][0] = ea
             self.libraryFunctionNameEADict[ea] = "cout"
-        
+
         if "endl" in libraryFunctionName:
             self.libraryFunctionNamesDict["endl"][0] = ea
             self.libraryFunctionNameEADict[ea] = "endl"
-        
+
         if "Xlength_error" in libraryFunctionName:
             self.libraryFunctionNamesDict["Xlength_error"][0] = ea
             self.libraryFunctionNameEADict[ea] = "Xlength_error"
-        
+
         if "cerr" in libraryFunctionName:
             self.libraryFunctionNamesDict["cerr"][0] = ea
             self.libraryFunctionNameEADict[ea] = "cerr"
@@ -363,14 +372,11 @@ class choice18:
         self.registerChainMinhash = []
         self.blocks = []
 
-    def createRegisterChain(self,p,ea):
+    def createRegisterChain(self, p, ea):
         f = FlowChart(get_func(ea))
-        
+
         functionName = get_func_name(ea)
-        client = MongoClient('localhost', 27017)
-        db = client.BinAuthor
-        collection = db.Choice18
-        
+
         if get_func_name(ea) not in self.functionRegisterChains.keys():
             self.functionRegisterChains[get_func_name(ea)] = {}
         for block in f:
@@ -379,20 +385,24 @@ class choice18:
                 for address in Heads(block.start_ea, block.end_ea):
                     if get_operand_type(address, 0) == 1 and print_operand(address, 0) != "":
                         if print_operand(address, 0) not in self.functionRegisterChains[get_func_name(ea)].keys():
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [print_insn_mnem(address)]
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [
+                                print_insn_mnem(address)]
                         else:
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)].append(print_insn_mnem(address))
-                            
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)].append(
+                                print_insn_mnem(address))
+
                         if print_operand(address, 0) not in registerChain.keys():
                             registerChain[print_operand(address, 0)] = [print_insn_mnem(address)]
                         else:
                             registerChain[print_operand(address, 0)].append(print_insn_mnem(address))
-                    if get_operand_type(address, 1) == 1  and print_operand(address, 1) != "":
+                    if get_operand_type(address, 1) == 1 and print_operand(address, 1) != "":
                         if print_operand(address, 1) not in self.functionRegisterChains[get_func_name(ea)].keys():
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)] = [print_insn_mnem(address)]
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)] = [
+                                print_insn_mnem(address)]
                         else:
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)].append(print_insn_mnem(address))
-                        
+                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)].append(
+                                print_insn_mnem(address))
+
                         if print_operand(address, 1) not in registerChain.keys():
                             registerChain[print_operand(address, 1)] = [print_insn_mnem(address)]
                         else:
@@ -407,16 +417,16 @@ class choice18:
                     for instruction in registerChain[register]:
                         fingerPrint += " " + str(instruction)
                         counter += 1
-                        
+
                     functionMinhashes["SimHashSignature"] = str(Simhash(fingerPrint).value)
 
-                    self.simhashList.append([counter,Simhash(fingerPrint).value])
+                    self.simhashList.append([counter, Simhash(fingerPrint).value])
                     if len(fingerPrint.split(" ")) >= 6:
-                        self.registerChainMinhash.append([fingerPrint,minHash(createShingles(fingerPrint))])
+                        self.registerChainMinhash.append([fingerPrint, minHash(createShingles(fingerPrint))])
                         functionMinhashes["MinHashSignature"] = minHash(createShingles(fingerPrint))
                         self.collection.insert_one(functionMinhashes)
                     else:
-                        self.registerChainMinhash.append([fingerPrint,])
+                        self.registerChainMinhash.append([fingerPrint, ])
 
     def choice18(self):
         for function in Functions():
@@ -440,13 +450,11 @@ class CustomStrings:
         all_strings.setup(
             strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4
         )
-        for string in strings:
+        for string in all_strings:
             self.allStrings.append(str(string))
-        
-        output = {"Strings": self.allStrings}      
-        output["FileName"] = self.fileName
-        output["FileMD5"] = self.fileMD5
-        output["Author Name"] = ARGV[1]
+
+        output = {"Strings": self.allStrings, "FileName": self.fileName, "FileMD5": self.fileMD5,
+                  "Author Name": ARGV[1]}
 
         self.collection.insert_one(output)
 
@@ -455,14 +463,12 @@ class CustomStrings:
         all_strings.setup(
             strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4
         )
-        for string in strings:
+        for string in all_strings:
             self.allStrings.append(str(string))
-        
-        output = {"Strings": self.allStrings}      
-        output["FileName"] = self.fileName
-        output["FileMD5"] = self.fileMD5
-        output["Author Name"] = self.authorName
-        
+
+        output = {"Strings": self.allStrings, "FileName": self.fileName, "FileMD5": self.fileMD5,
+                  "Author Name": self.authorName}
+
         return output
 
 

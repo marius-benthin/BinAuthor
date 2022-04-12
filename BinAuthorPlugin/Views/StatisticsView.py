@@ -14,7 +14,6 @@ from ida_kernwin import PluginForm, find_widget, ask_file, action_handler_t, AST
 
 from BinAuthorPlugin.Algorithms import FunctionStatistics as InstructionGroupStatistics
 
-
 use('Qt5Agg')
 
 
@@ -35,8 +34,10 @@ class StatsHandler(action_handler_t):
         return AST_ENABLE_ALWAYS
 
 
-class htmlReport():
-    def generateReport(self,executableName,MD5,function,statsTable):
+class htmlReport:
+
+    @staticmethod
+    def generateReport(executableName, MD5, function, statsTable):
         dateNow = datetime.now()
         html = '''
         <style>
@@ -47,12 +48,12 @@ class htmlReport():
     #statsDiv td {
         vertical-align:top
     }
-	#statsDiv.table td{
-		width:100%
-	}
+    #statsDiv.table td{
+        width:100%
+    }
     #statsDiv table{
-		width:85%
-	}
+        width:85%
+    }
 </style>
 <html>
     <div align="center"><h1>BinAuthor: Function Analysis Report</h1></div>
@@ -69,7 +70,7 @@ class htmlReport():
                 <td><b>Function:</b></td><td>''' + function + '''</td>
             </tr>
             <tr>
-                <td><b>Report Generation Date:</b></td><td>''' + dateNow.strftime('%Y/%m/%d %I:%M:%S %p') +  '''</td>
+                <td><b>Report Generation Date:</b></td><td>''' + dateNow.strftime('%Y/%m/%d %I:%M:%S %p') + '''</td>
             </tr>
         </table>
     </div><br>
@@ -79,13 +80,30 @@ class htmlReport():
     <div>
         <table border="">
             <tr>
-                <td><img src="KurtosisSkewness.png" alt="Function Kurtosis And Skewness" height="250" width="600" /></td><td><img src="GroupMean.png" alt="Group Mean" height="250" width="600" /></td>
+                <td>
+                    <img src="KurtosisSkewness.png" alt="Function Kurtosis And Skewness" height="250" width="600" />
+                </td>
+                <td>
+                    <img src="GroupMean.png" alt="Group Mean" height="250" width="600" />
+                </td>
             </tr>
             <tr>
-                <td><img src="GroupVariance.png" alt="Smiley face" height="250" width="600" /></td><td><img src="MinimumFrequencies.png" alt="Instructions With Minimum Frequencies" height="250" width="600" /></td>
+                <td>
+                    <img src="GroupVariance.png" alt="Smiley face" height="250" width="600" />
+                </td>
+                <td>
+                    <img 
+                    src="MinimumFrequencies.png" alt="Instructions With Minimum Frequencies" height="250" width="600" />
+                </td>
             </tr>
             <tr>
-                <td><img src="MaximumFrequencies.png" alt="Instructions With Maximum Frequencies" height="250" width="600" /></td><td><img src="FunctionCorrelations.png" alt="Top 5 Function Correlations" height="250" width="600" /></td>
+                <td>
+                    <img 
+                    src="MaximumFrequencies.png" alt="Instructions With Maximum Frequencies" height="250" width="600" />
+                </td>
+                <td>
+                    <img src="FunctionCorrelations.png" alt="Top 5 Function Correlations" height="250" width="600" />
+                </td>
             </tr>
         </table>
     </div>
@@ -94,79 +112,112 @@ class htmlReport():
 '''
         return html
 
+
 class StatsView(PluginForm):
 
     def __init__(self):
         super().__init__()
+        self.buttonsLayout = None
+        self.FinalPanelLayout = None
+        self.buttonsWidget = None
+        self.label = None
+        self.centerMainPanel = None
+        self.containerPanelLayout = None
+        self.rightPanelLayout = None
+        self.rightPanel = None
+        self.middlePanelLayout = None
+        self.middlePanel = None
+        self.leftPanelLayout = None
+        self.listView = None
+        self.leftPanel = None
+        self.statistics = None
+        self.FunctionStats = None
+        self.parent = None
+        self.minFreq = None
+        self.maxFreq = None
+        self.CurrentMD5 = None
+        self.FunctionName = None
+        self.groupStats = None
+        self.legend = None
+        self.legendItems = None
+        self.collection = None
+        self.db = None
+        self.client = None
         self.statsFigures = {}
 
-    def setDetails(self,funcName):
+    def setDetails(self, funcName):
         self.client = MongoClient('localhost', 27017)
         self.db = self.client.BinAuthor
         self.collection = self.db.Functions
-        self.legendItems = self.collection.find({"function":funcName,"MD5":str(GetInputFileMD5()), "group": { "$exists": "true"}},{"group": 1, "groupCount":1,"_id":0, "mean": 1,"variance": 1})
+        self.legendItems = self.collection.find(
+            {"function": funcName, "MD5": str(GetInputFileMD5()), "group": {"$exists": "true"}},
+            {"group": 1, "groupCount": 1, "_id": 0, "mean": 1, "variance": 1})
         self.legend = {}
         self.groupStats = {}
         self.maxFreq = 0
         self.minFreq = maxsize
         self.FunctionName = funcName
         self.CurrentMD5 = str(GetInputFileMD5())
-        
-        self.statsFigures = {"KurtosisSkewness": None,"GroupMean": None, "GroupVariance": None,"MinimumFrequencies": None,"MaximumFrequencies":None,"FunctionCorrelations":None}
-		
+
+        self.statsFigures = {"KurtosisSkewness": None, "GroupMean": None, "GroupVariance": None,
+                             "MinimumFrequencies": None, "MaximumFrequencies": None, "FunctionCorrelations": None}
+
         for item in self.legendItems:
             if item["group"] not in self.legend.keys():
                 self.legend[item["group"]] = item["groupCount"]
-                self.groupStats[item["group"]] = {"mean":item["mean"],"variance":item["variance"]}	
+                self.groupStats[item["group"]] = {"mean": item["mean"], "variance": item["variance"]}
                 if int(item["groupCount"]) > self.maxFreq:
                     self.maxFreq = int(item["groupCount"])
                 if int(item["groupCount"]) > self.minFreq:
                     self.minFreq = int(item["groupCount"])
-    def createBoxPlot(self,dataDict):
-	    # basic plot
-        f1 = plt.figure(figsize=(1.5625,0.2))
-        #f1.set_facecolor(None)
-        #f1.patch.set_alpha(0.0)
+
+    @staticmethod
+    def createBoxPlot(dataDict):
+        # basic plot
+        f1 = plt.figure(figsize=(1.5625, 0.2))
+        # f1.set_facecolor(None)
+        # f1.patch.set_alpha(0.0)
         temp = f1.add_subplot(111)
 
-        ## Create data
+        # Create data
         random.seed(10)
         collectn_1 = dataDict.values()
         collectn_2 = random.normal(80, 30, 200)
         collectn_3 = random.normal(90, 20, 200)
         collectn_4 = random.normal(70, 25, 200)
 
-        ## combine these different collections into a list
+        # combine these different collections into a list
         data_to_plot = [collectn_1, collectn_2, collectn_3, collectn_4]
 
-	    # fake up some more data
+        # fake up some more data
         temp.boxplot(data_to_plot)
-	    # multiple box plots on one figure
+        # multiple box plots on one figure
         canvas2 = FigureCanvas(f1)
         canvas2.setMinimumWidth(150)
         canvas2.setMinimumHeight(150)
         return canvas2
 
-    def createBarChart(self):
+    @staticmethod
+    def createBarChart():
 
-        D = {u'Label0':26, u'Label1': 17, u'Label2':30}
+        D = {u'Label0': 26, u'Label1': 17, u'Label2': 30}
 
-        f1 = plt.figure(figsize=(1.5625,0.2))
-        #f1.set_facecolor(None)
-        #f1.patch.set_alpha(0.0)
+        f1 = plt.figure(figsize=(1.5625, 0.2))
+        # f1.set_facecolor(None)
+        # f1.patch.set_alpha(0.0)
         temp = f1.add_subplot(111)
         my_colors = list(islice(cycle(['b', 'r', 'g', 'y', 'k']), None, len(D)))
-        temp.bar(range(len(D)), D.values(), align='center', width=0.2,color=my_colors)
+        temp.bar(range(len(D)), D.values(), align='center', width=0.2, color=my_colors)
 
         canvas2 = FigureCanvas(f1)
         canvas2.setMinimumWidth(150)
         canvas2.setMinimumHeight(150)
         return canvas2
 
-    def createBarChartCorrelation(self,dataTupple):
-        f1 = plt.figure(figsize=(1.5625,1.5))
-        #f1.set_facecolor(None)
-        #f1.patch.set_alpha(0.0)
+    def createBarChartCorrelation(self, dataTupple):
+        f1 = plt.figure(figsize=(1.5625, 1.5))
+        # f1.set_facecolor(None)
+        # f1.patch.set_alpha(0.0)
         temp = f1.add_subplot(111)
 
         x_axis_Titles = [function[0] for function in dataTupple]
@@ -174,29 +225,29 @@ class StatsView(PluginForm):
 
         my_colors = list(islice(cycle(['b', 'r', 'g', 'y', 'k']), None, len(dataTupple)))
 
-        temp.bar(range(len(dataTupple)), dataPoints, align='center', width=0.2,color=my_colors)
+        temp.bar(range(len(dataTupple)), dataPoints, align='center', width=0.2, color=my_colors)
         temp.set_xticks(range(len(dataTupple)))
         temp.set_xticklabels(x_axis_Titles)
         plt.setp(temp.get_xticklabels(), rotation=20, horizontalalignment='right')
         canvas2 = FigureCanvas(f1)
         plt.gcf().subplots_adjust(bottom=0.5)
-        plt.gca().set_ylim([min(dataPoints)-0.2,1])
+        plt.gca().set_ylim([min(dataPoints) - 0.2, 1])
         plt.title("Function Correlation")
         canvas2.setMinimumWidth(150)
         canvas2.setMinimumHeight(150)
         self.statsFigures["FunctionCorrelations"] = f1
         return canvas2
 
-    def createBarChartA(self,dataDict,title,type):
+    def createBarChartA(self, dataDict, title, chart_type):
 
-        f1 = plt.figure(figsize=(1.5625,1.5))
-        #f1.set_facecolor(None)
-        #f1.patch.set_alpha(0.0)
+        f1 = plt.figure(figsize=(1.5625, 1.5))
+        # f1.set_facecolor(None)
+        # f1.patch.set_alpha(0.0)
         temp = f1.add_subplot(111)
 
         my_colors = list(islice(cycle(['b', 'r', 'g', 'y', 'k']), None, len(dataDict)))
 
-        temp.bar(range(len(dataDict)), dataDict.values(), align='center', width=0.2,color=my_colors)
+        temp.bar(range(len(dataDict)), dataDict.values(), align='center', width=0.2, color=my_colors)
         temp.set_xticks(range(len(dataDict)))
         temp.set_xticklabels(dataDict.keys())
         plt.setp(temp.get_xticklabels(), rotation=20, horizontalalignment='right')
@@ -206,90 +257,95 @@ class StatsView(PluginForm):
         canvas2.setMinimumWidth(150)
         canvas2.setMinimumHeight(150)
 
-        self.statsFigures[type] = f1
+        self.statsFigures[chart_type] = f1
         return canvas2
 
-
-    def createPieChart(self):
+    @staticmethod
+    def createPieChart():
         # The slices will be ordered and plotted counter-clockwise.
         labels = 'User', 'Compiler', 'Other'
         sizes = [15, 55, 30]
-        colors = ['blue', '#FA8500' , '#80390A']
+        colors = ['blue', '#FA8500', '#80390A']
         explode = (0, 0.1, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
 
-        figure = plt.figure(figsize=(1.5625,0.2))
-        #figure.set_facecolor(None)
-        #figure.patch.set_alpha(0.0)
+        figure = plt.figure(figsize=(1.5625, 0.2))
+        # figure.set_facecolor(None)
+        # figure.patch.set_alpha(0.0)
         canvas = FigureCanvas(figure)
         axes = figure.add_subplot(111)
-        axes.pie(sizes, explode=explode, labels=labels, colors=colors,autopct='%1.1f%%', shadow=True, startangle=90)
-        
+        axes.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', shadow=True, startangle=90)
+
         canvas.setMinimumWidth(150)
         canvas.setMinimumHeight(150)
         return canvas
 
     def saveReport(self):
         fileName = str(get_root_filename() + "_" + self.FunctionName[:15] + ".html")
-        dir = ask_file(1,fileName,"Save as")
-        dir = dir[:-len(fileName)]
-        
-        if not path.exists(dir + str(get_root_filename() + "_" + self.FunctionName[:15])):
-            makedirs(dir + str(get_root_filename() + "_" + self.FunctionName[:15]))
-        dir = dir + str(get_root_filename() + "_" + self.FunctionName[:15]) + "\\"
+        file_dir = ask_file(1, fileName, "Save as")
+        file_dir = file_dir[:-len(fileName)]
+
+        if not path.exists(file_dir + str(get_root_filename() + "_" + self.FunctionName[:15])):
+            makedirs(file_dir + str(get_root_filename() + "_" + self.FunctionName[:15]))
+        file_dir = file_dir + str(get_root_filename() + "_" + self.FunctionName[:15]) + "\\"
         report = htmlReport()
 
-        fileOutput = open(dir+fileName,"wb")
-        fileOutput.write(report.generateReport(get_root_filename(),self.CurrentMD5,self.FunctionName,self.generateStatisticsTable()))
+        fileOutput = open(file_dir + fileName, "wb")
+        fileOutput.write(report.generateReport(get_root_filename(), self.CurrentMD5, self.FunctionName,
+                                               self.generateStatisticsTable()))
         fileOutput.close()
-        
+
         for graph in self.statsFigures.keys():
             self.statsFigures[graph].set_figheight(2.500)
             self.statsFigures[graph].set_figwidth(6.000)
             self.statsFigures[graph].set_dpi(10)
-            self.statsFigures[graph].savefig(dir + graph + ".png")
+            self.statsFigures[graph].savefig(file_dir + graph + ".png")
 
     def saveFigures(self):
-        dir = ask_file(1,"Skewness.png","Save as")
-        dir = dir[:-len("Skewness.png")]
-        
-        if not path.exists(dir + str(get_root_filename() + "_" + self.FunctionName[:15])):
-            makedirs(dir + str(get_root_filename() + "_" + self.FunctionName[:15]))
-        dir = dir + str(get_root_filename() + "_" + self.FunctionName[:15]) + "\\"
-        
+        file_dir = ask_file(1, "Skewness.png", "Save as")
+        file_dir = file_dir[:-len("Skewness.png")]
+
+        if not path.exists(file_dir + str(get_root_filename() + "_" + self.FunctionName[:15])):
+            makedirs(file_dir + str(get_root_filename() + "_" + self.FunctionName[:15]))
+        file_dir = file_dir + str(get_root_filename() + "_" + self.FunctionName[:15]) + "\\"
+
         for graph in self.statsFigures.keys():
             self.statsFigures[graph].set_figheight(2.500)
             self.statsFigures[graph].set_figwidth(6.000)
             self.statsFigures[graph].set_dpi(10)
-            self.statsFigures[graph].savefig(dir + graph + ".png")  
-            
-    
+            self.statsFigures[graph].savefig(file_dir + graph + ".png")
+
     def generateStatisticsTable(self):
         output = ''
-        outputSequence = ["Mean","Variance","Min","Max","Skewness","Kurtosis","Correlation"]
+        outputSequence = ["Mean", "Variance", "Min", "Max", "Skewness", "Kurtosis", "Correlation"]
         for statsType in outputSequence:
             if statsType == "Skewness":
                 output += '<tr><td><b>Skewness:</b></td><td>' + str(self.statistics[statsType]) + '</td></tr>'
             elif statsType == "Kurtosis":
-                output += '<tr><td><b>Kurtosis:</b></td><td>' + str(self.statistics[statsType]) + '</td></tr></table></td><td>'
+                output += '<tr><td><b>Kurtosis:</b></td><td>' + str(
+                    self.statistics[statsType]) + '</td></tr></table></td><td>'
             elif statsType == "Mean":
                 output += '<table><tr><td><h3>Group Mean:</h3><table border="">'
                 for group in self.statistics[statsType].keys():
-                    output += '<tr><td><b>' + group + ':</b></td><td>' + str(self.statistics[statsType][group]) + '</td></tr>'
+                    output += '<tr><td><b>' + group + ':</b></td><td>' + str(
+                        self.statistics[statsType][group]) + '</td></tr>'
                 output += '</table></td><td>'
             elif statsType == "Variance":
                 output += '<h3>Group Variance:</h3><table border="">'
                 for group in self.statistics[statsType].keys():
-                    output += '<tr><td><b>' + group + ':</b></td><td>' + str(self.statistics[statsType][group]) + '</td></tr>'
+                    output += '<tr><td><b>' + group + ':</b></td><td>' + str(
+                        self.statistics[statsType][group]) + '</td></tr>'
                 output += '</table></td><td>'
             elif statsType == "Min":
                 output += '<h3>Group Instruction Minimums:</h3><table border="">'
                 for group in self.statistics[statsType].keys():
-                    output += '<tr><td><b>' + group + ':</b></td><td>' + str(self.statistics[statsType][group]) + '</td></tr>'
+                    output += '<tr><td><b>' + group + ':</b></td><td>' + str(
+                        self.statistics[statsType][group]) + '</td></tr>'
                 output += '</table></td></tr>'
             elif statsType == "Max":
                 output += '<tr><td><h3>Group Instruction Maximums:</h3><table border="">'
                 for group in self.statistics[statsType].keys():
-                    output += '<tr><td><b>' + group + ':</b></td><td>' + str(self.statistics[statsType][group]) + '</td></tr>'
+                    output += '<tr><td><b>' + group + ':</b></td><td>' + str(
+                        self.statistics[statsType][group]) + '</td></tr>'
                 output += '</table></td><td><h3>Skewness & Kurtosis:</h3><table border="">'
             elif statsType == "Correlation":
                 output += '<h3>Correlated Functions:</h3><table border="">'
@@ -297,9 +353,11 @@ class StatsView(PluginForm):
                     output += '<tr><td><b>' + function[0] + ':</b></td><td>' + str(function[1]) + '</td></tr>'
                 output += '</table></td></tr></table>'
         return output
+
     def storeFunctionStatistics(self):
-        outputSequence = ["Mean","Variance","Min","Max","Skewness","Kurtosis","Correlation"]
-        outputDict = {"ExecutableName":get_root_filename(),"ExecutableMD5Hash":self.CurrentMD5,"FunctionName":self.FunctionName}
+        outputSequence = ["Mean", "Variance", "Min", "Max", "Skewness", "Kurtosis", "Correlation"]
+        outputDict = {"ExecutableName": get_root_filename(), "ExecutableMD5Hash": self.CurrentMD5,
+                      "FunctionName": self.FunctionName}
         for statsType in outputSequence:
             if statsType == "Skewness":
                 outputDict["Skewness"] = self.statistics[statsType]
@@ -333,35 +391,36 @@ class StatsView(PluginForm):
         collection = self.db.FunctionFingerPrint
         collection.insert(outputDict)
         print("Function Fingerprint has been successfully saved to the database!")
-            
+
     def OnCreate(self, Form):
         self.parent = self.FormToPySideWidget(Form)
-        
-        self.FunctionStats = InstructionGroupStatistics.InstructionGroupStatistics(self.CurrentMD5,self.FunctionName)
-        
+
+        self.FunctionStats = InstructionGroupStatistics.InstructionGroupStatistics(self.CurrentMD5, self.FunctionName)
+
         skewness = self.FunctionStats.getSkewness()
         kurtosis = self.FunctionStats.getKurtosis()
-        
+
         mean = self.FunctionStats.getInstructionGroupMeans()
         variance = self.FunctionStats.getInstructionGroupVariance()
-        
-        max = self.FunctionStats.getMaxInstructionFromGroup()
-        min = self.FunctionStats.getMinInstructionFromGroup()
-        
+
+        max_instructions = self.FunctionStats.getMaxInstructionFromGroup()
+        min_instructions = self.FunctionStats.getMinInstructionFromGroup()
+
         correlation = self.FunctionStats.correlation()
-        
-        self.statistics = {"Skewness": skewness,"Kurtosis":kurtosis,"Mean":mean,"Variance":variance,"Max":max,"Min":min,"Correlation":correlation}
-        
+
+        self.statistics = {"Skewness": skewness, "Kurtosis": kurtosis, "Mean": mean, "Variance": variance,
+                           "Max": max_instructions, "Min": min_instructions, "Correlation": correlation}
+
         ######
-        
-        self.leftPanel = QtWidgets.QWidget() #Left panel
+
+        self.leftPanel = QtWidgets.QWidget()  # Left panel
         self.leftPanel.setMinimumWidth(300)
-        
-        self.listView = QtWidgets.QTableWidget(len(self.legend.keys()),2)
-        
+
+        self.listView = QtWidgets.QTableWidget(len(self.legend.keys()), 2)
+
         newItem = QtWidgets.QTableWidgetItem("Group Name")
         self.listView.setHorizontalHeaderItem(0, newItem)
-        
+
         newItem = QtWidgets.QTableWidgetItem("Title Frequency")
         self.listView.setHorizontalHeaderItem(1, newItem)
         counter = 0
@@ -371,111 +430,107 @@ class StatsView(PluginForm):
             newItem = QtWidgets.QTableWidgetItem(str(self.legend[group]))
             self.listView.setItem(counter, 1, newItem)
             counter += 1
-        
+
         self.leftPanelLayout = QtWidgets.QVBoxLayout()
-        self.leftPanelLayout.addWidget(self.listView,QtCore.Qt.AlignRight|QtCore.Qt.AlignTop)
+        self.leftPanelLayout.addWidget(self.listView, QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
         self.leftPanel.setLayout(self.leftPanelLayout)
-        self.leftPanelLayout.setAlignment(self.listView,QtCore.Qt.AlignRight|QtCore.Qt.AlignTop)
-        #self.leftPanel.setMinimumHeight(self.parent.frameGeometry().height())
-        
-        
+        self.leftPanelLayout.setAlignment(self.listView, QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        # self.leftPanel.setMinimumHeight(self.parent.frameGeometry().height())
+
         vwidth = self.listView.verticalHeader().width()
         hwidth = self.listView.horizontalHeader().length()
-        swidth = self.listView.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent)
+        # swidth = self.listView.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent)
         fwidth = self.listView.frameWidth() * 2
-        
+
         vheight = self.listView.verticalHeader().length()
-        hheight = self.listView.horizontalHeader().length()
+        # hheight = self.listView.horizontalHeader().length()
         self.listView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.listView.setMinimumSize(QtCore.QSize(vwidth + hwidth + fwidth,vheight +25))
-        self.listView.setMaximumSize(QtCore.QSize(vwidth + hwidth + fwidth, vheight+25))
-        #self.listView.setMinimumSize(QtCore.QSize(vwidth + hwidth + swidth + fwidth, 33.225*len(self.legend.keys())))
-        #self.listView.setMaximumSize(QtCore.QSize(vwidth + hwidth + swidth + fwidth, 33.225*len(self.legend.keys())))
-        
-        
-        
-        self.middlePanel = QtWidgets.QWidget() #Middle panel
-        self.middlePanel.setMinimumWidth((self.parent.frameGeometry().width()-400)/2)
-        
+        self.listView.setMinimumSize(QtCore.QSize(vwidth + hwidth + fwidth, vheight + 25))
+        self.listView.setMaximumSize(QtCore.QSize(vwidth + hwidth + fwidth, vheight + 25))
+        # self.listView.setMinimumSize(QtCore.QSize(vwidth + hwidth + swidth + fwidth, 33.225*len(self.legend.keys())))
+        # self.listView.setMaximumSize(QtCore.QSize(vwidth + hwidth + swidth + fwidth, 33.225*len(self.legend.keys())))
+
+        self.middlePanel = QtWidgets.QWidget()  # Middle panel
+        self.middlePanel.setMinimumWidth((self.parent.frameGeometry().width() - 400) / 2)
+
         self.middlePanelLayout = QtWidgets.QVBoxLayout()
-        self.middlePanelLayout.addWidget(self.createBarChartA({u'Skewness':skewness, u'Kurtosis': kurtosis},"Function Skewness & Kurtosis","KurtosisSkewness"))
-        self.middlePanelLayout.addWidget(self.createBarChartA(variance,"Group Variance","GroupVariance"))
-        self.middlePanelLayout.addWidget(self.createBarChartA(max,"Instruction With Maximum Frequencies","MaximumFrequencies"))
-        
+        self.middlePanelLayout.addWidget(
+            self.createBarChartA({u'Skewness': skewness, u'Kurtosis': kurtosis}, "Function Skewness & Kurtosis",
+                                 "KurtosisSkewness"))
+        self.middlePanelLayout.addWidget(self.createBarChartA(variance, "Group Variance", "GroupVariance"))
+        self.middlePanelLayout.addWidget(
+            self.createBarChartA(max_instructions, "Instruction With Maximum Frequencies", "MaximumFrequencies"))
+
         self.middlePanel.setLayout(self.middlePanelLayout)
-        
-        self.rightPanel = QtWidgets.QWidget() #Right panel
-        self.rightPanel.setMinimumWidth((self.parent.frameGeometry().width()-400)/2)
-        
+
+        self.rightPanel = QtWidgets.QWidget()  # Right panel
+        self.rightPanel.setMinimumWidth((self.parent.frameGeometry().width() - 400) / 2)
+
         self.rightPanelLayout = QtWidgets.QVBoxLayout()
-        self.rightPanelLayout.addWidget(self.createBarChartA(mean,"Group Mean","GroupMean"))
-        self.rightPanelLayout.addWidget(self.createBarChartA(min,"Instruction With Minimum Frequencies","MinimumFrequencies"))
+        self.rightPanelLayout.addWidget(self.createBarChartA(mean, "Group Mean", "GroupMean"))
+        self.rightPanelLayout.addWidget(
+            self.createBarChartA(min_instructions, "Instruction With Minimum Frequencies", "MinimumFrequencies"))
         self.rightPanelLayout.addWidget(self.createBarChartCorrelation(correlation))
-        
-        
-        #### for figures stupid fix but it works for now!
-        self.createBarChartA({u'Skewness':skewness, u'Kurtosis': kurtosis},"Function Skewness & Kurtosis","KurtosisSkewness")
-        self.createBarChartA(variance,"Group Variance","GroupVariance")
-        self.createBarChartA(max,"Instruction With Maximum Frequencies","MaximumFrequencies")
-        self.createBarChartA(mean,"Group Mean","GroupMean")
-        self.createBarChartA(min,"Instruction With Minimum Frequencies","MinimumFrequencies")
+
+        # for figures stupid fix but it works for now!
+        self.createBarChartA({u'Skewness': skewness, u'Kurtosis': kurtosis}, "Function Skewness & Kurtosis",
+                             "KurtosisSkewness")
+        self.createBarChartA(variance, "Group Variance", "GroupVariance")
+        self.createBarChartA(max_instructions, "Instruction With Maximum Frequencies", "MaximumFrequencies")
+        self.createBarChartA(mean, "Group Mean", "GroupMean")
+        self.createBarChartA(min_instructions, "Instruction With Minimum Frequencies", "MinimumFrequencies")
         self.createBarChartCorrelation(correlation)
-        ####
-        
-        
+
         self.rightPanel.setLayout(self.rightPanelLayout)
-        
-        #self.containerPanel = QtWidgets.QWidget() #Widget that contains all pannels
+
+        # self.containerPanel = QtWidgets.QWidget() #Widget that contains all pannels
         self.containerPanelLayout = QtWidgets.QHBoxLayout()
-        
-        self.containerPanelLayout.addWidget(self.leftPanel,QtCore.Qt.AlignTop)
+
+        self.containerPanelLayout.addWidget(self.leftPanel, QtCore.Qt.AlignTop)
         self.containerPanelLayout.addWidget(self.middlePanel)
         self.containerPanelLayout.addWidget(self.rightPanel)
-        
-        self.centerMainPanel = QtWidgets.QWidget() #Center of main panel
+
+        self.centerMainPanel = QtWidgets.QWidget()  # Center of main panel
         self.centerMainPanel.setLayout(self.containerPanelLayout)
-        
-        self.label = QtWidgets.QLabel(self.parent) #Label
-        self.label.setGeometry(QtCore.QRect(self.parent.frameGeometry().width()/2, 0, 271, 51))
+
+        self.label = QtWidgets.QLabel(self.parent)  # Label
+        self.label.setGeometry(QtCore.QRect(self.parent.frameGeometry().width() / 2, 0, 271, 51))
         font = QtGui.QFont()
         font.setPointSize(25)
         self.label.setFont(font)
         self.label.setText(self.FunctionName[:15])
-        
-        
-        self.buttonsWidget = QtWidgets.QWidget() #Buttons
+
+        self.buttonsWidget = QtWidgets.QWidget()  # Buttons
         self.buttonsLayout = QtWidgets.QGridLayout()
-        
+
         figuresButton = QtWidgets.QPushButton("&Save Figures")
         figuresButton.clicked.connect(self.saveFigures)
-        self.buttonsLayout.addWidget(figuresButton,0,0) 
-        
+        self.buttonsLayout.addWidget(figuresButton, 0, 0)
+
         reportButton = QtWidgets.QPushButton("&Save Report")
         reportButton.clicked.connect(self.saveReport)
-        self.buttonsLayout.addWidget(reportButton,0,1)
-        
+        self.buttonsLayout.addWidget(reportButton, 0, 1)
+
         fingerprintButton = QtWidgets.QPushButton("&Save Fingerprint")
         fingerprintButton.clicked.connect(self.storeFunctionStatistics)
-        self.buttonsLayout.addWidget(fingerprintButton,0,2)
+        self.buttonsLayout.addWidget(fingerprintButton, 0, 2)
         self.buttonsWidget.setLayout(self.buttonsLayout)
-        
-        #self.column3.addWidget(self.buttonsWidget)
-        self.buttonsWidget.setGeometry(QtCore.QRect(self.parent.frameGeometry().width()/2, 0, 300, 51))
-        
+
+        # self.column3.addWidget(self.buttonsWidget)
+        self.buttonsWidget.setGeometry(QtCore.QRect(self.parent.frameGeometry().width() / 2, 0, 300, 51))
+
         self.FinalPanelLayout = QtWidgets.QVBoxLayout()
         self.FinalPanelLayout.addWidget(self.label)
         self.FinalPanelLayout.addWidget(self.centerMainPanel)
         self.FinalPanelLayout.addWidget(self.buttonsWidget)
-        
-        self.FinalPanelLayout.setAlignment(self.label,QtCore.Qt.AlignCenter)
-        self.FinalPanelLayout.setAlignment(self.buttonsWidget,QtCore.Qt.AlignTop|QtCore.Qt.AlignRight)        
-        
+
+        self.FinalPanelLayout.setAlignment(self.label, QtCore.Qt.AlignCenter)
+        self.FinalPanelLayout.setAlignment(self.buttonsWidget, QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
+
         self.parent.setLayout(self.FinalPanelLayout)
         self.parent.repaint()
         #####
-        
-        
-        
+
         '''
         print(correlation)
         self.widget1 = QtWidgets.QWidget()
@@ -505,15 +560,16 @@ class StatsView(PluginForm):
         self.column1.addWidget(self.listView,QtCore.Qt.AlignRight|QtCore.Qt.AlignTop)
          
         self.column2 = QtWidgets.QVBoxLayout()
-        self.column2.addWidget(self.createBarChartA({u'Skewness':skewness, u'Kurtosis': kurtosis},"Function Skewness & Kurtosis"))
+        self.column2.addWidget(self.createBarChartA({u'Skewness':skewness, u'Kurtosis': kurtosis},
+            "Function Skewness & Kurtosis"))
         self.column2.addWidget(self.createBarChartA(variance,"Group Variance"))
-        self.column2.addWidget(self.createBarChartA(max,"Instruction With Maximum Frequencies"))
+        self.column2.addWidget(self.createBarChartA(max_instructions,"Instruction With Maximum Frequencies"))
         
         self.widget1.setLayout(self.column2)
         
         self.column3 = QtWidgets.QVBoxLayout()
         self.column3.addWidget(self.createBarChartA(mean,"Group Mean"))
-        self.column3.addWidget(self.createBarChartA(min,"Instruction With Minimum Frequencies"))
+        self.column3.addWidget(self.createBarChartA(min_instructions,"Instruction With Minimum Frequencies"))
         self.column3.addWidget(self.createBarChartCorrelation(correlation))
         
         self.button1Widget = QtWidgets.QWidget()
@@ -571,7 +627,8 @@ class StatsView(PluginForm):
         
         scrollArea = QtWidgets.QScrollArea()
         scrollArea.setWidget(self.finalWindowWidget)
-        scrollArea.setGeometry(QtCore.QRect(0, 0, (self.parent.frameGeometry().width()-217), self.parent.frameGeometry().height()))
+        scrollArea.setGeometry(QtCore.QRect(0, 0, (self.parent.frameGeometry().width()-217), 
+            self.parent.frameGeometry().height()))
         scrollArea.setWidgetResizable(True)
         self.finalWindowWidget.setLayout(self.finalWindow)
         
@@ -580,9 +637,9 @@ class StatsView(PluginForm):
         self.final.addWidget(self.finalWindowWidget)
         
         self.parent.setLayout(self.final)'''
-        #scrollArea = QtWidgets.QScrollArea()
-        #scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
-        #scrollArea.setWidget(self.mainWindow)
+        # scrollArea = QtWidgets.QScrollArea()
+        # scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
+        # scrollArea.setWidget(self.mainWindow)
 
     def Show(self, caption="Function Statistics", options=PluginForm.WOPN_PERSIST):
         """Creates the form is not created or focuses it if it was"""
