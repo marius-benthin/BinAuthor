@@ -94,11 +94,11 @@ def createShingles(documentString):
     items = documentString.split(" ")
     counter = 0
     shingles = set()
-    for item in items:
-        #print(counter)
-        if (counter+2) < len(items):
-            shingle = items[counter] + " " + items[counter+1] + " " + items[counter+2]
-            crc = binascii.crc32(shingle) & 0xffffffff
+    for _ in items:
+        # print(counter)
+        if (counter + 2) < len(items):
+            shingle = items[counter] + " " + items[counter + 1] + " " + items[counter + 2]
+            crc = binascii.crc32(str.encode(shingle)) & 0xffffffff
             shingles.add(crc)
         counter += 1
     return shingles
