@@ -3,9 +3,25 @@ from pymongo import MongoClient
 from ida_nalt import get_root_filename, get_import_module_qty, enum_import_names, STRTYPE_C, STRTYPE_C_16
 from idautils import GetInputFileMD5, Names, Heads, Strings
 from idc import find_func_end, print_insn_mnem, get_operand_type, print_operand, get_operand_value
+from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
 
-class Choice2():
+class Choice2Handler(action_handler_t):
+
+    def __init__(self):
+        action_handler_t.__init__(self)
+        self.choice2 = Choice2()
+
+    def activate(self, ctx):
+        self.choice2.choice2()
+        return 1
+
+    def update(self, ctx):
+        return AST_ENABLE_ALWAYS
+
+
+class Choice2:
+
     def __init__(self):
         self.fileName = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()

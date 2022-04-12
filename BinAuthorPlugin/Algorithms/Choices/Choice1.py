@@ -5,12 +5,30 @@ from ida_idaapi import BADADDR
 from ida_nalt import get_root_filename
 from idautils import GetInputFileMD5, Names, Heads
 from idc import find_func_end, print_insn_mnem, next_head, get_operand_type, print_operand
+from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
 
-class Choice1():
+
+
+class Choice1Handler(action_handler_t):
+
     def __init__(self):
-        self.fileName = get_root_filename()
-        self.fileMD5 = GetInputFileMD5()
+        action_handler_t.__init__(self)
+        self.choice1 = Choice1()
+
+    def activate(self, ctx):
+        self.choice1.choice1()
+        return 1
+
+    def update(self, ctx):
+        return AST_ENABLE_ALWAYS
+
+
+class Choice1:
+
+    def __init__(self):
+        self.fileName: str = get_root_filename()
+        self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
         
     def choice1(self):

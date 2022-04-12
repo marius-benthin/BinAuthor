@@ -6,11 +6,27 @@ from idautils import GetInputFileMD5, Heads, Functions
 from idc import print_insn_mnem, get_operand_type, print_operand
 from ida_funcs import get_func, get_func_name
 from ida_gdl import FlowChart
+from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
 from BinAuthorPlugin.ExternalScripts.minhash import minhash
 
 
-class Choice18():
+class Choice18Handler(action_handler_t):
+
+    def __init__(self):
+        action_handler_t.__init__(self)
+        self.choice18 = Choice18()
+
+    def activate(self, ctx):
+        self.choice18.choice18()
+        return 1
+
+    def update(self, ctx):
+        return AST_ENABLE_ALWAYS
+
+
+class Choice18:
+
     def __init__(self):
         self.functionAddresstoRealFunctionName = {}
         self.functionRegisterChains = {}

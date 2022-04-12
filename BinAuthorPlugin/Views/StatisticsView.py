@@ -10,12 +10,29 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 from ida_nalt import get_root_filename
 from idautils import GetInputFileMD5
-from ida_kernwin import PluginForm, find_widget, ask_file
+from ida_kernwin import PluginForm, find_widget, ask_file, action_handler_t, AST_ENABLE_ALWAYS
 
 from BinAuthorPlugin.Algorithms import FunctionStatistics as InstructionGroupStatistics
 
 
 use('Qt5Agg')
+
+
+class StatsHandler(action_handler_t):
+
+    """
+    Action handler that initializes StatsView for IDA Pro GUI
+    """
+
+    def __init__(self):
+        action_handler_t.__init__(self)
+        self.stats = StatsView()
+
+    def activate(self, ctx):
+        return 1
+
+    def update(self, ctx):
+        return AST_ENABLE_ALWAYS
 
 
 class htmlReport():

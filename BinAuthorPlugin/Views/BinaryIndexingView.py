@@ -2,7 +2,28 @@ from subprocess import Popen
 from os.path import dirname, realpath
 from PyQt5 import QtCore, QtWidgets, uic
 
+from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
+
 from pluginConfigurations import getPythonPath
+
+
+class BinaryIndexingHandler(action_handler_t):
+
+    """
+    Action handler that initializes BinaryIndexing for IDA Pro GUI
+    """
+
+    def __init__(self):
+        action_handler_t.__init__(self)
+        self.binary_indexing = BinaryIndexing()
+
+    def activate(self, ctx):
+        self.binary_indexing.create()
+        self.binary_indexing.show()
+        return 1
+
+    def update(self, ctx):
+        return AST_ENABLE_ALWAYS
 
 
 class BinaryIndexing():

@@ -3,8 +3,27 @@ from os.path import dirname, realpath
 from PyQt5 import QtGui, QtCore, QtWidgets, uic
 
 from idaapi import PluginForm
+from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
 from BinAuthorPlugin.Algorithms import AuthorClassification
+
+
+class MetricsHandler(action_handler_t):
+
+    """
+    Action handler that initializes Metrics for IDA Pro GUI
+    """
+
+    def __init__(self):
+        action_handler_t.__init__(self)
+        self.metrics = Metrics()
+
+    def activate(self, ctx):
+        self.metrics.Show()
+        return 1
+
+    def update(self, ctx):
+        return AST_ENABLE_ALWAYS
 
 
 class Metrics(PluginForm):

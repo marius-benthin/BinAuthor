@@ -12,6 +12,7 @@ def PLUGIN_ENTRY():
         help = "Help if a matter of trust."
         wanted_name = "BinAuthor"
         wanted_hotkey = ""
+        wanted_menu_id = "bin_author"
 
         def __init__(self):
             self.BinAuthor_manager: BinAuthorManager = None

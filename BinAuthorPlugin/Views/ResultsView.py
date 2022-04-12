@@ -2,6 +2,24 @@ import os
 from PyQt5 import QtGui, QtWidgets, QtCore, uic
 
 from idaapi import PluginForm
+from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
+
+
+class ResultsHandler(action_handler_t):
+
+    """
+    Action handler that initializes Results for IDA Pro GUI
+    """
+
+    def __init__(self):
+        action_handler_t.__init__(self)
+        self.results = Results()
+
+    def activate(self, ctx):
+        return 1
+
+    def update(self, ctx):
+        return AST_ENABLE_ALWAYS
 
 
 class Results(PluginForm):

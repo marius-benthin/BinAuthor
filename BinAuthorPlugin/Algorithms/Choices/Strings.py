@@ -2,9 +2,25 @@ from pymongo import MongoClient
 
 from ida_nalt import get_root_filename, STRTYPE_C, STRTYPE_C_16
 from idautils import GetInputFileMD5, Strings
+from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
 
-class _Strings():
+class CustomStringsHandler(action_handler_t):
+
+    def __init__(self):
+        action_handler_t.__init__(self)
+        self.custom_strings = CustomStrings()
+
+    def activate(self, ctx):
+        self.custom_strings.CustomStrings()
+        return 1
+
+    def update(self, ctx):
+        return AST_ENABLE_ALWAYS
+
+
+class CustomStrings:
+
     def __init__(self):
         self.allStrings = []
         self.client = MongoClient('localhost', 27017)

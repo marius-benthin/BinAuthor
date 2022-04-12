@@ -2,12 +2,30 @@ from matplotlib import use, pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from PyQt5 import QtWidgets
 
-from ida_kernwin import PluginForm
+from ida_kernwin import PluginForm, action_handler_t, AST_ENABLE_ALWAYS
 
 from BinAuthorPlugin.Views import StatisticsView as StatsView
 
 
 use('Qt5Agg')
+
+
+class FunctionFilterHandler(action_handler_t):
+
+    """
+    Action handler that holds previously initializes FunctionFilter for IDA Pro GUI
+    """
+
+    def __init__(self, functionFilter):
+        action_handler_t.__init__(self)
+        self.function_filter = functionFilter
+
+    def activate(self, ctx):
+        self.function_filter.run()
+        return 1
+
+    def update(self, ctx):
+        return AST_ENABLE_ALWAYS
 
 
 class FunctionFilterList(PluginForm):
