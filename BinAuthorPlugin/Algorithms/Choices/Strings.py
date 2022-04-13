@@ -28,13 +28,13 @@ class CustomStrings:
         self.fileMD5: bytes = GetInputFileMD5()
         # use ARGV[1] if it was passed with authorName else fileName
         self.authorName: str = self.fileName if authorName is None else authorName
-        self.collection: Collection = MongoDB(Collections.strings).collection
+        self.collection_strings: Collection = MongoDB(Collections.strings).collection
 
         self.allStrings = []
 
     def CustomStrings(self):
         output = self.getAllStrings()
-        self.collection.insert_one(output)
+        self.collection_strings.insert_one(output)
 
     def getAllStrings(self):
         self.allStrings = self.getAllStringsA()

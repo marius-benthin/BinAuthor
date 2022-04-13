@@ -33,7 +33,7 @@ class Choice18:
         self.fileMD5: bytes = GetInputFileMD5()
         # use ARGV[1] if it was passed with authorName else fileName
         self.authorName: str = self.fileName if authorName is None else authorName
-        self.collection: Collection = MongoDB(Collections.choice18).collection
+        self.collection_choice18: Collection = MongoDB(Collections.choice18).collection
 
         self.functionAddresstoRealFunctionName = {}
         self.functionRegisterChains = {}
@@ -45,7 +45,7 @@ class Choice18:
 
     def createRegisterChain(self, p, ea):
         for functionMinhashes in self.createRegisterChainA(p, ea):
-            self.collection.insert_one(functionMinhashes)
+            self.collection_choice18.insert_one(functionMinhashes)
 
     def createRegisterChainA(self, p, ea):
         f = FlowChart(get_func(ea))

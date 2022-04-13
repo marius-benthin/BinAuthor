@@ -29,7 +29,7 @@ class Choice2:
         self.fileMD5: bytes = GetInputFileMD5()
         # use ARGV[1] if it was passed with authorName else fileName
         self.authorName: str = self.fileName if authorName is None else authorName
-        self.collection: Collection = MongoDB(Collections.choice2).collection
+        self.collection_choice2: Collection = MongoDB(Collections.choice2).collection
 
         self.allStrings = {}
         self.subStrings = ["cout", "endl", "Xlength_error", "cerr"]
@@ -63,7 +63,7 @@ class Choice2:
 
     def choice2(self):
         document = self.getChoice2()
-        self.collection.insert_one(document)
+        self.collection_choice2.insert_one(document)
 
     def getChoice2(self):
         numOfInstructions = 0
