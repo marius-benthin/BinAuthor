@@ -1,21 +1,21 @@
 from hashlib import md5
 from os import listdir, path
 from datetime import datetime
-from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from ida_nalt import get_root_filename
 from idautils import GetInputFileMD5
 
 from pluginConfigurations import getRoot
+from Database.mongodb import MongoDB, Collections
 
 
 class FunctionCategorizer:
 
     def __init__(self):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client.BinAuthor
-        self.collection = self.db.FunctionLabels
-        self.collection2 = self.db.GroupLabels
+        self.collection_functions: Collection = MongoDB(Collections.functions).collection
+        self.collection_group_labels: Collection = MongoDB(Collections.group_labels).collection
+        self.collection_function_labels: Collection = MongoDB(Collections.function_labels).collection
 
         self.instructionFeatures = {}
         self.groupFeatures = {}
@@ -85,8 +85,9 @@ class FunctionCategorizer:
     def loadInstructionFeatures(self, function):
         newDict = 0
         numOfInstructions = 0
-        col = self.db.Functions
-        results = list(col.find({"MD5": self.fileMD5, "type": "instructions", "function": function}))
+        results = list(self.collection_functions.find_one(
+            {"MD5": self.fileMD5, "type": "instructions", "function": function})
+        )
         for line in results:
             numOfInstructions += int(line["instructionCount"])
             instruction = line["instruction"]
@@ -102,8 +103,9 @@ class FunctionCategorizer:
     def loadGroupFeatures(self, function):
         newDict = 0
         numOfGroups = 0
-        col = self.db.Functions
-        results = list(col.find({"MD5": self.fileMD5, "type": "groups", "function": function}))
+        results = list(self.collection_functions.find_one(
+            {"MD5": self.fileMD5, "type": "groups", "function": function})
+        )
         for line in results:
             group = line["group"]
             numOfGroups += int(line["groupCount"])
@@ -117,13 +119,12 @@ class FunctionCategorizer:
         self.numFileFunctionGroups[function] = numOfGroups
 
     def run(self):
-        col = self.db.Functions
-        functions = list(col.distinct("function", {"MD5": self.fileMD5, "type": "instructions"}))
+        functions = list(self.collection_functions.distinct("function", {"MD5": self.fileMD5, "type": "instructions"}))
 
         for function in functions:
             self.loadInstructionFeatures(function)
 
-        functions = list(col.distinct("function", {"MD5": self.fileMD5, "type": "groups"}))
+        functions = list(self.collection_functions.distinct("function", {"MD5": self.fileMD5, "type": "groups"}))
         for function in functions:
             self.loadGroupFeatures(function)
 
@@ -224,7 +225,7 @@ class FunctionCategorizer:
                 {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "compiler", "function": str(function)})
         try:
-            self.collection.insert_many(bulkInsert)
+            self.collection_function_labels.insert_many(bulkInsert)
         except Exception:
             pass
 
@@ -238,7 +239,7 @@ class FunctionCategorizer:
                 {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "other", "function": str(function)})
         try:
-            self.collection.insert_many(bulkInsert)
+            self.collection_function_labels.insert_many(bulkInsert)
         except Exception:
             pass
         bulkInsert = []
@@ -251,7 +252,7 @@ class FunctionCategorizer:
                 {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "user", "function": str(function)})
         try:
-            self.collection.insert_many(bulkInsert)
+            self.collection_function_labels.insert_many(bulkInsert)
         except Exception:
             pass
 
@@ -330,7 +331,7 @@ class FunctionCategorizer:
                 {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "compiler", "function": str(function)})
         try:
-            self.collection2.insert_many(bulkInsert)
+            self.collection_group_labels.insert_many(bulkInsert)
         except Exception:
             pass
         bulkInsert = []
@@ -343,7 +344,7 @@ class FunctionCategorizer:
                 {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "other", "function": str(function)})
         try:
-            self.collection2.insert_many(bulkInsert)
+            self.collection_group_labels.insert_many(bulkInsert)
         except Exception:
             pass
         bulkInsert = []
@@ -356,6 +357,6 @@ class FunctionCategorizer:
                 {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "user", "function": str(function)})
         try:
-            self.collection2.insert_many(bulkInsert)
+            self.collection_group_labels.insert_many(bulkInsert)
         except Exception:
             pass

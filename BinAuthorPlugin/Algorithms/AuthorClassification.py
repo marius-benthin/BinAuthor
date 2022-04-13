@@ -1,7 +1,8 @@
 from functools import reduce
-from pymongo import MongoClient
 from Levenshtein import distance
+from pymongo.collection import Collection
 
+from Database.mongodb import MongoDB, Collections
 from BinAuthorPlugin.Algorithms.Choices import Choice1
 from BinAuthorPlugin.Algorithms.Choices import Choice2
 from BinAuthorPlugin.Algorithms.Choices import Choice18
@@ -12,13 +13,11 @@ from BinAuthorPlugin.ExternalScripts.minhash import minhash
 class AuthorClassification:
 
     def __init__(self):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client.BinAuthor
-        self.collection = self.db.Functions
-        self.choice1 = self.db.Choice1
-        self.choice2 = self.db.Choice2
-        self.choice18 = self.db.Choice18
-        self.Strings = self.db.Strings
+        self.collection_functions: Collection = MongoDB(Collections.functions).collection
+        self.collection_choice1: Collection = MongoDB(Collections.choice1).collection
+        self.collection_choice2: Collection = MongoDB(Collections.choice2).collection
+        self.collection_choice18: Collection = MongoDB(Collections.choice18).collection
+        self.collection_strings: Collection = MongoDB(Collections.strings).collection
         self.choice1Results = {}
         self.choice2Results = {}
         self.choice18Results = {}
@@ -28,7 +27,7 @@ class AuthorClassification:
         choice1 = Choice1.Choice1()
         choice1 = choice1.getChoice1()
         features = choice1["features"]
-        documents = self.choice1.find(
+        documents = self.collection_choice1.find_one(
             {
                 "$or": [
                     {"features.0": features[0]},
@@ -74,7 +73,7 @@ class AuthorClassification:
         featureVector = list(library.values()) + list(returns.values()) + [
             choice2["calls"], choice2['printf without newline'], choice2['printf with newline']]
 
-        documents = self.choice2.find(
+        documents = self.collection_choice2.find_one(
             {
                 "$or": [
                     {'LibraryFunctions.cout': library['cout']},
@@ -145,7 +144,7 @@ class AuthorClassification:
                     orQuery["$or"].append({"$and": andList})
                     start += HASHES_PER_BAND
 
-                documents = self.choice18.find({"$and": [{"register": register}, orQuery]})
+                documents = self.collection_choice18.find_one({"$and": [{"register": register}, orQuery]})
 
                 for document in documents:
                     if document["Author Name"] not in candidateMatches.keys():
@@ -182,7 +181,7 @@ class AuthorClassification:
 
         Authors = {}
 
-        documents = self.Strings.find()
+        documents = self.collection_strings.find_one()
         for document in documents:
             if document["Author Name"] not in Authors.keys():
                 Authors[document["Author Name"]] = {"score": 0}

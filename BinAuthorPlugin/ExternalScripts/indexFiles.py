@@ -3,7 +3,9 @@ from os import listdir, path
 from shlex import split
 from subprocess import call
 from multiprocessing import Pool
-from pymongo import MongoClient
+from pymongo.collection import Collection
+
+from Database.mongodb import MongoDB, Collections
 
 
 def executeScripts(file):
@@ -29,10 +31,8 @@ def main():
         else:
             author = argv[3]
 
-    client = MongoClient('localhost', 27017)
-    db = client.BinAuthor
-    collection = db.test
-    collection.insert({"mypath": mypath, "multiple": multiple, "author": author})
+    collection_test: Collection = MongoDB(Collections.test).collection
+    collection_test.insert_one({"mypath": mypath, "multiple": multiple, "author": author})
 
     onlyfiles = [[path.join(mypath, f), author] for f in listdir(mypath) if path.isfile(path.join(mypath, f))]
     onlyfolders = [path.join(mypath, f) for f in listdir(mypath) if path.isdir(path.join(mypath, f))]

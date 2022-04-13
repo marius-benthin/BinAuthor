@@ -1,10 +1,11 @@
-from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from idautils import GetInputFileMD5
 from idc import get_func_attr, FUNCATTR_FLAGS
 from ida_funcs import get_func, FUNC_LIB
 from ida_kernwin import refresh_idaview_anyway, request_refresh, IWID_FUNCS
 
+from Database.mongodb import MongoDB, Collections
 from BinAuthorPlugin.Views import FunctionFilterView as FunctionFilterList
 from BinAuthorPlugin.Algorithms import CategorizeFunction as FunctionCategorizer
 from BinAuthorPlugin.Algorithms import FunctionFeatureExtractor as FeatureExtractor
@@ -14,28 +15,26 @@ class FunctionFilter:
 
     def __init__(self):
         self.functionNamesToEA = None
+        self.collection_function_labels: Collection = MongoDB(Collections.function_labels).collection
 
     def init(self):
         pass
 
     def colorFunctions(self):
-        client = MongoClient('localhost', 27017)
-        db = client.BinAuthor
-        collection = db.FunctionLabels
-        functionsToColor = list(collection.find({"MD5": GetInputFileMD5()}))
+        functionsToColor = list(self.collection_function_labels.find_one({"MD5": GetInputFileMD5()}))
 
         userFunctions = [
-            userfunc["function"] for userfunc in list(collection.find(
+            userfunc["function"] for userfunc in list(self.collection_function_labels.find_one(
                 {"MD5": GetInputFileMD5(), "type": "user"}
             ))
         ]
         compilerFunctions = [
-            compilerfunc["function"] for compilerfunc in list(collection.find(
+            compilerfunc["function"] for compilerfunc in list(self.collection_function_labels.find_one(
                 {"MD5": GetInputFileMD5(), "type": "compiler"}
             ))
         ]
         otherFunctions = [
-            otherfunc["function"] for otherfunc in list(collection.find(
+            otherfunc["function"] for otherfunc in list(self.collection_function_labels.find_one(
                 {"MD5": GetInputFileMD5(), "type": "other"}
             ))
         ]
@@ -58,7 +57,7 @@ class FunctionFilter:
                     func.color = 0x80FFCC
         funcTypeStatsView = FunctionFilterList.FunctionFilterList()
         print(len(functionsToColor))
-        print(collection.find({"MD5": GetInputFileMD5(), "type": "user"}).count())
+        print(self.collection_function_labels.find_one({"MD5": GetInputFileMD5(), "type": "user"}).count())
         funcTypeStatsView.setDetails([userFuncStat, compilerFuncStat, otherFuncStat],
                                      {"User": userFunctions, "Compiler": compilerFunctions, "Other": otherFunctions})
         funcTypeStatsView.Show()

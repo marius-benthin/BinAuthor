@@ -2,8 +2,8 @@ from os import makedirs, path
 from sys import maxsize
 from numpy import random
 from datetime import datetime
-from pymongo import MongoClient
 from itertools import cycle, islice
+from pymongo.collection import Collection
 from matplotlib import use, pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from PyQt5 import QtGui, QtCore, QtWidgets
@@ -12,6 +12,7 @@ from ida_nalt import get_root_filename
 from idautils import GetInputFileMD5
 from ida_kernwin import PluginForm, find_widget, ask_file, action_handler_t, AST_ENABLE_ALWAYS
 
+from Database.mongodb import MongoDB, Collections
 from BinAuthorPlugin.Algorithms import FunctionStatistics as InstructionGroupStatistics
 
 use('Qt5Agg')
@@ -117,6 +118,8 @@ class StatsView(PluginForm):
 
     def __init__(self):
         super().__init__()
+        self.collection_functions: Collection = MongoDB(Collections.functions).collection
+        self.collection_function_fingerprint: Collection = MongoDB(Collections.functions).collection
         self.buttonsLayout = None
         self.FinalPanelLayout = None
         self.buttonsWidget = None
@@ -140,16 +143,11 @@ class StatsView(PluginForm):
         self.groupStats = None
         self.legend = None
         self.legendItems = None
-        self.collection = None
-        self.db = None
         self.client = None
         self.statsFigures = {}
 
     def setDetails(self, funcName):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client.BinAuthor
-        self.collection = self.db.Functions
-        self.legendItems = self.collection.find(
+        self.legendItems = self.collection_functions.find_one(
             {"function": funcName, "MD5": str(GetInputFileMD5()), "group": {"$exists": "true"}},
             {"group": 1, "groupCount": 1, "_id": 0, "mean": 1, "variance": 1})
         self.legend = {}
@@ -388,8 +386,7 @@ class StatsView(PluginForm):
                 for function in self.statistics[statsType]:
                     correlated[function[0]] = function[1]
                 outputDict[statsType] = correlated
-        collection = self.db.FunctionFingerPrint
-        collection.insert(outputDict)
+        self.collection_function_fingerprint.insert_one(outputDict)
         print("Function Fingerprint has been successfully saved to the database!")
 
     def OnCreate(self, Form):

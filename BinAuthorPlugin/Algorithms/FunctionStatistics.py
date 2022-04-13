@@ -1,15 +1,16 @@
 from math import sqrt
 from scipy import stats
-from pymongo import MongoClient
 from operator import itemgetter
+from pymongo.collection import Collection
+
+from Database.mongodb import MongoDB, Collections
 
 
 class InstructionGroupStatistics(object):
     def __init__(self, MD5, functionName):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client.BinAuthor
-        self.collection = self.db.Functions
-        self.functionGroupCount = self.collection.find(
+        self.collection_functions: Collection = MongoDB(Collections.functions).collection
+        self.collection_function_labels: Collection = MongoDB(Collections.function_labels).collection
+        self.functionGroupCount = self.collection_functions.find_one(
             {
                 "function": functionName,
                 "MD5": str(MD5),
@@ -93,7 +94,7 @@ class InstructionGroupStatistics(object):
         correlations = {}
 
         functionGroups = {}
-        userFunctionNames = [item["function"] for item in self.db.FunctionLabels.find(
+        userFunctionNames = [item["function"] for item in self.collection_function_labels.find_one(
             {
                 "MD5": str(self.MD5),
                 "type": "user",
@@ -108,7 +109,7 @@ class InstructionGroupStatistics(object):
         )]
 
         print(userFunctionNames)
-        functions = self.collection.find(
+        functions = self.collection_functions.find_one(
             {
                 "function": {"$in": userFunctionNames},
                 "MD5": str(self.MD5),

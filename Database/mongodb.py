@@ -11,6 +11,11 @@ class Collections(str, Enum):
     choice2 = "Choice2"
     choice18 = "Choice18"
     mahalanobis = "Mahalanobis"
+    functions = "Functions"
+    group_labels = "GroupLabels"
+    function_labels = "FunctionLabels"
+    function_fingerprint = "FunctionFingerPrint"
+    test = "test"
 
 
 class MongoConfig(BaseSettings):

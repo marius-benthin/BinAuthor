@@ -1,10 +1,11 @@
-from pymongo import MongoClient
 from os.path import dirname, realpath
+from pymongo.collection import Collection
 from PyQt5 import QtGui, QtCore, QtWidgets, uic
 
 from idaapi import PluginForm
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
+from Database.mongodb import MongoDB, Collections
 from BinAuthorPlugin.Algorithms import AuthorClassification
 
 
@@ -30,13 +31,12 @@ class Metrics(PluginForm):
 
     def __init__(self):
         super().__init__()
+        self.collection_choice1: Collection = MongoDB(Collections.choice1).collection
         self.authorClassification = None
         self.wid = None
         self.parent = None
         self.authorRanking = None
         self.authors = None
-        self.choice1 = None
-        self.db = None
         self.client = None
         self.StringStats = None
         self.choice18Stats = None
@@ -76,11 +76,7 @@ class Metrics(PluginForm):
         return self.StringStats
 
     def getAuthorsList(self):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client.BinAuthor
-        self.choice1 = self.db.Choice1
-
-        authorsList = self.choice1.distinct("Author Name")
+        authorsList = self.collection_choice1.distinct("Author Name")
         self.authors = {}
         self.authorRanking = {}
 

@@ -1,7 +1,7 @@
 from hashlib import md5
 from copy import deepcopy
 from datetime import datetime
-from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from ida_idaapi import BADADDR
 from ida_nalt import get_root_filename
@@ -10,15 +10,14 @@ from idc import next_head, print_insn_mnem, find_func_end, get_segm_start, get_s
 from ida_funcs import get_func_name
 from ida_ida import inf_get_min_ea
 
+from Database.mongodb import MongoDB, Collections
 from pluginConfigurations import getInstructionListPath, getGroupPath
 
 
 class FeatureExtractor:
 
     def __init__(self):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client.BinAuthor
-        self.collection = self.db.Functions
+        self.collection_functions: Collection = MongoDB(Collections.functions).collection
 
         self.instructionList = getInstructionListPath() + "InstructionList.txt"
         self.groupList = getGroupPath() + "InstructionGroups.txt"
@@ -60,7 +59,7 @@ class FeatureExtractor:
                      "instruction": instruction, "instructionCount": functionInstructions[instruction], "mean": mean,
                      "variance": variance})
         try:
-            self.collection.insert_many(bulkInsert)
+            self.collection_functions.insert_many(bulkInsert)
         except Exception:
             pass
 
@@ -121,7 +120,7 @@ class FeatureExtractor:
                      "max_instruction": maxInstruction, "max_instruction_count": maxInstructionCount,
                      "min_instruction": minInstruction, "min_instruction_count": minInstructionCount})
         try:
-            self.collection.insert_many(bulkInsert)
+            self.collection_functions.insert_many(bulkInsert)
         except Exception:
             pass
 
