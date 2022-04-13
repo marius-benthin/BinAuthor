@@ -107,7 +107,7 @@ class FeatureExtractor:
                 maxInstructionCount = maxInstruction[1]
                 maxInstruction = maxInstruction[0]
 
-                for item in functionGroups[group][0].keys():
+                for item in functionGroups[group][0].copy().keys():
                     if functionGroups[group][0][item] == 0:
                         del functionGroups[group][0][item]
                 minInstruction = min(functionGroups[group][0].items(), key=lambda x: x[1])
