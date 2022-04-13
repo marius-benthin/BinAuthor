@@ -28,10 +28,11 @@ class Choice18Handler(action_handler_t):
 
 class Choice18:
 
-    def __init__(self):
-        self.fileName = get_root_filename()
+    def __init__(self, authorName: str = None):
+        self.fileName: str = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()
-        self.authorName = self.fileName
+        # use ARGV[1] if it was passed with authorName else fileName
+        self.authorName: str = self.fileName if authorName is None else authorName
         self.collection: Collection = MongoDB(Collections.choice18).collection
 
         self.functionAddresstoRealFunctionName = {}
@@ -43,70 +44,8 @@ class Choice18:
         self.blocks = []
 
     def createRegisterChain(self, p, ea):
-        f = FlowChart(get_func(ea))
-
-        functionName = get_func_name(ea)
-
-        if get_func_name(ea) not in self.functionRegisterChains.keys():
-            self.functionRegisterChains[get_func_name(ea)] = {}
-        for block in f:
-            if p:
-                registerChain = {}
-                for address in Heads(block.start_ea, block.end_ea):
-                    if get_operand_type(address, 0) == 1 and print_operand(address, 0) != "":
-                        if print_operand(address, 0) not in self.functionRegisterChains[get_func_name(ea)].keys():
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)] = [
-                                print_insn_mnem(address)
-                            ]
-                        else:
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 0)].append(
-                                print_insn_mnem(address)
-                            )
-
-                        if print_operand(address, 0) not in registerChain.keys():
-                            registerChain[print_operand(address, 0)] = [print_insn_mnem(address)]
-                        else:
-                            registerChain[print_operand(address, 0)].append(print_insn_mnem(address))
-                    if get_operand_type(address, 1) == 1 and print_operand(address, 1) != "":
-                        if print_operand(address, 1) not in self.functionRegisterChains[get_func_name(ea)].keys():
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)] = [
-                                print_insn_mnem(address)
-                            ]
-                        else:
-                            self.functionRegisterChains[get_func_name(ea)][print_operand(address, 1)].append(
-                                print_insn_mnem(address)
-                            )
-
-                        if print_operand(address, 1) not in registerChain.keys():
-                            registerChain[print_operand(address, 1)] = [print_insn_mnem(address)]
-                        else:
-                            registerChain[print_operand(address, 1)].append(print_insn_mnem(address))
-                for register in registerChain.keys():
-                    fingerPrint = str(register)
-                    functionMinhashes = {
-                        "FunctionName": functionName,
-                        "FileName": self.fileName,
-                        "FileMD5": self.fileMD5,
-                        "Author Name": self.authorName,
-                        "BlockStartEA": block.start_ea,
-                        "register": register,
-                        "registerChain": registerChain[register]
-                    }
-                    counter = 0
-                    for instruction in registerChain[register]:
-                        fingerPrint += " " + str(instruction)
-                        counter += 1
-
-                    functionMinhashes["SimHashSignature"] = str(Simhash(fingerPrint).value)
-
-                    self.simhashList.append([counter, Simhash(fingerPrint).value])
-                    if len(fingerPrint.split(" ")) >= 6:
-                        self.registerChainMinhash.append(
-                            [fingerPrint, minhash.minHash(minhash.createShingles(fingerPrint))])
-                        functionMinhashes["MinHashSignature"] = minhash.minHash(minhash.createShingles(fingerPrint))
-                        self.collection.insert_one(functionMinhashes)
-                    else:
-                        self.registerChainMinhash.append([fingerPrint, ])
+        for functionMinhashes in self.createRegisterChainA(p, ea):
+            self.collection.insert_one(functionMinhashes)
 
     def createRegisterChainA(self, p, ea):
         f = FlowChart(get_func(ea))
@@ -174,9 +113,7 @@ class Choice18:
         return functions
 
     def choice18(self):
-        for function in Functions():
-            self.functionAddresstoRealFunctionName[function] = get_func_name(function)
-            self.createRegisterChain(True, function)
+        self.choice18A()
 
     def choice18A(self):
         functions = []

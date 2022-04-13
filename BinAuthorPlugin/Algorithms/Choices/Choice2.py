@@ -24,10 +24,11 @@ class Choice2Handler(action_handler_t):
 
 class Choice2:
 
-    def __init__(self):
-        self.fileName = get_root_filename()
+    def __init__(self, authorName: str = None):
+        self.fileName: str = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()
-        self.authorName = self.fileName
+        # use ARGV[1] if it was passed with authorName else fileName
+        self.authorName: str = self.fileName if authorName is None else authorName
         self.collection: Collection = MongoDB(Collections.choice2).collection
 
         self.allStrings = {}
@@ -61,95 +62,13 @@ class Choice2:
         self.libraryFunctionNameEADict = {}
 
     def choice2(self):
-
-        numOfInstructions = 0
-        printfNewline = [0, 0]
-        mainEA = 0
-
-        self.getAllStrings()
-        for name in Names():
-            if (str(name[1]).find("main") != -1) and (len(str(name[1])) <= 5):
-                mainEA = name[0]
-
-        numberOfImports = get_import_module_qty()
-
-        for counter in range(0, numberOfImports):
-            enum_import_names(counter, self.getImportedFunctions)
-
-        for _ in Heads(mainEA, find_func_end(mainEA)):
-            numOfInstructions += 1
-
-        currentInstruction = 0
-        currentStackValue = ''
-        numberOfCalls = 0
-        previousInstructionEA = 0
-        for address in Heads(mainEA, find_func_end(mainEA)):
-            currentInstruction += 1
-            if print_insn_mnem(address) == "push":
-                previousInstructionEA = address
-                currentStackValue = print_operand(address, 0)
-            elif print_insn_mnem(address) == "pop":
-                currentStackValue = ''
-            elif print_insn_mnem(address) == "mov":
-                if print_operand(address, 0) in self.standardRegisters.keys():
-                    self.standardRegisters[print_operand(address, 0)] = get_operand_value(address, 1)
-
-            distanceFromEndOfFunction = int(numOfInstructions * (3 / float(4)))
-            if get_operand_type(address, 0) == 1 and print_operand(address, 0) in self.standardRegisters.keys():
-                libraryInstruction = self.standardRegisters[print_operand(address, 0)]
-            else:
-                libraryInstruction = get_operand_value(address, 0)
-
-            for string in self.subStrings:
-                if string in print_operand(address, 1) and currentInstruction >= distanceFromEndOfFunction:
-                    self.libraryFunctionNamesDict[string][1] += 1
-
-            if print_insn_mnem(address) == "call" and currentInstruction >= distanceFromEndOfFunction:
-                numberOfCalls += 1
-
-            if print_insn_mnem(address) in self.returns.keys() and currentInstruction >= distanceFromEndOfFunction:
-                self.returns[print_insn_mnem(address)] += 1
-
-            if (
-                    print_insn_mnem(address) == "call" and
-                    libraryInstruction in self.libraryFunctionNameEADict.keys() and
-                    currentInstruction >= distanceFromEndOfFunction
-            ):
-                if self.libraryFunctionNameEADict[libraryInstruction] == "exit":
-                    if currentStackValue == "1":
-                        self.libraryFunctionNamesDict[self.libraryFunctionNameEADict[libraryInstruction]][1] += 1
-                else:
-                    if "printf" in self.libraryFunctionNameEADict[libraryInstruction] and print_insn_mnem(
-                            previousInstructionEA) == "push":
-                        locationOfPushValue = get_operand_value(previousInstructionEA, 0)
-
-                        if locationOfPushValue in self.allStrings.keys():
-                            if "\n" in self.allStrings[locationOfPushValue]:
-                                printfNewline[0] += 1
-                            else:
-                                printfNewline[1] += 1
-
-                    self.libraryFunctionNamesDict[self.libraryFunctionNameEADict[libraryInstruction]][1] += 1
-
-        output = {"LibraryFunctions": {}}
-        for libraryFunction in self.libraryFunctionNamesDict.keys():
-            output["LibraryFunctions"][libraryFunction] = self.libraryFunctionNamesDict[libraryFunction][1]
-
-        output["calls"] = numberOfCalls
-
-        output["returns"] = self.returns
-        output["printf with newline"] = printfNewline[0]
-        output["printf without newline"] = printfNewline[1]
-        output["FileName"] = self.fileName
-        output["FileMD5"] = self.fileMD5
-        output["Author Name"] = self.authorName
-        self.collection.insert_one(output)
+        document = self.getChoice2()
+        self.collection.insert_one(document)
 
     def getChoice2(self):
         numOfInstructions = 0
         printfNewline = [0, 0]
         mainEA = 0
-        # fileName = idc.ARGV[1]
 
         self.getAllStrings()
         for name in Names():

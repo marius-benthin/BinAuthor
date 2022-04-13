@@ -23,35 +23,21 @@ class CustomStringsHandler(action_handler_t):
 
 class CustomStrings:
 
-    def __init__(self):
+    def __init__(self, authorName: str = None):
         self.fileName: str = get_root_filename()
         self.fileMD5: bytes = GetInputFileMD5()
-        self.authorName = self.fileName
+        # use ARGV[1] if it was passed with authorName else fileName
+        self.authorName: str = self.fileName if authorName is None else authorName
         self.collection: Collection = MongoDB(Collections.strings).collection
 
         self.allStrings = []
 
     def CustomStrings(self):
-        strings = Strings(default_setup=False)
-        strings.setup(
-            strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4
-        )
-        for string in strings:
-            self.allStrings.append(str(string))
-
-        output = {"Strings": self.allStrings, "FileName": self.fileName, "FileMD5": self.fileMD5,
-                  "Author Name": self.authorName}
-
+        output = self.getAllStrings()
         self.collection.insert_one(output)
 
     def getAllStrings(self):
-        strings = Strings(default_setup=False)
-        strings.setup(
-            strtypes=[STRTYPE_C, STRTYPE_C_16], ignore_instructions=True, display_only_existing_strings=True, minlen=4
-        )
-        for string in strings:
-            self.allStrings.append(str(string))
-
+        self.allStrings = self.getAllStringsA()
         output = {"Strings": self.allStrings, "FileName": self.fileName, "FileMD5": self.fileMD5,
                   "Author Name": self.authorName}
 
