@@ -28,7 +28,7 @@ class FeatureExtractor:
         self.groups = {}
 
         self.fileName = get_root_filename()
-        self.fileMD5 = GetInputFileMD5()
+        self.fileMD5 = str(GetInputFileMD5())
         self.dateAnalyzed = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # load instructions into dictionary
@@ -53,8 +53,8 @@ class FeatureExtractor:
             variance = ((functionInstructions[instruction] - mean) ** 2 / total)
             if functionInstructions[instruction] > 0:
                 hashFunction = md5()
-                hashFunction.update(self.fileMD5 + "," + file + "," + "instructions," + instruction + "," + str(
-                    functionInstructions[instruction]) + "," + str(mean) + "," + str(variance))
+                hashFunction.update((self.fileMD5 + "," + file + "," + "instructions," + instruction + "," + str(
+                    functionInstructions[instruction]) + "," + str(mean) + "," + str(variance)).encode('utf-8'))
                 bulkInsert.append(
                     {"binaryFileName": self.fileName, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
                      "function": oldFileName, "type": "instructions", "hash": hashFunction.hexdigest(),
@@ -74,9 +74,9 @@ class FeatureExtractor:
             variance = ((functionInstructions[instruction] - mean)**2/total)
             if functionInstructions[instruction] > 0:
                 hashFunction = md5()
-                hashFunction.update(
+                hashFunction.update((
                     self.fileMD5 + "," + file + "," + "instructions," + instruction + "," + 
-                    str(functionInstructions[instruction]) + "," + str(mean) + "," + str(variance)
+                    str(functionInstructions[instruction]) + "," + str(mean) + "," + str(variance)).encode('utf-8')
                 )
                 bulkInsert.append(
                     {
@@ -102,8 +102,8 @@ class FeatureExtractor:
             variance = ((functionGroups[group][1] - mean) ** 2 / allGroupSum)
             if functionGroups[group][1] > 0:
                 hashFunction = md5()
-                hashFunction.update(self.fileMD5 + "," + file + "," + "groups," + group + "," + str(
-                    functionGroups[group][1]) + "," + str(mean) + "," + str(variance))
+                hashFunction.update((self.fileMD5 + "," + file + "," + "groups," + group + "," + str(
+                    functionGroups[group][1]) + "," + str(mean) + "," + str(variance)).encode('utf-8'))
                 maxInstruction = max(functionGroups[group][0].iteritems(), key=itemgetter(1))
                 maxInstructionCount = maxInstruction[1]
                 maxInstruction = maxInstruction[0]
