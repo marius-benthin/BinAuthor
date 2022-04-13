@@ -71,8 +71,8 @@ class AuthorClassification:
         library = choice2["LibraryFunctions"]
         returns = choice2["returns"]
 
-        featureVector = library.values() + returns.values() + [choice2["calls"], choice2['printf without newline'],
-                                                               choice2['printf with newline']]
+        featureVector = list(library.values()) + list(returns.values()) + [
+            choice2["calls"], choice2['printf without newline'], choice2['printf with newline']]
 
         documents = self.choice2.find(
             {
@@ -97,8 +97,8 @@ class AuthorClassification:
 
         authorDic = {}
         for doc in documents:
-            docFeatureVector = doc["LibraryFunctions"].values() + doc["returns"].values() + [doc["calls"], doc[
-                'printf without newline'], doc['printf with newline']]
+            docFeatureVector = list(doc["LibraryFunctions"].values()) + list(doc["returns"].values()) + [
+                doc["calls"], doc['printf without newline'], doc['printf with newline']]
             jaccardCoefficient = len(list(set(docFeatureVector) & set(featureVector))) / float(
                 len(list(set(docFeatureVector) | set(featureVector))))
             if doc['Author Name'] not in authorDic.keys():
