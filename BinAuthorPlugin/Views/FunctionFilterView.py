@@ -53,7 +53,7 @@ class FunctionFilterList(PluginForm):
         """
         self.statisticsView = None
         # Get parent widget
-        self.parent = self.FormToPySideWidget(form)
+        self.parent = self.FormToPyQtWidget(form)
 
         w = QtWidgets.QWidget()
         # w.resize(200, 200)

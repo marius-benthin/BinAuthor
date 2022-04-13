@@ -46,7 +46,7 @@ class Results(PluginForm):
         return QtGui.QColor(R, G, B)
 
     def OnCreate(self, form):
-        self.parent = self.FormToPySideWidget(form)
+        self.parent = self.FormToPyQtWidget(form)
         self.wid = QtWidgets.QWidget()
         binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\\UI\\ResultsView.ui"
         file = QtCore.QFile(binaryUIPath)

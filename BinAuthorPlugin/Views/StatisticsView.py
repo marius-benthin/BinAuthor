@@ -393,7 +393,7 @@ class StatsView(PluginForm):
         print("Function Fingerprint has been successfully saved to the database!")
 
     def OnCreate(self, Form):
-        self.parent = self.FormToPySideWidget(Form)
+        self.parent = self.FormToPyQtWidget(Form)
 
         self.FunctionStats = InstructionGroupStatistics.InstructionGroupStatistics(self.CurrentMD5, self.FunctionName)
 
@@ -645,7 +645,7 @@ class StatsView(PluginForm):
         """Creates the form is not created or focuses it if it was"""
         try:
             tform = find_widget("IDA View-A")
-            w = PluginForm.FormToPySideWidget(tform)
+            w = PluginForm.FormToPyQtWidget(tform)
             w.setFocus()
         except Exception:
             print('Failed to set focus.')

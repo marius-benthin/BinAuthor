@@ -119,7 +119,7 @@ class Metrics(PluginForm):
         #    self.authorRanking[author] = self.authorRanking[author]/authorSum
 
     def OnCreate(self, form):
-        self.parent = self.FormToPySideWidget(form)
+        self.parent = self.FormToPyQtWidget(form)
         self.wid = QtWidgets.QWidget()
         binaryUIPath = dirname(realpath(__file__)) + "\\UI\\MetricsView.ui"
         file = QtCore.QFile(binaryUIPath)
