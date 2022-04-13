@@ -1,7 +1,6 @@
 from hashlib import md5
 from copy import deepcopy
 from datetime import datetime
-from operator import itemgetter
 from pymongo import MongoClient
 
 from ida_idaapi import BADADDR
@@ -104,14 +103,14 @@ class FeatureExtractor:
                 hashFunction = md5()
                 hashFunction.update((self.fileMD5 + "," + file + "," + "groups," + group + "," + str(
                     functionGroups[group][1]) + "," + str(mean) + "," + str(variance)).encode('utf-8'))
-                maxInstruction = max(functionGroups[group][0].iteritems(), key=itemgetter(1))
+                maxInstruction = max(functionGroups[group][0].items(), key=lambda x: x[1])
                 maxInstructionCount = maxInstruction[1]
                 maxInstruction = maxInstruction[0]
 
                 for item in functionGroups[group][0].keys():
                     if functionGroups[group][0][item] == 0:
                         del functionGroups[group][0][item]
-                minInstruction = min(functionGroups[group][0].iteritems(), key=itemgetter(1))
+                minInstruction = min(functionGroups[group][0].items(), key=lambda x: x[1])
                 minInstructionCount = minInstruction[1]
                 minInstruction = minInstruction[0]
 
