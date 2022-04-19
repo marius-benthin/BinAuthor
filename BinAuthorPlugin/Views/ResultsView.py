@@ -51,8 +51,8 @@ class Results(PluginForm):
         _config: Config = Config()
         self.parent = self.FormToPyQtWidget(form)
         self.wid = QtWidgets.QWidget()
-        binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\\UI\\ResultsView.ui"
-        file = QtCore.QFile(binaryUIPath)
+        ui_dir_path = _config.bin_author_path / "BinAuthorPlugin" / "Views" / "UI"
+        file = QtCore.QFile(str(ui_dir_path / "ResultsView.ui"))
         file.open(QtCore.QFile.ReadOnly)
         myWidget = uic.loadUi(file, self.wid)
         # Grid

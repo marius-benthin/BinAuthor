@@ -1,4 +1,5 @@
 from hashlib import md5
+from pathlib import Path
 from os import listdir, path
 from datetime import datetime
 from pymongo.collection import Collection
@@ -24,8 +25,7 @@ class FunctionCategorizer:
         self.groupFeatures = {}
         self.compilerInstructionFeatures = {}
         self.compilerGroupFeatures = {}
-        self.rootFolder = getRoot()
-        self.thresholdPath = "With_Threshold\\"
+        self.rootFolder = _config.bin_author_path
         self.outputResults = {}
         self.outputResultsOnlyMatch = {}
         self.outputResultsThresholdMatch = {}
@@ -41,7 +41,6 @@ class FunctionCategorizer:
         self.numFileFunctionGroups = {}
 
         self.executableName = "Student1-A1.exe"
-        self.featuresPath = "author 1\\A1-2.exe"
         self.compilerFunctionsDetected = []
         self.otherFunctionsDetected = []
         self.userFunctionsDetected = []
@@ -56,7 +55,7 @@ class FunctionCategorizer:
     def loadCompilerInstructionFeatures(self, root_path, fileName):
         newDict = 0
         numOfInstructions = 0
-        for line in open(root_path + "\\instructions\\" + fileName, "r"):
+        for line in open(root_path / "instructions" / fileName, "r"):
             line = line.split(",")
             numOfInstructions += int(line[1])
             instruction = line[0]
@@ -72,7 +71,7 @@ class FunctionCategorizer:
     def loadCompilerGroupFeatures(self, root_path, fileName):
         newDict = 0
         numOfGroups = 0
-        for line in open(root_path + "\\groups\\" + fileName, "r"):
+        for line in open(root_path / "groups" / fileName, "r"):
             line = line.split(",")
             group = line[0]
             numOfGroups += int(line[1])
@@ -131,13 +130,16 @@ class FunctionCategorizer:
         for function in functions:
             self.loadGroupFeatures(function)
 
-        for files in listdir(self.rootFolder + "compilerFeatures\\instructions"):
-            if path.isfile(self.rootFolder + "compilerFeatures\\instructions\\" + files):
-                self.loadCompilerInstructionFeatures(self.rootFolder + "compilerFeatures", files)
+        compiler_features_dir_path: Path = self.rootFolder / "Features" / "compilerFeatures"
+        instructions_dir_path: Path = compiler_features_dir_path / "groups"
+        for file in listdir(instructions_dir_path):
+            if path.isfile(instructions_dir_path / file):
+                self.loadCompilerInstructionFeatures(compiler_features_dir_path, file)
 
-        for files in listdir(self.rootFolder + "compilerFeatures\\groups"):
-            if path.isfile(self.rootFolder + "compilerFeatures\\groups\\" + files):
-                self.loadCompilerGroupFeatures(self.rootFolder + "compilerFeatures", files)
+        groups_dir_path: Path = compiler_features_dir_path / "groups"
+        for file in listdir(groups_dir_path):
+            if path.isfile(groups_dir_path / file):
+                self.loadCompilerGroupFeatures(compiler_features_dir_path, file)
 
         for function in self.instructionFeatures.keys():
             thresholdMatches = {}

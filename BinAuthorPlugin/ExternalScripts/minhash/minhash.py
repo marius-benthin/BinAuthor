@@ -20,9 +20,9 @@ numHashes = numOfUniqueHashCodes
 
 stringShinglesDict = {"string1": [string1, set(), []], "string2": [string2, set(), []]}
 
-path = os.path.dirname(os.path.realpath(__file__))
-coeffA = pickle.load(open(path + "\\coeffA.p", "rb"))  # pickRandomCoeffs(numHashes)
-coeffB = pickle.load(open(path + "\\coeffB.p", "rb"))  # pickRandomCoeffs(numHashes)
+minhash_dir_path = config.bin_author_path / "BinAuthorPlugin" / "ExternalScripts" / "minhash"
+coeffA = pickle.load(open(minhash_dir_path / "coeffA.p", "rb"))  # pickRandomCoeffs(numHashes)
+coeffB = pickle.load(open(minhash_dir_path / "coeffB.p", "rb"))  # pickRandomCoeffs(numHashes)
 
 
 def minHash(documentShingles):

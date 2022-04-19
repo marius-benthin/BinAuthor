@@ -12,7 +12,6 @@ from ida_ida import inf_get_min_ea
 
 from config import Config
 from Database.mongodb import MongoDB, Collections
-from pluginConfigurations import getInstructionListPath, getGroupPath
 
 
 class FeatureExtractor:
@@ -23,8 +22,8 @@ class FeatureExtractor:
 
         self.collection_functions: Collection = MongoDB(Collections.functions).collection
 
-        self.instructionList = getInstructionListPath() + "InstructionList.txt"
-        self.groupList = getGroupPath() + "InstructionGroups.txt"
+        self.instructionList = _config.bin_author_path / "Features" / "InstructionList.txt"
+        self.groupList = _config.bin_author_path / "Features" / "InstructionGroups.txt"
 
         self.instructions = {}
         self.groups = {}

@@ -12,13 +12,12 @@ config: Config = Config()
 
 
 def executeScripts(file):
-    scriptsFolder = path.dirname(path.realpath(__file__)) + ""
-    choice1 = path.join(scriptsFolder, "computeChoices.py")
     fileToAnalyze = file[0]
     AuthorName = file[1]
 
-    executionString = split(
-        'cmd.exe /c idaw.exe -A -S"' + choice1 + ' \\"' + AuthorName + '\\"" ' + '"' + fileToAnalyze + '"')
+    choice1 = config.bin_author_path / "BinAuthorPlugin" / "ExternalScripts" / "computeChoices.py"
+
+    executionString = split('cmd.exe /c idaw.exe -A -S"' + str(choice1 / AuthorName) + '" "' + fileToAnalyze + '"')
     call(executionString)
 
 

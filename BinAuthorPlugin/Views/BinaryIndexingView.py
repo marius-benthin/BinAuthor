@@ -45,8 +45,7 @@ class BinaryIndexing:
         Create a view for binary indexing
         """
         # load UI file
-        ui_path = self.file_dir_path / "UI" / "BinaryIndexing.ui"
-        file = QtCore.QFile(str(ui_path))
+        file = QtCore.QFile(str(self.ui_dir_path / "BinaryIndexing.ui"))
         file.open(QtCore.QFile.ReadOnly)
         # create window widget
         self.wid = QtWidgets.QWidget()
