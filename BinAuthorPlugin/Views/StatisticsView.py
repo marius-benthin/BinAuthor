@@ -147,7 +147,7 @@ class StatsView(PluginForm):
         self.statsFigures = {}
 
     def setDetails(self, funcName):
-        self.legendItems = self.collection_functions.find_one(
+        self.legendItems = self.collection_functions.find(
             {"function": funcName, "MD5": str(GetInputFileMD5()), "group": {"$exists": "true"}},
             {"group": 1, "groupCount": 1, "_id": 0, "mean": 1, "variance": 1})
         self.legend = {}

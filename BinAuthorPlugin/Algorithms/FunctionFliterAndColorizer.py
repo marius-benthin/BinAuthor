@@ -21,20 +21,20 @@ class FunctionFilter:
         pass
 
     def colorFunctions(self):
-        functionsToColor = list(self.collection_function_labels.find_one({"MD5": GetInputFileMD5()}))
+        functionsToColor = list(self.collection_function_labels.find({"MD5": GetInputFileMD5()}))
 
         userFunctions = [
-            userfunc["function"] for userfunc in list(self.collection_function_labels.find_one(
+            userfunc["function"] for userfunc in list(self.collection_function_labels.find(
                 {"MD5": GetInputFileMD5(), "type": "user"}
             ))
         ]
         compilerFunctions = [
-            compilerfunc["function"] for compilerfunc in list(self.collection_function_labels.find_one(
+            compilerfunc["function"] for compilerfunc in list(self.collection_function_labels.find(
                 {"MD5": GetInputFileMD5(), "type": "compiler"}
             ))
         ]
         otherFunctions = [
-            otherfunc["function"] for otherfunc in list(self.collection_function_labels.find_one(
+            otherfunc["function"] for otherfunc in list(self.collection_function_labels.find(
                 {"MD5": GetInputFileMD5(), "type": "other"}
             ))
         ]
@@ -57,7 +57,7 @@ class FunctionFilter:
                     func.color = 0x80FFCC
         funcTypeStatsView = FunctionFilterList.FunctionFilterList()
         print(len(functionsToColor))
-        print(self.collection_function_labels.find_one({"MD5": GetInputFileMD5(), "type": "user"}).count())
+        print(self.collection_function_labels.count_documents({"MD5": GetInputFileMD5(), "type": "user"}))
         funcTypeStatsView.setDetails([userFuncStat, compilerFuncStat, otherFuncStat],
                                      {"User": userFunctions, "Compiler": compilerFunctions, "Other": otherFunctions})
         funcTypeStatsView.Show()

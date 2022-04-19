@@ -27,7 +27,7 @@ class AuthorClassification:
         choice1 = Choice1.Choice1()
         choice1 = choice1.getChoice1()
         features = choice1["features"]
-        documents = self.collection_choice1.find_one(
+        documents = self.collection_choice1.find(
             {
                 "$or": [
                     {"features.0": features[0]},
@@ -73,7 +73,7 @@ class AuthorClassification:
         featureVector = list(library.values()) + list(returns.values()) + [
             choice2["calls"], choice2['printf without newline'], choice2['printf with newline']]
 
-        documents = self.collection_choice2.find_one(
+        documents = self.collection_choice2.find(
             {
                 "$or": [
                     {'LibraryFunctions.cout': library['cout']},
@@ -144,7 +144,7 @@ class AuthorClassification:
                     orQuery["$or"].append({"$and": andList})
                     start += HASHES_PER_BAND
 
-                documents = self.collection_choice18.find_one({"$and": [{"register": register}, orQuery]})
+                documents = self.collection_choice18.find({"$and": [{"register": register}, orQuery]})
 
                 for document in documents:
                     if document["Author Name"] not in candidateMatches.keys():
@@ -181,7 +181,7 @@ class AuthorClassification:
 
         Authors = {}
 
-        documents = self.collection_strings.find_one()
+        documents = self.collection_strings.find()
         for document in documents:
             if document["Author Name"] not in Authors.keys():
                 Authors[document["Author Name"]] = {"score": 0}

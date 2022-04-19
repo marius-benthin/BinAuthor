@@ -85,7 +85,7 @@ class FunctionCategorizer:
     def loadInstructionFeatures(self, function):
         newDict = 0
         numOfInstructions = 0
-        results = list(self.collection_functions.find_one(
+        results = list(self.collection_functions.find(
             {"MD5": self.fileMD5, "type": "instructions", "function": function})
         )
         for line in results:
@@ -103,7 +103,7 @@ class FunctionCategorizer:
     def loadGroupFeatures(self, function):
         newDict = 0
         numOfGroups = 0
-        results = list(self.collection_functions.find_one(
+        results = list(self.collection_functions.find(
             {"MD5": self.fileMD5, "type": "groups", "function": function})
         )
         for line in results:

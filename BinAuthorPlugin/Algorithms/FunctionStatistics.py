@@ -10,7 +10,7 @@ class InstructionGroupStatistics(object):
     def __init__(self, MD5, functionName):
         self.collection_functions: Collection = MongoDB(Collections.functions).collection
         self.collection_function_labels: Collection = MongoDB(Collections.function_labels).collection
-        self.functionGroupCount = self.collection_functions.find_one(
+        self.functionGroupCount = self.collection_functions.find(
             {
                 "function": functionName,
                 "MD5": str(MD5),
@@ -94,7 +94,7 @@ class InstructionGroupStatistics(object):
         correlations = {}
 
         functionGroups = {}
-        userFunctionNames = [item["function"] for item in self.collection_function_labels.find_one(
+        userFunctionNames = [item["function"] for item in self.collection_function_labels.find(
             {
                 "MD5": str(self.MD5),
                 "type": "user",
@@ -109,7 +109,7 @@ class InstructionGroupStatistics(object):
         )]
 
         print(userFunctionNames)
-        functions = self.collection_functions.find_one(
+        functions = self.collection_functions.find(
             {
                 "function": {"$in": userFunctionNames},
                 "MD5": str(self.MD5),
