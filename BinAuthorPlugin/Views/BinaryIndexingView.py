@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtWidgets, uic
 
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
-from pluginConfigurations import getPythonPath
+from config import Config
 
 
 class BinaryIndexingHandler(action_handler_t):
@@ -33,6 +33,7 @@ class BinaryIndexing:
     """
 
     def __init__(self):
+        _config: Config = Config()
         self.file_dir_path = Path(__file__).parent.absolute()
         self.radioButton = None
         self.folderInput = None

@@ -5,6 +5,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets, uic
 from idaapi import PluginForm
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
+from config import Config
 from Database.mongodb import MongoDB, Collections
 from BinAuthorPlugin.Algorithms import AuthorClassification
 
@@ -115,6 +116,7 @@ class Metrics(PluginForm):
         #    self.authorRanking[author] = self.authorRanking[author]/authorSum
 
     def OnCreate(self, form):
+        _config: Config = Config()
         self.parent = self.FormToPyQtWidget(form)
         self.wid = QtWidgets.QWidget()
         binaryUIPath = dirname(realpath(__file__)) + "\\UI\\MetricsView.ui"

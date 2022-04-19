@@ -4,6 +4,8 @@ from PyQt5 import QtGui, QtWidgets, QtCore, uic
 from idaapi import PluginForm
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
+from config import Config
+
 
 class ResultsHandler(action_handler_t):
 
@@ -46,6 +48,7 @@ class Results(PluginForm):
         return QtGui.QColor(R, G, B)
 
     def OnCreate(self, form):
+        _config: Config = Config()
         self.parent = self.FormToPyQtWidget(form)
         self.wid = QtWidgets.QWidget()
         binaryUIPath = os.path.dirname(os.path.realpath(__file__)) + "\\UI\\ResultsView.ui"

@@ -6,13 +6,16 @@ from pymongo.collection import Collection
 from ida_nalt import get_root_filename
 from idautils import GetInputFileMD5
 
-from pluginConfigurations import getRoot
+from config import Config
 from Database.mongodb import MongoDB, Collections
 
 
 class FunctionCategorizer:
 
     def __init__(self):
+
+        _config: Config = Config()
+
         self.collection_functions: Collection = MongoDB(Collections.functions).collection
         self.collection_group_labels: Collection = MongoDB(Collections.group_labels).collection
         self.collection_function_labels: Collection = MongoDB(Collections.function_labels).collection

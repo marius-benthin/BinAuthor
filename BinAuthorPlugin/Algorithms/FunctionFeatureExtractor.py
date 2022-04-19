@@ -10,6 +10,7 @@ from idc import next_head, print_insn_mnem, find_func_end, get_segm_start, get_s
 from ida_funcs import get_func_name
 from ida_ida import inf_get_min_ea
 
+from config import Config
 from Database.mongodb import MongoDB, Collections
 from pluginConfigurations import getInstructionListPath, getGroupPath
 
@@ -17,6 +18,9 @@ from pluginConfigurations import getInstructionListPath, getGroupPath
 class FeatureExtractor:
 
     def __init__(self):
+
+        _config: Config = Config()
+
         self.collection_functions: Collection = MongoDB(Collections.functions).collection
 
         self.instructionList = getInstructionListPath() + "InstructionList.txt"

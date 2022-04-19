@@ -5,7 +5,10 @@ from subprocess import call
 from multiprocessing import Pool
 from pymongo.collection import Collection
 
+from config import Config
 from Database.mongodb import MongoDB, Collections
+
+config: Config = Config()
 
 
 def executeScripts(file):

@@ -2,7 +2,8 @@ from enum import Enum
 from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.collection import Collection
-from pydantic import BaseSettings, AnyUrl
+
+from config import Config
 
 
 class Collections(str, Enum):
@@ -18,20 +19,12 @@ class Collections(str, Enum):
     test = "test"
 
 
-class MongoConfig(BaseSettings):
-    uri: AnyUrl
-    database: str = "BinAuthor"
-
-    class Config:
-        env_file: str = '.env'
-
-
 class MongoDB:
 
     def __init__(self, collection: Collections):
-        _config: MongoConfig = MongoConfig()
-        self._client: MongoClient = MongoClient(_config.uri)
-        self._database: Database = self._get_database(_config.database)
+        _config: Config = Config()
+        self._client: MongoClient = MongoClient(_config.mongodb_uri)
+        self._database: Database = self._get_database(_config.mongodb_database)
         self.collection: Collection = self._get_collection(collection.value)
 
     def _get_database(self, name: str) -> Database:

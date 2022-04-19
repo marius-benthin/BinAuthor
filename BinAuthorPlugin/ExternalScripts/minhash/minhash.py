@@ -3,7 +3,10 @@ __author__ = 'titan'
 import random
 import binascii
 import pickle
-import os
+
+from config import Config
+
+config: Config = Config()
 
 string1 = "Shakespeare produced most of his known work between 1589 and 1613"
 string2 = "Shakespeare produced most of his work after 1589"
