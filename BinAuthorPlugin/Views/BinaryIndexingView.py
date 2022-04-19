@@ -34,7 +34,8 @@ class BinaryIndexing:
 
     def __init__(self):
         _config: Config = Config()
-        self.file_dir_path = Path(__file__).parent.absolute()
+        self.ui_dir_path: Path = _config.bin_author_path / "BinAuthorPlugin" / "Views" / "UI"
+        self.external_scripts_dir_path: Path = _config.bin_author_path / "BinAuthorPlugin" / "ExternalScripts"
         self.radioButton = None
         self.folderInput = None
         self.lineEditors = None
