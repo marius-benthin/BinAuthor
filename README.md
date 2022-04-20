@@ -1,4 +1,6 @@
-# BinAuthor
+# BinAuthor (IDA Pro 7.7 & Python3)
+
+**!!! This project is currently being renewed step by step and is therefore not yet ready to use !!!**
 
 BinAuthor is an IDA pro plugin developped through research at concordia in the area of binary authorship identification. The main purpose of this tool is to apply cutting edge research 
 in order to solve the difficult task of matching an author to a provided unknown binary. Our tool achieves this by applying novel techniques such as statistical analysis and clustering algorithms
@@ -8,9 +10,9 @@ in conjunction with constructed features to match an author to an unknown binary
 
 ### Requirements:
 
-**OS:** windows (any version supported by IDA Pro 6.8 or higher) other operating systems coming soon
+**OS:** Linux and Windows (any version supported by IDA Pro 7.7 ~~6.8~~ or higher) ~~other operating systems coming soon~~
 
-**Python:** 2.7 64 bit version
+**Python:** 3.7 ~~2.7~~ 64 bit version
 
 **MongoDB:** Any version with WiredTiger
 
