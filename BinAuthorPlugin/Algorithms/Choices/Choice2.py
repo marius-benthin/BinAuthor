@@ -1,7 +1,8 @@
 from pymongo.collection import Collection
 
-from ida_nalt import get_root_filename, get_import_module_qty, enum_import_names, STRTYPE_C, STRTYPE_C_16
-from idautils import GetInputFileMD5, Names, Heads, Strings
+from ida_nalt import (get_root_filename, get_import_module_qty, enum_import_names, STRTYPE_C, STRTYPE_C_16,
+                      retrieve_input_file_sha256)
+from idautils import Names, Heads, Strings
 from idc import find_func_end, print_insn_mnem, get_operand_type, print_operand, get_operand_value
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
@@ -26,7 +27,7 @@ class Choice2:
 
     def __init__(self, authorName: str = None):
         self.fileName: str = get_root_filename()
-        self.fileMD5: bytes = GetInputFileMD5()
+        self.fileSHA256: str = retrieve_input_file_sha256().hex()
         # use ARGV[1] if it was passed with authorName else fileName
         self.authorName: str = self.fileName if authorName is None else authorName
         self.collection_choice2: Collection = MongoDB(Collections.choice2).collection
@@ -145,7 +146,7 @@ class Choice2:
         output["printf with newline"] = printfNewline[0]
         output["printf without newline"] = printfNewline[1]
         output["FileName"] = self.fileName
-        output["FileMD5"] = self.fileMD5
+        output["FileSHA256"] = self.fileSHA256
         output["Author Name"] = self.authorName
         return output
 

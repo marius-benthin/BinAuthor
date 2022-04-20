@@ -4,8 +4,7 @@ from os import listdir, path
 from datetime import datetime
 from pymongo.collection import Collection
 
-from ida_nalt import get_root_filename
-from idautils import GetInputFileMD5
+from ida_nalt import get_root_filename, retrieve_input_file_sha256
 
 from config import Config
 from Database.mongodb import MongoDB, Collections
@@ -48,8 +47,8 @@ class FunctionCategorizer:
         self.compilerFunctionsDetectedGroup = []
         self.otherFunctionsDetectedGroup = []
         self.userFunctionsDetectedGroup = []
-        self.root_filename = get_root_filename()
-        self.fileMD5 = GetInputFileMD5()
+        self.root_filename: str = get_root_filename()
+        self.fileSHA256: str = retrieve_input_file_sha256().hex()
         self.dateAnalyzed = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def loadCompilerInstructionFeatures(self, root_path, fileName):
@@ -88,7 +87,7 @@ class FunctionCategorizer:
         newDict = 0
         numOfInstructions = 0
         results = list(self.collection_functions.find(
-            {"MD5": self.fileMD5, "type": "instructions", "function": function})
+            {"SHA256": self.fileSHA256, "type": "instructions", "function": function})
         )
         for line in results:
             numOfInstructions += int(line["instructionCount"])
@@ -106,7 +105,7 @@ class FunctionCategorizer:
         newDict = 0
         numOfGroups = 0
         results = list(self.collection_functions.find(
-            {"MD5": self.fileMD5, "type": "groups", "function": function})
+            {"SHA256": self.fileSHA256, "type": "groups", "function": function})
         )
         for line in results:
             group = line["group"]
@@ -121,12 +120,14 @@ class FunctionCategorizer:
         self.numFileFunctionGroups[function] = numOfGroups
 
     def run(self):
-        functions = list(self.collection_functions.distinct("function", {"MD5": self.fileMD5, "type": "instructions"}))
+        functions = list(
+            self.collection_functions.distinct("function", {"SHA256": self.fileSHA256, "type": "instructions"})
+        )
 
         for function in functions:
             self.loadInstructionFeatures(function)
 
-        functions = list(self.collection_functions.distinct("function", {"MD5": self.fileMD5, "type": "groups"}))
+        functions = list(self.collection_functions.distinct("function", {"SHA256": self.fileSHA256, "type": "groups"}))
         for function in functions:
             self.loadGroupFeatures(function)
 
@@ -225,9 +226,9 @@ class FunctionCategorizer:
         for function in self.compilerFunctionsDetected:
             output += "," + str(function)
             hashFunction = md5()
-            hashFunction.update(self.fileMD5 + "," + function + ",compiler")
+            hashFunction.update((self.fileSHA256 + "," + function + ",compiler").encode('utf-8'))
             bulkInsert.append(
-                {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
+                {"binaryFileName": self.root_filename, "SHA256": self.fileSHA256, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "compiler", "function": str(function)})
         try:
             self.collection_function_labels.insert_many(bulkInsert)
@@ -239,9 +240,9 @@ class FunctionCategorizer:
         for function in self.otherFunctionsDetected:
             output += "," + str(function)
             hashFunction = md5()
-            hashFunction.update(self.fileMD5 + "," + function + ",other")
+            hashFunction.update((self.fileSHA256 + "," + function + ",other").encode('utf-8'))
             bulkInsert.append(
-                {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
+                {"binaryFileName": self.root_filename, "SHA256": self.fileSHA256, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "other", "function": str(function)})
         try:
             self.collection_function_labels.insert_many(bulkInsert)
@@ -252,9 +253,9 @@ class FunctionCategorizer:
         for function in self.userFunctionsDetected:
             output += "," + str(function)
             hashFunction = md5()
-            hashFunction.update(self.fileMD5 + "," + function + ",user")
+            hashFunction.update((self.fileSHA256 + "," + function + ",user").encode('utf-8'))
             bulkInsert.append(
-                {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
+                {"binaryFileName": self.root_filename, "SHA256": self.fileSHA256, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "user", "function": str(function)})
         try:
             self.collection_function_labels.insert_many(bulkInsert)
@@ -331,9 +332,9 @@ class FunctionCategorizer:
         for function in self.compilerFunctionsDetectedGroup:
             output += "," + str(function)
             hashFunction = md5()
-            hashFunction.update(self.fileMD5 + "," + function + ",compiler")
+            hashFunction.update((self.fileSHA256 + "," + function + ",compiler").encode('utf-8'))
             bulkInsert.append(
-                {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
+                {"binaryFileName": self.root_filename, "SHA256": self.fileSHA256, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "compiler", "function": str(function)})
         try:
             self.collection_group_labels.insert_many(bulkInsert)
@@ -344,9 +345,9 @@ class FunctionCategorizer:
         for function in self.otherFunctionsDetectedGroup:
             output += "," + str(function)
             hashFunction = md5()
-            hashFunction.update(self.fileMD5 + "," + function + ",other")
+            hashFunction.update((self.fileSHA256 + "," + function + ",other").encode('utf-8'))
             bulkInsert.append(
-                {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
+                {"binaryFileName": self.root_filename, "SHA256": self.fileSHA256, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "other", "function": str(function)})
         try:
             self.collection_group_labels.insert_many(bulkInsert)
@@ -357,9 +358,9 @@ class FunctionCategorizer:
         for function in self.userFunctionsDetectedGroup:
             output += "," + str(function)
             hashFunction = md5()
-            hashFunction.update(self.fileMD5 + "," + function + ",user")
+            hashFunction.update((self.fileSHA256 + "," + function + ",user").encode('utf-8'))
             bulkInsert.append(
-                {"binaryFileName": self.root_filename, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
+                {"binaryFileName": self.root_filename, "SHA256": self.fileSHA256, "Date Analyzed": self.dateAnalyzed,
                  "hash": hashFunction.hexdigest(), "type": "user", "function": str(function)})
         try:
             self.collection_group_labels.insert_many(bulkInsert)

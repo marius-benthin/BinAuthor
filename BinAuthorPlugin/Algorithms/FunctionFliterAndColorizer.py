@@ -1,6 +1,6 @@
 from pymongo.collection import Collection
 
-from idautils import GetInputFileMD5
+from ida_nalt import retrieve_input_file_sha256
 from idc import get_func_attr, FUNCATTR_FLAGS
 from ida_funcs import get_func, FUNC_LIB
 from ida_kernwin import refresh_idaview_anyway, request_refresh, IWID_FUNCS
@@ -21,21 +21,24 @@ class FunctionFilter:
         pass
 
     def colorFunctions(self):
-        functionsToColor = list(self.collection_function_labels.find({"MD5": GetInputFileMD5()}))
+
+        fileSHA256: str = retrieve_input_file_sha256().hex()
+
+        functionsToColor = list(self.collection_function_labels.find({"SHA256": fileSHA256}))
 
         userFunctions = [
             userfunc["function"] for userfunc in list(self.collection_function_labels.find(
-                {"MD5": GetInputFileMD5(), "type": "user"}
+                {"SHA256": fileSHA256, "type": "user"}
             ))
         ]
         compilerFunctions = [
             compilerfunc["function"] for compilerfunc in list(self.collection_function_labels.find(
-                {"MD5": GetInputFileMD5(), "type": "compiler"}
+                {"SHA256": fileSHA256, "type": "compiler"}
             ))
         ]
         otherFunctions = [
             otherfunc["function"] for otherfunc in list(self.collection_function_labels.find(
-                {"MD5": GetInputFileMD5(), "type": "other"}
+                {"SHA256": fileSHA256, "type": "other"}
             ))
         ]
 
@@ -57,7 +60,7 @@ class FunctionFilter:
                     func.color = 0x80FFCC
         funcTypeStatsView = FunctionFilterList.FunctionFilterList()
         print(len(functionsToColor))
-        print(self.collection_function_labels.count_documents({"MD5": GetInputFileMD5(), "type": "user"}))
+        print(self.collection_function_labels.count_documents({"SHA256": fileSHA256, "type": "user"}))
         funcTypeStatsView.setDetails([userFuncStat, compilerFuncStat, otherFuncStat],
                                      {"User": userFunctions, "Compiler": compilerFunctions, "Other": otherFunctions})
         funcTypeStatsView.Show()

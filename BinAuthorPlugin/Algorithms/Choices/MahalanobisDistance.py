@@ -1,7 +1,6 @@
 from numpy import array, mean, dot, sqrt, linalg, tile
 
 from ida_nalt import get_root_filename
-from idautils import GetInputFileMD5
 
 '''
 This code was translated from: https://people.revoledu.com/kardi/tutorial/Similarity/MahalanobisDistance.html
@@ -13,7 +12,6 @@ class Mahalanobis:
 
     def __init__(self):
         self.fileName: str = get_root_filename()
-        self.fileMD5: bytes = GetInputFileMD5()
         self.authorName = self.fileName
 
     def mahalanobisDistance(self, A, B):

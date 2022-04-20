@@ -1,7 +1,7 @@
 from pymongo.collection import Collection
 
-from ida_nalt import get_root_filename, STRTYPE_C, STRTYPE_C_16
-from idautils import GetInputFileMD5, Strings
+from ida_nalt import get_root_filename, STRTYPE_C, STRTYPE_C_16, retrieve_input_file_sha256
+from idautils import Strings
 from ida_kernwin import action_handler_t, AST_ENABLE_ALWAYS
 
 from Database.mongodb import MongoDB, Collections
@@ -25,7 +25,7 @@ class CustomStrings:
 
     def __init__(self, authorName: str = None):
         self.fileName: str = get_root_filename()
-        self.fileMD5: bytes = GetInputFileMD5()
+        self.fileSHA256: str = retrieve_input_file_sha256().hex()
         # use ARGV[1] if it was passed with authorName else fileName
         self.authorName: str = self.fileName if authorName is None else authorName
         self.collection_strings: Collection = MongoDB(Collections.strings).collection
@@ -38,7 +38,7 @@ class CustomStrings:
 
     def getAllStrings(self):
         self.allStrings = self.getAllStringsA()
-        output = {"Strings": self.allStrings, "FileName": self.fileName, "FileMD5": self.fileMD5,
+        output = {"Strings": self.allStrings, "FileName": self.fileName, "FileSHA256": self.fileSHA256,
                   "Author Name": self.authorName}
 
         return output

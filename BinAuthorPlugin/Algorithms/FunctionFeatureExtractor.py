@@ -4,8 +4,8 @@ from datetime import datetime
 from pymongo.collection import Collection
 
 from ida_idaapi import BADADDR
-from ida_nalt import get_root_filename
-from idautils import GetInputFileMD5, Functions
+from ida_nalt import get_root_filename, retrieve_input_file_sha256
+from idautils import Functions
 from idc import next_head, print_insn_mnem, find_func_end, get_segm_start, get_segm_end
 from ida_funcs import get_func_name
 from ida_ida import inf_get_min_ea
@@ -28,8 +28,8 @@ class FeatureExtractor:
         self.instructions = {}
         self.groups = {}
 
-        self.fileName = get_root_filename()
-        self.fileMD5 = str(GetInputFileMD5())
+        self.fileName: str = get_root_filename()
+        self.fileSHA256: str = retrieve_input_file_sha256().hex()
         self.dateAnalyzed = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # load instructions into dictionary
@@ -54,10 +54,10 @@ class FeatureExtractor:
             variance = ((functionInstructions[instruction] - mean) ** 2 / total)
             if functionInstructions[instruction] > 0:
                 hashFunction = md5()
-                hashFunction.update((self.fileMD5 + "," + file + "," + "instructions," + instruction + "," + str(
+                hashFunction.update((self.fileSHA256 + "," + file + "," + "instructions," + instruction + "," + str(
                     functionInstructions[instruction]) + "," + str(mean) + "," + str(variance)).encode('utf-8'))
                 bulkInsert.append(
-                    {"binaryFileName": self.fileName, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
+                    {"binaryFileName": self.fileName, "SHA256": self.fileSHA256, "Date Analyzed": self.dateAnalyzed,
                      "function": oldFileName, "type": "instructions", "hash": hashFunction.hexdigest(),
                      "instruction": instruction, "instructionCount": functionInstructions[instruction], "mean": mean,
                      "variance": variance})
@@ -76,13 +76,13 @@ class FeatureExtractor:
             if functionInstructions[instruction] > 0:
                 hashFunction = md5()
                 hashFunction.update((
-                    self.fileMD5 + "," + file + "," + "instructions," + instruction + "," + 
+                    self.fileSHA256 + "," + file + "," + "instructions," + instruction + "," + 
                     str(functionInstructions[instruction]) + "," + str(mean) + "," + str(variance)).encode('utf-8')
                 )
                 bulkInsert.append(
                     {
                         "binaryFileName": self.fileName,
-                        "MD5": self.fileMD5,
+                        "SHA256": self.fileSHA256,
                         "Date Analyzed": self.dateAnalyzed,
                         "function": oldFileName, 
                         "type": "instructions", 
@@ -103,7 +103,7 @@ class FeatureExtractor:
             variance = ((functionGroups[group][1] - mean) ** 2 / allGroupSum)
             if functionGroups[group][1] > 0:
                 hashFunction = md5()
-                hashFunction.update((self.fileMD5 + "," + file + "," + "groups," + group + "," + str(
+                hashFunction.update((self.fileSHA256 + "," + file + "," + "groups," + group + "," + str(
                     functionGroups[group][1]) + "," + str(mean) + "," + str(variance)).encode('utf-8'))
                 maxInstruction = max(functionGroups[group][0].items(), key=lambda x: x[1])
                 maxInstructionCount = maxInstruction[1]
@@ -117,7 +117,7 @@ class FeatureExtractor:
                 minInstruction = minInstruction[0]
 
                 bulkInsert.append(
-                    {"binaryFileName": self.fileName, "MD5": self.fileMD5, "Date Analyzed": self.dateAnalyzed,
+                    {"binaryFileName": self.fileName, "SHA256": self.fileSHA256, "Date Analyzed": self.dateAnalyzed,
                      "function": oldFileName, "type": "groups", "hash": hashFunction.hexdigest(), "group": group,
                      "groupCount": functionGroups[group][1], "mean": mean, "variance": variance,
                      "max_instruction": maxInstruction, "max_instruction_count": maxInstructionCount,

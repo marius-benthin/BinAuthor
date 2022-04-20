@@ -1,8 +1,8 @@
 from simhash import Simhash
 from pymongo.collection import Collection
 
-from ida_nalt import get_root_filename
-from idautils import GetInputFileMD5, Heads, Functions
+from ida_nalt import get_root_filename, retrieve_input_file_sha256
+from idautils import Heads, Functions
 from idc import print_insn_mnem, get_operand_type, print_operand
 from ida_funcs import get_func, get_func_name
 from ida_gdl import FlowChart
@@ -30,7 +30,7 @@ class Choice18:
 
     def __init__(self, authorName: str = None):
         self.fileName: str = get_root_filename()
-        self.fileMD5: bytes = GetInputFileMD5()
+        self.fileSHA256: str = retrieve_input_file_sha256().hex()
         # use ARGV[1] if it was passed with authorName else fileName
         self.authorName: str = self.fileName if authorName is None else authorName
         self.collection_choice18: Collection = MongoDB(Collections.choice18).collection
@@ -89,7 +89,7 @@ class Choice18:
                     functionMinhashes = {
                         "FunctionName": functionName,
                         "FileName": self.fileName,
-                        "FileMD5": self.fileMD5,
+                        "FileSHA256": self.fileSHA256,
                         "Author Name": self.authorName,
                         "BlockStartEA": block.start_ea,
                         "register": register,

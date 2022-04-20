@@ -8,8 +8,7 @@ from matplotlib import use, pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from PyQt5 import QtGui, QtCore, QtWidgets
 
-from ida_nalt import get_root_filename
-from idautils import GetInputFileMD5
+from ida_nalt import get_root_filename, retrieve_input_file_sha256
 from ida_kernwin import PluginForm, find_widget, ask_file, action_handler_t, AST_ENABLE_ALWAYS
 
 from Database.mongodb import MongoDB, Collections
@@ -38,7 +37,7 @@ class StatsHandler(action_handler_t):
 class htmlReport:
 
     @staticmethod
-    def generateReport(executableName, MD5, function, statsTable):
+    def generateReport(executableName, SHA256, function, statsTable):
         dateNow = datetime.now()
         html = '''
         <style>
@@ -65,7 +64,7 @@ class htmlReport:
                 <td><b>Executable Name:</b></td><td>''' + executableName + '''</td>
             </tr>
             <tr>
-                <td><b>Executable Hash:</b></td><td>''' + MD5 + '''</td>
+                <td><b>Executable Hash:</b></td><td>''' + SHA256 + '''</td>
             </tr>
             <tr>
                 <td><b>Function:</b></td><td>''' + function + '''</td>
@@ -138,7 +137,7 @@ class StatsView(PluginForm):
         self.parent = None
         self.minFreq = None
         self.maxFreq = None
-        self.CurrentMD5 = None
+        self.CurrentSHA256 = None
         self.FunctionName = None
         self.groupStats = None
         self.legend = None
@@ -147,15 +146,16 @@ class StatsView(PluginForm):
         self.statsFigures = {}
 
     def setDetails(self, funcName):
+        sha256: str = retrieve_input_file_sha256().hex()
         self.legendItems = self.collection_functions.find(
-            {"function": funcName, "MD5": str(GetInputFileMD5()), "group": {"$exists": "true"}},
+            {"function": funcName, "SHA256": sha256, "group": {"$exists": "true"}},
             {"group": 1, "groupCount": 1, "_id": 0, "mean": 1, "variance": 1})
         self.legend = {}
         self.groupStats = {}
         self.maxFreq = 0
         self.minFreq = maxsize
         self.FunctionName = funcName
-        self.CurrentMD5 = str(GetInputFileMD5())
+        self.CurrentSHA256 = sha256
 
         self.statsFigures = {"KurtosisSkewness": None, "GroupMean": None, "GroupVariance": None,
                              "MinimumFrequencies": None, "MaximumFrequencies": None, "FunctionCorrelations": None}
@@ -288,7 +288,7 @@ class StatsView(PluginForm):
         report = htmlReport()
 
         fileOutput = open(file_dir + fileName, "wb")
-        fileOutput.write(report.generateReport(get_root_filename(), self.CurrentMD5, self.FunctionName,
+        fileOutput.write(report.generateReport(get_root_filename(), self.CurrentSHA256, self.FunctionName,
                                                self.generateStatisticsTable()))
         fileOutput.close()
 
@@ -354,7 +354,7 @@ class StatsView(PluginForm):
 
     def storeFunctionStatistics(self):
         outputSequence = ["Mean", "Variance", "Min", "Max", "Skewness", "Kurtosis", "Correlation"]
-        outputDict = {"ExecutableName": get_root_filename(), "ExecutableMD5Hash": self.CurrentMD5,
+        outputDict = {"ExecutableName": get_root_filename(), "ExecutableSHA256Hash": self.CurrentSHA256,
                       "FunctionName": self.FunctionName}
         for statsType in outputSequence:
             if statsType == "Skewness":
@@ -392,7 +392,9 @@ class StatsView(PluginForm):
     def OnCreate(self, Form):
         self.parent = self.FormToPyQtWidget(Form)
 
-        self.FunctionStats = InstructionGroupStatistics.InstructionGroupStatistics(self.CurrentMD5, self.FunctionName)
+        self.FunctionStats = InstructionGroupStatistics.InstructionGroupStatistics(
+            self.CurrentSHA256, self.FunctionName
+        )
 
         skewness = self.FunctionStats.getSkewness()
         kurtosis = self.FunctionStats.getKurtosis()
