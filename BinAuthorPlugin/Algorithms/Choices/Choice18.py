@@ -113,7 +113,9 @@ class Choice18:
         return functions
 
     def choice18(self):
-        self.choice18A()
+        for function in Functions():
+            self.functionAddresstoRealFunctionName[function] = get_func_name(function)
+            self.createRegisterChain(True, function)
 
     def choice18A(self):
         functions = []
