@@ -95,137 +95,104 @@ class Choice1:
         output["indirect calls"] = instructionCounts["indirect_call"]
         output["regs used"] = instructionCounts["reg_used"]
 
-        if float(totalInstructions) != 0:
-            output["ln(num push/length)"] = log(instructionCounts["push"] / float(totalInstructions))
-            output["ln(num call/length)"] = log(instructionCounts["call"] / float(totalInstructions))
-        else:
-            output["ln(num push/length)"] = "infinity"
-            output["ln(num call/length)"] = "infinity"
-        if float(totalInstructions) != 0:
-            if (instructionCounts["indirect_call"] / float(totalInstructions)) != 0 and (
-                    instructionCounts["reg_used"] / float(totalInstructions)) != 0:
-                output["ln(num Indirect call/length)"] = log(
-                    instructionCounts["indirect_call"] / float(totalInstructions))
-                output["ln(num reg used/length)"] = log(instructionCounts["reg_used"] / float(totalInstructions))
-            elif (instructionCounts["indirect_call"] / float(totalInstructions)) == 0:
-                output["ln(num Indirect call/length)"] = "infinity"
-                output["ln(num reg used/length)"] = log(instructionCounts["reg_used"] / float(totalInstructions))
-            elif (instructionCounts["reg_used"] / float(totalInstructions)) == 0:
-                output["ln(num Indirect call/length)"] = log(
-                    instructionCounts["indirect_call"] / float(totalInstructions))
-                output["ln(num reg used/length)"] = "infinity"
-        else:
-            output["ln(num Indirect call/length)"] = "infinity"
-            output["ln(num reg used/length)"] = "infinity"
+        output["ln(num push/length)"] = "infinity"
+        output["ln(num call/length)"] = "infinity"
+        output["ln(num Indirect call/length)"] = "infinity"
+        output["ln(num reg used/length)"] = "infinity"
+        output["ln(num push/num lea)"] = "infinity"
+        output["ln(num cmp/num test)"] = "infinity"
+        output["ln(num mov/num push)"] = "infinity"
+        output["ln(num jmp/num lea)"] = "infinity"
+        output["ln(num indirect call/num call)"] = "infinity"
+        output["ln(num eax/num ecx)"] = "infinity"
+        output["ln(num esi/num edi)"] = "infinity"
 
-        if float(instructionCounts["lea"]) != 0 and (instructionCounts["push"] / float(instructionCounts["lea"])) != 0:
+        totalInstructions = float(totalInstructions)
+        if totalInstructions != 0:
+            if instructionCounts["push"] != 0:
+                output["ln(num push/length)"] = log(instructionCounts["push"] / totalInstructions)
+            if instructionCounts["call"] != 0:
+                output["ln(num call/length)"] = log(instructionCounts["call"] / totalInstructions)
+            if instructionCounts["indirect_call"] != 0:
+                output["ln(num Indirect call/length)"] = log(instructionCounts["indirect_call"] / totalInstructions)
+            if instructionCounts["reg_used"] != 0:
+                output["ln(num reg used/length)"] = log(instructionCounts["reg_used"] / totalInstructions)
+
+        if float(instructionCounts["lea"]) != 0 and instructionCounts["push"] != 0:
             output["ln(num push/num lea)"] = log(instructionCounts["push"] / float(instructionCounts["lea"]))
-        else:
-            output["ln(num push/num lea)"] = "infinity"
-
-        if float(instructionCounts["test"]) != 0 and (instructionCounts["cmp"] / float(instructionCounts["test"])) != 0:
+        if float(instructionCounts["test"]) != 0 and instructionCounts["cmp"] != 0:
             output["ln(num cmp/num test)"] = log(instructionCounts["cmp"] / float(instructionCounts["test"]))
-        else:
-            output["ln(num cmp/num test)"] = "infinity"
-
-        if float(instructionCounts["push"]) != 0 and (instructionCounts["mov"] / float(instructionCounts["push"])) != 0:
+        if float(instructionCounts["push"]) != 0 and instructionCounts["mov"] != 0:
             output["ln(num mov/num push)"] = log(instructionCounts["mov"] / float(instructionCounts["push"]))
-        else:
-            output["ln(num mov/num push)"] = "infinity"
-        if float(instructionCounts["lea"]) != 0 and (instructionCounts["jmp"] / float(instructionCounts["lea"])) != 0:
+        if float(instructionCounts["lea"]) != 0 and instructionCounts["jmp"] != 0:
             output["ln(num jmp/num lea)"] = log(instructionCounts["jmp"] / float(instructionCounts["lea"]))
-        else:
-            output["ln(num jmp/num lea)"] = "infinity"
+        if float(instructionCounts["call"]) != 0 and instructionCounts["indirect_call"] != 0:
+            output["ln(num indirect call/num call)"] = log(instructionCounts["indirect_call"] / float(instructionCounts["call"]))
 
-        if float(instructionCounts["call"]) != 0 and (
-                instructionCounts["indirect_call"] / float(instructionCounts["call"])) != 0:
-            output["ln(num indirect call/num call)"] = log(
-                instructionCounts["indirect_call"] / float(instructionCounts["call"]))
-        else:
-            output["ln(num indirect call/num call)"] = "infinity"
+        if "eax" in registerCounts.keys() and "ecx" in registerCounts.keys():
+            if float(registerCounts["ecx"]) != 0 and registerCounts["eax"] != 0:
+                output["ln(num eax/num ecx)"] = log(registerCounts["eax"] / float(registerCounts["ecx"]))
 
-        if float(registerCounts["ecx"]) != 0:
-            output["ln(num eax/num ecx)"] = log(registerCounts["eax"] / float(registerCounts["ecx"]))
-        else:
-            output["ln(num eax/num ecx)"] = "infinity"
         if "esi" in registerCounts.keys() and "edi" in registerCounts.keys():
-            if float(registerCounts["edi"]) != 0 and (registerCounts["esi"] / float(registerCounts["edi"])) != 0:
+            if float(registerCounts["edi"]) != 0 and registerCounts["esi"] != 0:
                 output["ln(num esi/num edi)"] = log(registerCounts["esi"] / float(registerCounts["edi"]))
-            else:
-                output["ln(num esi/num edi)"] = "infinity"
-        else:
-            output["ln(num esi/num edi)"] = "infinity"
 
         document = {"General": output}
 
+        feature1 = -1
+        feature2 = -1
+        feature3 = -1
+        feature4 = -1
+        feature5 = -1
+        feature6 = -1
+        feature7 = -1
+        feature8 = -1
+        feature9 = -1
+        feature10 = -1
+        feature11 = -2
+
         if float(instructionCounts["lea"]) != 0:
-            if (instructionCounts["push"] / float(instructionCounts["lea"])) != 0:
+            if instructionCounts["push"] != 0:
                 feature1 = log(instructionCounts["push"] / float(instructionCounts["lea"]))
-            else:
-                feature1 = -1
-            if (instructionCounts["jmp"] / float(instructionCounts["lea"])) != 0:
+            if instructionCounts["jmp"] != 0:
                 feature2 = log(instructionCounts["jmp"] / float(instructionCounts["lea"]))
-            else:
-                feature2 = -1
-        else:
-            feature1 = -1
-            feature2 = -1
 
-        if float(instructionCounts["push"]) != 0 and (instructionCounts["mov"] / float(instructionCounts["push"])) != 0:
+        if float(instructionCounts["push"]) != 0 and instructionCounts["mov"] != 0:
             feature3 = log(instructionCounts["mov"] / float(instructionCounts["push"]))
-        else:
-            feature3 = -1
 
-        if float(instructionCounts["call"]) != 0 and (
-                instructionCounts["indirect_call"] / float(instructionCounts["call"])) != 0:
+        if float(instructionCounts["call"]) != 0 and instructionCounts["indirect_call"] != 0:
             feature4 = log(instructionCounts["indirect_call"] / float(instructionCounts["call"]))
-        else:
-            feature4 = -1
 
-        if float(instructionCounts["test"]) != 0 and (instructionCounts["cmp"] / float(instructionCounts["test"])) != 0:
+        if float(instructionCounts["test"]) != 0 and instructionCounts["cmp"] != 0:
             feature5 = log(instructionCounts["cmp"] / float(instructionCounts["test"]))
-        else:
-            feature5 = -1
 
-        if float(totalInstructions) != 0:
-            if (instructionCounts["reg_used"] / float(totalInstructions)) != 0:
-                feature6 = log(instructionCounts["reg_used"] / float(totalInstructions))
-            else:
-                feature6 = -1
-            if (instructionCounts["push"] / float(totalInstructions)) != 0:
-                feature7 = log(instructionCounts["push"] / float(totalInstructions))
-            else:
-                feature7 = -1
-            if (instructionCounts["call"] / float(totalInstructions)) != 0:
-                feature8 = log(instructionCounts["call"] / float(totalInstructions))
-            else:
-                feature8 = -1
-            if (instructionCounts["indirect_call"] / float(totalInstructions)) != 0:
-                feature9 = log(instructionCounts["indirect_call"] / float(totalInstructions))
-            else:
-                feature9 = -1
-        else:
-            feature6 = -1
-            feature7 = -1
-            feature8 = -1
-            feature9 = -1
+        if totalInstructions != 0:
+            if instructionCounts["reg_used"] != 0:
+                feature6 = log(instructionCounts["reg_used"] / totalInstructions)
+            if instructionCounts["push"] != 0:
+                feature7 = log(instructionCounts["push"] / totalInstructions)
+            if instructionCounts["call"] != 0:
+                feature8 = log(instructionCounts["call"] / totalInstructions)
+            if instructionCounts["indirect_call"] != 0:
+                feature9 = log(instructionCounts["indirect_call"] / totalInstructions)
 
-        if float(registerCounts["ecx"]) != 0:
-            feature10 = log(registerCounts["eax"] / float(registerCounts["ecx"]))
+        if "eax" in registerCounts.keys() and "ecx" in registerCounts.keys():
+            if float(registerCounts["ecx"]) != 0 and registerCounts["eax"] != 0:
+                feature10 = log(registerCounts["eax"] / float(registerCounts["ecx"]))
         else:
-            feature10 = -1
+            feature10 = -2
 
-        if "edi" in registerCounts.keys():
-            if float(registerCounts["edi"]) != 0:
+        if "edi" in registerCounts.keys() and "esi" in registerCounts.keys():
+            if float(registerCounts["edi"]) != 0 and registerCounts["esi"] != 0:
                 feature11 = log(registerCounts["esi"] / float(registerCounts["edi"]))
-            else:
-                feature11 = -1
         else:
             feature11 = -2
+
         featureList = [
             feature1, feature3, feature4, feature5, feature6, feature10, feature11, feature2, feature7, feature8,
             feature9
         ]
+
         document["features"] = featureList
         document["FileName"] = self.fileName
         document["FileSHA256"] = self.fileSHA256
