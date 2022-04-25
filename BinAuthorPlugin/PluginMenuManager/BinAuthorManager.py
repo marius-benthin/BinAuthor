@@ -5,6 +5,7 @@ from ida_kernwin import (
     detach_action_from_menu,
     attach_action_to_menu,
     action_desc_t,
+    unregister_action,
     register_action,
     warning,
 )
@@ -36,6 +37,7 @@ class BinAuthorManager:
         """
         for _item in self._menu_items:
             detach_action_from_menu(self._ui_path, _item)
+            unregister_action(_item)
         self._menu.remove_menu(self._ui_name)
         self._menu.clear()
         
